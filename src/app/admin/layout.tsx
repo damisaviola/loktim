@@ -13,13 +13,17 @@ import {
   Search,
   ChevronRight,
   ChevronDown,
-  Menu
+  Menu,
+  X
 } from "lucide-react";
+import JobFormModal from "@/components/admin/JobFormModal";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({ "Lowongan": true });
+  const [isCreateJobOpen, setIsCreateJobOpen] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const toggleSubmenu = (name: string) => {
     if (isCollapsed) setIsCollapsed(false); // Auto-expand sidebar if trying to open a submenu
@@ -50,17 +54,27 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       
       {/* Sidebar */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-gray-200 bg-white lg:flex transition-all duration-300 ease-in-out ${
-          isCollapsed ? "w-20" : "w-72"
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-gray-200 bg-white transition-all duration-300 ease-in-out lg:translate-x-0 ${
+          isCollapsed ? "lg:w-20" : "lg:w-72"
+        } ${
+          isMobileOpen ? "translate-x-0 w-72" : "-translate-x-full w-72"
         }`}
       >
         
         {/* Brand Area */}
-        <div className={`flex h-16 shrink-0 items-center overflow-hidden border-b border-transparent ${isCollapsed ? 'justify-center px-0' : 'px-6'}`}>
-          <Link href="/admin" className="flex items-center gap-2 font-bold tracking-tight text-primary">
+        <div className={`flex h-16 shrink-0 items-center overflow-hidden border-b border-transparent justify-between ${isCollapsed ? 'justify-center px-0' : 'px-6'}`}>
+          <Link href="/admin" className="flex items-center gap-2 font-bold tracking-tight text-primary" onClick={() => setIsMobileOpen(false)}>
             <Briefcase className="h-6 w-6 shrink-0" />
             {!isCollapsed && <span className="text-xl whitespace-nowrap animate-in fade-in duration-300">LokerTimika</span>}
           </Link>
+          {!isCollapsed && (
+            <button 
+              onClick={() => setIsMobileOpen(false)}
+              className="lg:hidden p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
         </div>
         
         {/* Navigation */}
@@ -98,10 +112,28 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                       <div className="ml-9 mt-1 flex flex-col gap-1 border-l border-gray-100 pl-2 animate-in slide-in-from-top-2 duration-200">
                         {item.subItems.map(sub => {
                           const isSubActive = pathname === sub.href;
+                          const isCreateJobBtn = sub.name === "Tambah Lowongan";
+                          
+                          if (isCreateJobBtn) {
+                            return (
+                              <button
+                                key={sub.name}
+                                onClick={() => {
+                                  setIsCreateJobOpen(true);
+                                  setIsMobileOpen(false);
+                                }}
+                                className="flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors text-gray-500 hover:text-gray-900 hover:bg-gray-50 text-left"
+                              >
+                                {sub.name}
+                              </button>
+                            );
+                          }
+
                           return (
                             <Link
                               key={sub.name}
                               href={sub.href}
+                              onClick={() => setIsMobileOpen(false)}
                               className={`flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                                 isSubActive 
                                   ? "text-primary bg-primary/5" 
@@ -124,6 +156,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 <Link
                   key={item.name}
                   href={item.href}
+                  onClick={() => setIsMobileOpen(false)}
                   title={isCollapsed ? item.name : undefined}
                   className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all ${
                     isCollapsed ? "justify-center" : "gap-3"
@@ -154,7 +187,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-8 transition-all duration-300">
           
           {/* Mobile Menu Button */}
-          <button className="lg:hidden p-2 -ml-2 text-gray-500 hover:text-gray-700">
+          <button 
+            onClick={() => setIsMobileOpen(true)}
+            className="lg:hidden p-2 -ml-2 text-gray-500 hover:text-gray-700"
+          >
             <Menu className="h-6 w-6" />
           </button>
 
@@ -201,6 +237,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </main>
 
       </div>
+
+      {/* Mobile Sidebar Backdrop */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden" 
+          onClick={() => setIsMobileOpen(false)} 
+        />
+      )}
+
+      {/* GLOBAL MODALS */}
+      <JobFormModal open={isCreateJobOpen} onOpenChange={setIsCreateJobOpen} />
     </div>
   );
 }

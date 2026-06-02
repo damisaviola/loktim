@@ -1,16 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/Button";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription,
+} from "@/components/ui/Dialog";
 import { companies } from "@/lib/dummy-data";
-import { Plus, Briefcase, MapPin, Building, CheckCircle2, Mail, Phone } from "lucide-react";
+import { Plus, Briefcase, MapPin, Building, CheckCircle2 } from "lucide-react";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 
-export default function QuickPost() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  
+interface JobFormModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) {
   const [isNewCompany, setIsNewCompany] = useState(false);
   const companyList = Object.values(companies);
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
@@ -33,60 +40,42 @@ export default function QuickPost() {
       return;
     }
 
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSuccess(true);
-    }, 1500);
+    alert("Berhasil! Lowongan baru telah tersimpan sebagai 'Menunggu Approval'.");
+    setIsNewCompany(false);
+    setSelectedCompanyId("");
+    setDescription("");
+    setRequirements("");
+    onOpenChange(false);
   };
 
-  if (success) {
-    return (
-      <div className="container mx-auto px-4 py-16 sm:py-20 max-w-2xl text-center">
-        <div className="bg-card rounded-2xl border border-border p-8 sm:p-12 shadow-xl animate-in zoom-in-95 fade-in duration-500">
-          <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-8 h-8" />
-          </div>
-          <h1 className="text-xl sm:text-2xl font-bold mb-4 text-foreground">Lowongan Berhasil Terkirim!</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-md mx-auto">
-            Lowongan Anda sedang dalam proses moderasi oleh Admin LokerTimika dan akan segera aktif setelah disetujui.
-          </p>
-          <Link href="/" className="inline-block">
-            <Button className="w-full sm:w-auto font-bold rounded-lg px-8 py-3">
-              Kembali ke Beranda
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <div className="bg-card border border-border shadow-xl rounded-2xl overflow-hidden flex flex-col">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl !p-0 overflow-hidden border border-border bg-card shadow-2xl rounded-2xl !flex !flex-col max-h-[90vh] !gap-0">
         
-        {/* HEADER */}
-        <div className="p-6 border-b border-border/60 bg-card">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/15">
-              <Briefcase className="h-5 w-5" />
+        {/* HEADER FIXED */}
+        <div className="p-6 pr-12 border-b border-border/60 shrink-0 bg-card">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
+                <Briefcase className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-bold tracking-tight text-foreground">Publikasi Lowongan</DialogTitle>
+                <DialogDescription className="mt-1 text-xs text-muted-foreground font-medium">
+                  Lengkapi informasi berikut untuk menjangkau kandidat terbaik.
+                </DialogDescription>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">Pasang Lowongan Kerja Baru</h1>
-              <p className="mt-1 text-xs text-muted-foreground font-medium">
-                Lengkapi informasi lowongan Anda agar dapat menjangkau ribuan kandidat terbaik di LokerTimika.
-              </p>
-            </div>
-          </div>
+          </DialogHeader>
         </div>
-
-        {/* BODY FORM */}
-        <div className="p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
+        
+        {/* BODY SCROLLABLE */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-8">
+          <form id="create-job-form" onSubmit={handleSubmit} className="space-y-8">
             
             {/* Section 1: Pekerjaan */}
             <div className="space-y-5">
-              <div className="flex items-center gap-2 border-l-4 border-emerald-500 pl-3">
+              <div className="flex items-center gap-2 border-l-4 border-primary pl-3">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Detail Pekerjaan</h4>
               </div>
               
@@ -97,7 +86,7 @@ export default function QuickPost() {
                     required 
                     type="text" 
                     placeholder="Cth: Mekanik Alat Berat" 
-                    className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
+                    className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -106,7 +95,7 @@ export default function QuickPost() {
                     <select 
                       required 
                       defaultValue=""
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="" disabled hidden>Pilih Kategori</option>
                       <option value="Teknik & Engineering">Teknik & Engineering</option>
@@ -147,7 +136,7 @@ export default function QuickPost() {
 
             {/* Section 2: Kualifikasi */}
             <div className="space-y-5">
-              <div className="flex items-center gap-2 border-l-4 border-emerald-500 pl-3">
+              <div className="flex items-center gap-2 border-l-4 border-primary pl-3">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Kualifikasi Kandidat</h4>
               </div>
               
@@ -158,7 +147,7 @@ export default function QuickPost() {
                     <select 
                       required 
                       defaultValue="Full-time"
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="Full-time">Full-time</option>
                       <option value="Part-time">Part-time</option>
@@ -178,7 +167,7 @@ export default function QuickPost() {
                   <div className="relative">
                     <select 
                       defaultValue="Semua"
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="Semua">Semua Jenjang</option>
                       <option value="SMA/SMK">SMA/SMK</option>
@@ -197,7 +186,7 @@ export default function QuickPost() {
                   <div className="relative">
                     <select 
                       defaultValue="Tanpa Pengalaman"
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="Tanpa Pengalaman">Fresh Graduate</option>
                       <option value="1-3 Tahun">1-3 Tahun</option>
@@ -219,7 +208,7 @@ export default function QuickPost() {
 
             {/* Section 3: Perusahaan */}
             <div className="space-y-5">
-              <div className="flex items-center gap-2 border-l-4 border-emerald-500 pl-3">
+              <div className="flex items-center gap-2 border-l-4 border-primary pl-3">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Profil Perusahaan</h4>
               </div>
               
@@ -233,7 +222,7 @@ export default function QuickPost() {
                   }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-medium transition-all cursor-pointer ${
                     !isNewCompany
-                      ? "bg-background text-emerald-500 shadow-sm border border-border/40"
+                      ? "bg-background text-primary shadow-sm border border-border/40"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -248,7 +237,7 @@ export default function QuickPost() {
                   }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-medium transition-all cursor-pointer ${
                     isNewCompany
-                      ? "bg-background text-emerald-500 shadow-sm border border-border/40"
+                      ? "bg-background text-primary shadow-sm border border-border/40"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -266,7 +255,7 @@ export default function QuickPost() {
                       required={!isNewCompany}
                       value={selectedCompanyId}
                       onChange={(e) => setSelectedCompanyId(e.target.value)}
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="" disabled hidden>-- Pilih Perusahaan Terdaftar --</option>
                       {companyList.map(comp => (
@@ -288,8 +277,8 @@ export default function QuickPost() {
                       <input 
                         required={isNewCompany} 
                         type="text" 
-                        placeholder="Cth: PT. Sukses Makmur" 
-                        className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
+                        placeholder="Cth: PT. Timika Sentosa" 
+                        className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -301,8 +290,8 @@ export default function QuickPost() {
                         <input 
                           required={isNewCompany} 
                           type="text" 
-                          placeholder="Cth: Timika" 
-                          className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
+                          placeholder="Cth: Tembagapura" 
+                          className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
                         />
                       </div>
                     </div>
@@ -312,76 +301,37 @@ export default function QuickPost() {
                     <textarea 
                       rows={2} 
                       placeholder="Profil singkat perusahaan..." 
-                      className="w-full px-3.5 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none"
+                      className="w-full px-3.5 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
                     />
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Divider */}
-            <hr className="border-border/60" />
-
-            {/* Section 4: Kontak Pengiklan */}
-            <div className="space-y-5">
-              <div className="flex items-center gap-2 border-l-4 border-emerald-500 pl-3">
-                <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Kontak Lowongan</h4>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground/80">Email Lamaran <span className="text-red-500">*</span></label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <input 
-                      required 
-                      type="email" 
-                      placeholder="hrd@perusahaan.com" 
-                      className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground/80">WhatsApp Kontak <span className="text-gray-400 font-normal">(Opsional)</span></label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <input 
-                      type="tel" 
-                      placeholder="Cth: 081234567890" 
-                      className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ACTION BUTTONS */}
-            <div className="pt-6 border-t border-border/60 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-              <button 
-                type="button" 
-                onClick={() => window.history.back()}
-                className="px-5 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground bg-background border border-border hover:bg-secondary hover:text-foreground transition-all shadow-sm w-full sm:w-auto cursor-pointer"
-              >
-                Batal
-              </button>
-              <button 
-                type="submit"
-                disabled={isSubmitting}
-                className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 hover:shadow-md hover:shadow-emerald-500/10 transition-all w-full sm:w-auto flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <CheckCircle2 className="h-4 w-4" />
-                {isSubmitting ? "Memproses..." : "Kirim Lowongan"}
-              </button>
-            </div>
-
           </form>
         </div>
+        
+        {/* FOOTER FIXED */}
+        <div className="p-5 border-t border-border/60 shrink-0 bg-secondary/20">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <button 
+              type="button" 
+              onClick={() => onOpenChange(false)}
+              className="px-5 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground bg-background border border-border hover:bg-secondary hover:text-foreground transition-all shadow-sm w-full sm:w-auto cursor-pointer"
+            >
+              Batal
+            </button>
+            <button 
+              form="create-job-form"
+              type="submit"
+              className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary/90 hover:shadow-md hover:shadow-primary/10 transition-all w-full sm:w-auto flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <CheckCircle2 className="h-4 w-4" />
+              Publikasikan Lowongan
+            </button>
+          </div>
+        </div>
 
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

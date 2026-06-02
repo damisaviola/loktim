@@ -8,6 +8,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function Navbar() {
   const pathname = usePathname();
+
   if (pathname?.startsWith('/admin')) return null;
 
   return (
@@ -29,7 +30,10 @@ export function Navbar() {
           
           <ThemeToggle />
 
-          <Link href="/post" className="hidden sm:flex flex-col items-center gap-1 hover:text-foreground py-1 px-2 transition-colors">
+          <Link 
+            href="/post"
+            className="hidden sm:flex flex-col items-center gap-1 hover:text-foreground py-1 px-2 transition-colors"
+          >
             <MessageSquare className="w-5 h-5" />
             <span className="hidden md:inline">Pasang Loker</span>
           </Link>
@@ -46,9 +50,12 @@ export function Navbar() {
             </Link>
 
             {/* Mobile menu icon */}
-            <div className="sm:hidden flex flex-col items-center gap-1 hover:text-foreground py-1 px-2 cursor-pointer transition-colors">
+            <Link 
+              href="/post"
+              className="sm:hidden flex flex-col items-center gap-1 hover:text-foreground py-1 px-2 cursor-pointer transition-colors"
+            >
               <Menu className="w-6 h-6" />
-            </div>
+            </Link>
           </div>
         </nav>
       </div>
