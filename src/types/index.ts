@@ -16,6 +16,7 @@ export interface Job {
   companyId: string;
   company?: Company;
   type: JobType;
+  category?: string;
   education?: EducationLevel;
   experience?: ExperienceLevel;
   gender?: 'Pria' | 'Wanita' | 'Pria/Wanita';

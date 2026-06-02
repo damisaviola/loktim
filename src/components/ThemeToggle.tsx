@@ -6,10 +6,15 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/Button";
 
 export function ThemeToggle() {
-  const { setTheme, theme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+  const { setTheme, theme, resolvedTheme } = useTheme();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleTheme = (e: React.MouseEvent) => {
-    const newTheme = theme === "light" ? "dark" : "light";
+    const newTheme = resolvedTheme === "light" ? "dark" : "light";
     
     // Check if View Transitions API is supported
     if (!document.startViewTransition) {
@@ -23,17 +28,38 @@ export function ThemeToggle() {
     });
   };
 
+  if (!mounted) {
+    return (
+      <button className="flex flex-col items-center gap-1 hover:text-primary text-muted-foreground py-1 px-1 sm:px-2 bg-transparent border-none">
+        <div className="w-5 h-5"></div>
+        <span className="hidden md:inline text-xs font-medium">Tema</span>
+      </button>
+    );
+  }
+
+  const isDark = resolvedTheme === "dark";
+
   return (
     <button
       onClick={toggleTheme}
       title="Ubah Tema"
-      className="flex flex-col items-center gap-1 hover:text-primary text-muted-foreground py-1 px-1 sm:px-2 transition-all duration-300 ease-spring cursor-pointer bg-transparent border-none hover:scale-110 active:scale-75 active:rotate-12"
+      className="flex flex-col items-center gap-1 hover:text-primary text-muted-foreground py-1 px-1 sm:px-2 transition-all duration-300 ease-spring cursor-pointer bg-transparent border-none hover:scale-110 active:scale-75"
     >
-      <div className="relative w-5 h-5 flex items-center justify-center">
-        <Sun className="h-5 w-5 rotate-0 scale-100 transition-transform duration-500 dark:-rotate-180 dark:scale-0 text-current" />
-        <Moon className="absolute h-5 w-5 rotate-180 scale-0 transition-transform duration-500 dark:rotate-0 dark:scale-100 text-current" />
+      <div className="relative w-5 h-5 flex items-center justify-center overflow-hidden">
+        <Sun 
+          className={`absolute h-5 w-5 transition-all duration-500 ease-out text-current ${
+            isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
+          }`} 
+        />
+        <Moon 
+          className={`absolute h-5 w-5 transition-all duration-500 ease-out text-current ${
+            isDark ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
+          }`} 
+        />
       </div>
-      <span className="hidden md:inline text-xs font-medium">Tema</span>
+      <span className="hidden md:inline text-xs font-medium">
+        {isDark ? "Terang" : "Gelap"}
+      </span>
     </button>
   );
 }

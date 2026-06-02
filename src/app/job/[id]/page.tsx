@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { jobs } from '@/lib/dummy-data';
 import { Button } from '@/components/ui/Button';
@@ -6,6 +7,22 @@ import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 import { JobMoreOptions } from '@/components/JobMoreOptions';
 import { ApplyModal } from '@/components/ApplyModal';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const job = jobs.find(j => j.id === resolvedParams.id);
+
+  if (!job) {
+    return {
+      title: 'Lowongan Tidak Ditemukan',
+    };
+  }
+
+  return {
+    title: `${job.title} di ${job.company?.name}`,
+    description: job.description.substring(0, 160) + '...',
+  };
+}
 
 export default async function JobDetail({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -182,7 +199,19 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
           <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
             <h2 className="font-bold text-lg mb-4">Rekomendasi Lowongan</h2>
             <div className="flex flex-col gap-4">
-              {jobs.filter(j => j.id !== job.id).slice(0, 4).map(relatedJob => (
+              {jobs
+                .filter(j => j.id !== job.id)
+                .map(j => {
+                  let score = 0;
+                  if (j.category === job.category) score += 3;
+                  if (j.companyId === job.companyId) score += 2;
+                  if (j.company?.location === job.company?.location) score += 1;
+                  if (j.type === job.type) score += 1;
+                  return { ...j, _score: score };
+                })
+                .sort((a, b) => b._score - a._score)
+                .slice(0, 4)
+                .map(relatedJob => (
                 <Link key={relatedJob.id} href={`/job/${relatedJob.id}`} className="group flex items-start gap-3 border-b border-border last:border-0 pb-3 last:pb-0">
                   <div className="w-10 h-10 shrink-0 bg-white border border-border flex items-center justify-center overflow-hidden rounded-sm mt-0.5">
                     {relatedJob.company?.logoUrl ? (

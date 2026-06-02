@@ -1,9 +1,15 @@
+"use client";
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Briefcase, MessageSquare, Bell, UserCircle, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function Navbar() {
+  const pathname = usePathname();
+  if (pathname?.startsWith('/admin')) return null;
+
   return (
     <header className="sticky top-0 z-50 w-full bg-card border-b border-border shadow-sm">
       <div className="container mx-auto flex h-14 max-w-[1128px] items-center justify-between px-4 sm:px-4 lg:px-0">
@@ -19,7 +25,7 @@ export function Navbar() {
           </Link>
         </div>
 
-        <nav className="flex items-center gap-1 sm:gap-6 text-muted-foreground text-xs font-medium">
+        <nav className="flex items-center gap-3 sm:gap-6 text-muted-foreground text-xs font-medium">
           
           <ThemeToggle />
 
@@ -33,7 +39,7 @@ export function Navbar() {
             <span className="hidden md:inline">Dasbor HRD</span>
           </Link>
 
-          <div className="flex items-center gap-2 sm:gap-4 sm:border-l sm:border-border sm:pl-4">
+          <div className="flex items-center gap-3 sm:gap-6 sm:border-l sm:border-border sm:pl-6">
             <Link href="/login" className="flex flex-col items-center gap-1 hover:text-foreground py-1 px-2 cursor-pointer transition-colors text-muted-foreground">
               <UserCircle className="w-6 h-6 sm:w-6 sm:h-6" />
               <span className="hidden md:inline">Masuk</span>

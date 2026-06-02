@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Send, ArrowLeft, CheckCircle2, MessageSquare } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MessageSquare, Send } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export default function ContactPage() {
@@ -27,131 +27,123 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 max-w-[640px] py-12 sm:py-20">
+    <div className="container mx-auto px-4 max-w-[800px] py-8">
       {/* Back Button */}
-      <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-12 group">
+      <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors mb-6 group">
         <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
         Kembali ke Beranda
       </Link>
 
-      {/* Main Form Content (No Card) */}
-      <div className="w-full">
+      <div className="bg-card rounded-2xl border border-border/60 p-6 sm:p-10 shadow-lg">
         {isSubmitted ? (
-          <div className="py-12 animate-in fade-in duration-500">
-            <h2 className="text-3xl font-normal mb-4 text-foreground">Pesan terkirim</h2>
-            <p className="text-muted-foreground mb-8 text-base leading-relaxed">
-              Terima kasih telah menghubungi kami. Kami telah menerima pesan Anda dan akan segera merespons ke email yang Anda berikan.
+          <div className="py-12 flex flex-col items-center text-center animate-in zoom-in-95 fade-in duration-500">
+            <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-6">
+              <CheckCircle2 className="w-10 h-10" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold mb-4 text-foreground">Pesan Berhasil Terkirim</h2>
+            <p className="text-muted-foreground mb-8 text-sm sm:text-base max-w-md">
+              Terima kasih telah menghubungi LokerTimika. Tim kami telah menerima pesan Anda dan akan segera merespons melalui email yang Anda berikan.
             </p>
             <Button 
               onClick={() => setIsSubmitted(false)} 
               variant="outline"
-              className="h-10 px-6 font-medium"
+              className="h-12 px-8 font-bold rounded-full border-border hover:bg-secondary transition-colors"
             >
-              Kirim tanggapan lain
+              Kirim Pesan Lainnya
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Header */}
-            <div className="pb-6 border-b border-border/40">
-              <h1 className="text-4xl font-normal text-foreground tracking-tight mb-3">Hubungi Kami</h1>
-              <p className="text-muted-foreground text-base">
-                Silakan isi formulir di bawah ini untuk pertanyaan, kemitraan, atau bantuan teknis.
+            <div className="border-b border-border/60 pb-6 mb-8 text-center sm:text-left">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary mb-4">
+                <MessageSquare className="w-6 h-6" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-2">Hubungi Kami</h1>
+              <p className="text-sm text-muted-foreground">
+                Apabila Anda memiliki pertanyaan, penawaran kerja sama, atau memerlukan bantuan teknis terkait layanan kami, silakan isi formulir di bawah ini.
               </p>
             </div>
 
-            <div className="space-y-6 pt-2">
-              {/* Floating Label Input - Name */}
-              <div className="relative">
-                <input
-                  type="text"
-                  id="name"
-                  required
-                  className="block px-3 pb-3 pt-4 w-full text-base text-foreground bg-transparent rounded-md border border-border/80 appearance-none focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 peer transition-colors"
-                  placeholder=" "
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                />
-                <label
-                  htmlFor="name"
-                  className="absolute text-sm text-muted-foreground duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-background px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-2 cursor-text"
-                >
-                  Nama Lengkap
-                </label>
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {/* Name Input */}
+                <div className="space-y-2">
+                  <label htmlFor="name" className="text-sm font-bold text-foreground px-1">Nama Lengkap / Instansi</label>
+                  <input
+                    type="text"
+                    id="name"
+                    required
+                    placeholder="Masukkan nama lengkap atau nama perusahaan"
+                    className="w-full h-12 px-4 bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl focus:outline-none text-sm text-foreground font-medium placeholder:text-muted-foreground transition-all"
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+
+                {/* Email Input */}
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-bold text-foreground px-1">Alamat Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    required
+                    placeholder="Alamat email aktif untuk balasan"
+                    className="w-full h-12 px-4 bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl focus:outline-none text-sm text-foreground font-medium placeholder:text-muted-foreground transition-all"
+                    value={formData.email}
+                    onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
               </div>
 
-              {/* Floating Label Input - Email */}
-              <div className="relative">
-                <input
-                  type="email"
-                  id="email"
-                  required
-                  className="block px-3 pb-3 pt-4 w-full text-base text-foreground bg-transparent rounded-md border border-border/80 appearance-none focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 peer transition-colors"
-                  placeholder=" "
-                  value={formData.email}
-                  onChange={e => setFormData({ ...formData, email: e.target.value })}
-                />
-                <label
-                  htmlFor="email"
-                  className="absolute text-sm text-muted-foreground duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-background px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-2 cursor-text"
-                >
-                  Alamat Email
-                </label>
-              </div>
-
-              {/* Floating Label Input - Subject */}
-              <div className="relative">
+              {/* Subject Input */}
+              <div className="space-y-2">
+                <label htmlFor="subject" className="text-sm font-bold text-foreground px-1">Subjek Pesan</label>
                 <input
                   type="text"
                   id="subject"
                   required
-                  className="block px-3 pb-3 pt-4 w-full text-base text-foreground bg-transparent rounded-md border border-border/80 appearance-none focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 peer transition-colors"
-                  placeholder=" "
+                  placeholder="Contoh: Permintaan pemasangan iklan lowongan"
+                  className="w-full h-12 px-4 bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl focus:outline-none text-sm text-foreground font-medium placeholder:text-muted-foreground transition-all"
                   value={formData.subject}
                   onChange={e => setFormData({ ...formData, subject: e.target.value })}
                 />
-                <label
-                  htmlFor="subject"
-                  className="absolute text-sm text-muted-foreground duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-background px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-2 cursor-text"
-                >
-                  Subjek
-                </label>
               </div>
 
-              {/* Floating Label Textarea - Message */}
-              <div className="relative">
+              {/* Message Textarea */}
+              <div className="space-y-2">
+                <label htmlFor="message" className="text-sm font-bold text-foreground px-1">Isi Pesan</label>
                 <textarea
                   id="message"
                   required
                   rows={5}
-                  className="block px-3 pb-3 pt-4 w-full text-base text-foreground bg-transparent rounded-md border border-border/80 appearance-none focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 peer transition-colors resize-y min-h-[120px]"
-                  placeholder=" "
+                  placeholder="Tuliskan pertanyaan atau rincian pesan Anda secara lengkap..."
+                  className="w-full px-4 py-3 bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl focus:outline-none text-sm text-foreground font-medium placeholder:text-muted-foreground transition-all resize-y min-h-[120px]"
                   value={formData.message}
                   onChange={e => setFormData({ ...formData, message: e.target.value })}
                 ></textarea>
-                <label
-                  htmlFor="message"
-                  className="absolute text-sm text-muted-foreground duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-background px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-6 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-2 cursor-text"
-                >
-                  Isi Pesan
-                </label>
               </div>
             </div>
 
-            <div className="flex justify-between items-center pt-4">
-              <span className="text-xs text-muted-foreground">
-                * Semua kolom wajib diisi
-              </span>
-              <Button 
-                type="submit" 
-                disabled={isLoading} 
-                className="h-10 px-6 rounded-md font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-none transition-colors"
-              >
-                {isLoading ? 'Mengirim...' : 'Kirim'}
-              </Button>
-            </div>
-          </form>
-        )}
+            <div className="flex flex-col-reverse sm:flex-row justify-between items-center pt-4 gap-4 border-t border-border/50">
+              <span className="text-xs text-muted-foreground font-medium px-1">
+                  * Semua kolom wajib diisi
+                </span>
+                <Button 
+                  type="submit" 
+                  disabled={isLoading} 
+                  className="w-full sm:w-auto h-12 px-8 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
+                >
+                  {isLoading ? 'Mengirim...' : (
+                    <>
+                      Kirim Pesan
+                      <Send className="w-4 h-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          )}
       </div>
     </div>
   );

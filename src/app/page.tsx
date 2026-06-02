@@ -9,14 +9,60 @@ import { JobType, EducationLevel, ExperienceLevel, Job } from '@/types';
 import { Settings2, X, Search, SearchX, Building2 } from 'lucide-react';
 import Link from 'next/link';
 
+const PLACEHOLDERS = [
+  "Cari posisi mekanik...",
+  "Cari pekerjaan barista...",
+  "Cari lowongan admin gudang...",
+  "Cari posisi operator alat berat...",
+  "Cari lowongan IT support...",
+  "Cari pekerjaan kasir...",
+  "Cari lowongan driver...",
+  "Cari posisi security...",
+  "Cari kesempatan magang...",
+  "Ketik posisi yang Anda cari..."
+];
+
 export default function Home() {
   const [activeType, setActiveType] = useState<JobType | 'Semua'>('Semua');
+  const [activeCategory, setActiveCategory] = useState<string>('Semua');
   const [activeEdu, setActiveEdu] = useState<EducationLevel | 'Semua'>('Semua');
   const [activeExp, setActiveExp] = useState<ExperienceLevel | 'Semua'>('Semua');
+  const [activeDate, setActiveDate] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [visibleCount, setVisibleCount] = useState(5);
+
+  const [placeholderText, setPlaceholderText] = useState('');
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let typeSpeed = isDeleting ? 50 : 80;
+    const fullText = PLACEHOLDERS[placeholderIndex];
+
+    if (!isDeleting && placeholderText === fullText) {
+      typeSpeed = 5000; // Jeda 5 detik saat teks selesai diketik
+    } else if (isDeleting && placeholderText === '') {
+      typeSpeed = 1000; // Jeda sebelum mulai kata baru
+    }
+
+    const timer = setTimeout(() => {
+      if (!isDeleting && placeholderText === fullText) {
+        setIsDeleting(true);
+      } else if (isDeleting && placeholderText === '') {
+        setIsDeleting(false);
+        setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDERS.length);
+      } else {
+        setPlaceholderText(
+          fullText.substring(0, placeholderText.length + (isDeleting ? -1 : 1))
+        );
+      }
+    }, typeSpeed);
+
+    return () => clearTimeout(timer);
+  }, [placeholderText, isDeleting, placeholderIndex]);
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
@@ -28,6 +74,10 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setVisibleCount(5);
+  }, [searchQuery, activeType, activeCategory, activeEdu, activeExp, activeDate]);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1200);
@@ -36,40 +86,54 @@ export default function Home() {
 
   const filteredJobs = jobs.filter(job => {
     const matchType = activeType === 'Semua' || job.type === activeType;
+    const matchCategory = activeCategory === 'Semua' || job.category === activeCategory;
     const matchEdu = activeEdu === 'Semua' || job.education === activeEdu || job.education === 'Semua' || !job.education;
     const matchExp = activeExp === 'Semua' || job.experience === activeExp || job.experience === 'Semua' || !job.experience;
-    const matchQuery = !searchQuery || 
+    const matchDate = activeDate === 'Semua' || (() => {
+      if (!job.postedAt) return false;
+      const diffDays = (new Date().getTime() - new Date(job.postedAt).getTime()) / (1000 * 60 * 60 * 24);
+      if (activeDate === '24 Jam Terakhir') return diffDays <= 1;
+      if (activeDate === '3 Hari Terakhir') return diffDays <= 3;
+      if (activeDate === '7 Hari Terakhir') return diffDays <= 7;
+      if (activeDate === 'Bulan Ini') return diffDays <= 30;
+      return true;
+    })();
+    const matchQuery = !searchQuery ||
       job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (job.company?.name && job.company.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (job.description && job.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchType && matchEdu && matchExp && matchQuery;
+    return matchType && matchCategory && matchEdu && matchExp && matchDate && matchQuery;
   });
 
+  const displayedJobs = filteredJobs.slice(0, visibleCount);
+
+  const jobCategories = ['Semua', 'Pertambangan', 'F&B', 'Administrasi', 'IT/Teknologi', 'Desain/Kreatif', 'Logistik', 'Pelayanan'];
   const jobTypes = ['Semua', 'Full-time', 'Part-time', 'Magang', 'Freelance'];
   const eduLevels = ['Semua', 'SMA/SMK', 'D3', 'S1', 'S2'];
   const expLevels = ['Semua', 'Tanpa Pengalaman', '1-3 Tahun', '3-5 Tahun', '> 5 Tahun'];
+  const dateFilters = ['Semua', '24 Jam Terakhir', '3 Hari Terakhir', '7 Hari Terakhir', 'Bulan Ini'];
 
   return (
     <div className="container mx-auto px-4 lg:px-0 max-w-[1128px]">
       
       {/* Banner / Header */}
-      <div className="bg-card rounded-2xl p-6 sm:p-10 mb-8 text-foreground relative overflow-hidden border border-border/60 shadow-sm">
+      <div className="mt-4 sm:mt-6 w-full bg-card rounded-2xl mb-8 text-foreground relative overflow-hidden border border-border/60 shadow-sm">
         <div className="absolute top-0 right-0 -mt-16 -mr-16 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-72 h-72 bg-emerald-600/5 rounded-full blur-3xl"></div>
         
-        <div className="relative z-10 space-y-5">
+        <div className="p-6 sm:p-10 relative z-10 space-y-5">
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full bg-secondary/30 p-2 rounded-2xl sm:rounded-full border border-border/40">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Cari posisi (mekanik, barista, admin)..." 
+                placeholder={placeholderText ? `${placeholderText}|` : "|"}
                 className="w-full h-12 sm:h-14 pl-12 pr-10 bg-background border border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl sm:rounded-full focus:outline-none text-sm sm:text-base text-foreground font-medium placeholder:text-muted-foreground transition-all"
               />
               {searchQuery && (
-                <button 
+                <button
                   onClick={() => handleSearchChange('')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs font-bold bg-secondary w-5 h-5 rounded-full flex items-center justify-center cursor-pointer"
                 >
@@ -78,7 +142,7 @@ export default function Home() {
               )}
             </div>
             <div className="flex gap-2 shrink-0">
-              <button 
+              <button
                 type="button"
                 onClick={() => handleSearchChange(searchQuery)}
                 className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-14 sm:px-0 rounded-xl sm:rounded-full shadow-md bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 transition-all cursor-pointer font-bold text-sm"
@@ -87,8 +151,8 @@ export default function Home() {
                 <Search className="w-5 h-5" />
                 <span className="sm:hidden">Cari</span>
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-full shrink-0 shadow-sm bg-background hover:bg-secondary text-foreground flex items-center justify-center transition-all cursor-pointer border border-border"
                 onClick={() => setIsFilterOpen(true)}
                 title="Filter Lanjutan"
@@ -115,10 +179,29 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+
+        {/* Category Filter - Mobile (Horizontal Scroll) */}
+        <div className="w-full overflow-x-auto pb-2 lg:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex gap-2 min-w-max">
+            {jobCategories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-5 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all ${
+                  activeCategory === cat
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-card text-muted-foreground hover:bg-secondary border border-border/60 hover:border-blue-300'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Main Content - Feed */}
-        <div className="w-full">
+        <div className="w-full lg:w-3/4 flex-1">
           <div className="mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 px-1">
             <div>
               <h2 className="font-bold text-lg sm:text-xl">Rekomendasi untuk Anda</h2>
@@ -128,46 +211,75 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col">
-              {isLoading ? (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <JobCardSkeleton key={i} />
-                ))
-              ) : filteredJobs.length > 0 ? (
-                filteredJobs.map(job => (
-                  <JobCard key={job.id} job={job} onClick={setSelectedJob} />
-                ))
-              ) : (
-                <div className="py-16 px-6 flex flex-col items-center justify-center text-center bg-card/50 rounded-2xl border border-border/60 border-dashed my-4">
-                  <div className="w-24 h-24 bg-blue-50 dark:bg-blue-950/30 rounded-full flex items-center justify-center mb-5 text-blue-500">
-                    <SearchX className="w-12 h-12" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground mb-2">Pekerjaan tidak ditemukan</h3>
-                  <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6 leading-relaxed">
-                    Maaf, kami tidak dapat menemukan lowongan yang sesuai dengan kata kunci atau filter pencarian Anda. Coba gunakan kata kunci lain atau hapus beberapa filter.
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    className="font-semibold rounded-full px-6 border-border hover:bg-secondary transition-colors"
-                    onClick={() => {
-                      setSearchQuery('');
-                      setActiveType('Semua');
-                      setActiveEdu('Semua');
-                      setActiveExp('Semua');
-                    }}
-                  >
-                    Hapus Semua Filter
-                  </Button>
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <JobCardSkeleton key={i} />
+              ))
+            ) : displayedJobs.length > 0 ? (
+              displayedJobs.map(job => (
+                <JobCard key={job.id} job={job} onClick={setSelectedJob} />
+              ))
+            ) : (
+              <div className="py-16 px-6 flex flex-col items-center justify-center text-center bg-card/50 rounded-2xl border border-border/60 border-dashed my-4">
+                <div className="w-24 h-24 bg-blue-50 dark:bg-blue-950/30 rounded-full flex items-center justify-center mb-5 text-blue-500">
+                  <SearchX className="w-12 h-12" />
                 </div>
-              )}
-            </div>
-
-            {!isLoading && filteredJobs.length > 0 && (
-              <div className="mt-4 text-center">
-                <Button variant="outline" className="w-full sm:w-auto px-8 rounded-full border-primary text-primary hover:bg-primary/5 font-bold">
-                  Tampilkan lebih banyak
+                <h3 className="text-xl font-bold text-foreground mb-2">Pekerjaan tidak ditemukan</h3>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6 leading-relaxed">
+                  Maaf, kami tidak dapat menemukan lowongan yang sesuai dengan kata kunci atau filter pencarian Anda. Coba gunakan kata kunci lain atau hapus beberapa filter.
+                </p>
+                <Button
+                  variant="outline"
+                  className="font-semibold rounded-full px-6 border-border hover:bg-secondary transition-colors"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setActiveCategory('Semua');
+                    setActiveType('Semua');
+                    setActiveEdu('Semua');
+                    setActiveExp('Semua');
+                    setActiveDate('Semua');
+                  }}
+                >
+                  Hapus Semua Filter
                 </Button>
               </div>
             )}
+          </div>
+
+          {!isLoading && visibleCount < filteredJobs.length && (
+            <div className="mt-4 text-center">
+              <Button 
+                onClick={() => setVisibleCount(filteredJobs.length)}
+                variant="outline" 
+                className="w-full sm:w-auto px-8 rounded-full border-primary text-primary hover:bg-primary/5 font-bold"
+              >
+                Tampilkan lebih banyak
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Right Sidebar - Desktop Categories */}
+        <div className="hidden lg:flex flex-col w-1/4 shrink-0">
+          <div className="sticky top-24 bg-card rounded-2xl border border-border/60 p-5 shadow-sm">
+            <h3 className="font-bold text-lg mb-4 text-foreground">Kategori Pekerjaan</h3>
+            <div className="flex flex-col gap-2">
+              {jobCategories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-between ${
+                    activeCategory === cat
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-background text-muted-foreground hover:bg-secondary border border-border/40 hover:border-blue-300'
+                  }`}
+                >
+                  {cat}
+                  {activeCategory === cat && <span className="w-2 h-2 rounded-full bg-white shrink-0"></span>}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -237,6 +349,24 @@ export default function Home() {
                   ))}
                 </div>
               </div>
+
+              <div className="border-t border-border pt-4">
+                <h3 className="font-bold text-base mb-3">Waktu Tayang</h3>
+                <div className="flex flex-col gap-3">
+                  {dateFilters.map((filter) => (
+                    <label key={filter} className="flex items-center gap-3 text-sm cursor-pointer">
+                      <input
+                        type="radio"
+                        name="dateFilterMobile"
+                        checked={activeDate === filter}
+                        onChange={() => setActiveDate(filter)}
+                        className="w-5 h-5 text-primary accent-primary"
+                      />
+                      {filter}
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-card border-t border-border sm:rounded-b-2xl">
@@ -252,11 +382,11 @@ export default function Home() {
       {/* Job Detail Side Drawer */}
       {selectedJob && (
         <>
-          <div 
+          <div
             className="fixed inset-0 z-[110] bg-black/60 transition-opacity animate-in fade-in duration-300"
             onClick={() => setSelectedJob(null)}
           />
-          
+
           <div className="fixed inset-y-0 right-0 z-[120] w-full max-w-md bg-card shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col border-l border-border overflow-hidden">
             <div className="flex justify-between items-center p-5 pb-4 border-b border-border">
               <h2 className="text-lg font-bold">Detail Pekerjaan</h2>
@@ -264,7 +394,7 @@ export default function Home() {
                 <X className="w-6 h-6 text-muted-foreground" />
               </button>
             </div>
-            
+
             <div className="overflow-y-auto flex-1 p-5">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 bg-white border border-border/50 flex items-center justify-center overflow-hidden rounded-lg shadow-sm shrink-0">
@@ -285,34 +415,34 @@ export default function Home() {
               </div>
 
               <div className="space-y-4 text-sm bg-secondary/20 p-4 rounded-xl border border-border/40">
-                 <div className="flex justify-between items-center py-2 border-b border-border/50">
-                   <span className="text-muted-foreground">Lokasi</span>
-                   <span className="font-semibold text-right">{selectedJob.company?.location}</span>
-                 </div>
-                 <div className="flex justify-between items-center py-2 border-b border-border/50">
-                   <span className="text-muted-foreground">Tipe</span>
-                   <span className="font-semibold text-[#057642] text-right">{selectedJob.type}</span>
-                 </div>
-                 <div className="flex justify-between items-center py-2 border-b border-border/50">
-                   <span className="text-muted-foreground">Pengalaman</span>
-                   <span className="font-semibold text-right">{selectedJob.experience}</span>
-                 </div>
-                 <div className="flex justify-between items-center py-2">
-                   <span className="text-muted-foreground">Pendidikan</span>
-                   <span className="font-semibold text-right">{selectedJob.education}</span>
-                 </div>
-                 {selectedJob.salaryMin && (
-                   <div className="flex justify-between items-center py-2 border-t border-border/50">
-                     <span className="text-muted-foreground">Gaji</span>
-                     <span className="font-semibold text-[#057642] text-right">
-                       {selectedJob.salaryMax && selectedJob.salaryMax !== selectedJob.salaryMin
-                         ? `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')} - Rp ${selectedJob.salaryMax.toLocaleString('id-ID')}`
-                         : `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')}`}
-                     </span>
-                   </div>
-                 )}
+                <div className="flex justify-between items-center py-2 border-b border-border/50">
+                  <span className="text-muted-foreground">Lokasi</span>
+                  <span className="font-semibold text-right">{selectedJob.company?.location}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-border/50">
+                  <span className="text-muted-foreground">Tipe</span>
+                  <span className="font-semibold text-[#057642] text-right">{selectedJob.type}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-border/50">
+                  <span className="text-muted-foreground">Pengalaman</span>
+                  <span className="font-semibold text-right">{selectedJob.experience}</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-muted-foreground">Pendidikan</span>
+                  <span className="font-semibold text-right">{selectedJob.education}</span>
+                </div>
+                {selectedJob.salaryMin && (
+                  <div className="flex justify-between items-center py-2 border-t border-border/50">
+                    <span className="text-muted-foreground">Gaji</span>
+                    <span className="font-semibold text-[#057642] text-right">
+                      {selectedJob.salaryMax && selectedJob.salaryMax !== selectedJob.salaryMin
+                        ? `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')} - Rp ${selectedJob.salaryMax.toLocaleString('id-ID')}`
+                        : `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')}`}
+                    </span>
+                  </div>
+                )}
               </div>
-              
+
               <div className="mt-8">
                 <h3 className="font-bold mb-3 text-lg">Deskripsi Pekerjaan</h3>
                 <div className="text-foreground/80 text-sm whitespace-pre-wrap leading-relaxed">
