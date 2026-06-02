@@ -60,6 +60,7 @@ export const jobs: Job[] = [
     salaryMin: 15000000,
     salaryMax: 25000000,
     isPremium: true,
+    status: 'pending',
     postedAt: new Date(Date.now() - 3600000 * 2).toISOString(), // 2 hours ago
     description: 'Kami mencari Mekanik Alat Berat berpengalaman untuk ditempatkan di area tambang. Harus siap bekerja dengan sistem roster.',
     requirements: [
@@ -111,6 +112,7 @@ export const jobs: Job[] = [
     gender: 'Pria',
     ageRange: 'Maks. 28 Tahun',
     isPremium: true,
+    status: 'pending',
     postedAt: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
     description: 'Dibutuhkan segera Admin Gudang untuk penempatan di cabang SP 2, Timika. Terbuka untuk lulusan baru.',
     requirements: [
