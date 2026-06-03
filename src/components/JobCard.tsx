@@ -148,7 +148,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
         </div>
 
         {/* Localized Badges for authentic, non-AI look */}
-        <div className="flex flex-wrap items-center gap-2 mt-3">
+        <div className="flex flex-wrap items-center gap-2 mt-3 mb-4">
           {job.contacts?.whatsapp && (
             <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#15803d] bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-0.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse"></span>
