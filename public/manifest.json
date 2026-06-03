@@ -1,0 +1,16 @@
+{
+  "name": "LokerTimika",
+  "short_name": "LokerTimika",
+  "description": "Portal informasi lowongan kerja terpercaya di Timika",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1c4ed8",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/x-icon"
+    }
+  ]
+}

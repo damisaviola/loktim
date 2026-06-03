@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 
 export function Footer() {
   const pathname = usePathname();
-  if (pathname?.startsWith('/admin')) return null;
+  // Hide footer on admin and login pages
+  if (pathname?.startsWith('/admin') || pathname === '/login') return null;
 
   return (
     <footer className="bg-card border-t border-border/60 mt-16 py-8 text-sm text-muted-foreground">

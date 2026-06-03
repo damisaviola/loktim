@@ -3,7 +3,7 @@ import { Job } from "@/types";
 import { Badge } from "./ui/Badge";
 import { Building2, Bookmark, GraduationCap, Award, MapPin, Users, CalendarRange, Briefcase, Banknote } from "lucide-react";
 
-export function JobCard({ job, onClick }: { job: Job; onClick?: (job: Job) => void }) {
+export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job: Job) => void; className?: string }) {
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
       e.preventDefault();
@@ -32,7 +32,7 @@ export function JobCard({ job, onClick }: { job: Job; onClick?: (job: Job) => vo
   const salary = formatSalary(job.salaryMin, job.salaryMax);
 
   return (
-    <div className="bg-card border border-border/60 rounded-xl p-4 sm:p-5 mb-4 shadow-sm hover:shadow-md transition-all group relative flex flex-col sm:flex-row gap-3 sm:gap-5">
+    <div className={`bg-card border border-border/60 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-all group relative flex flex-col sm:flex-row gap-3 sm:gap-5 ${className || 'mb-4'}`}>
       
       {/* Mobile Top Row (Logo + Title) & Desktop Logo */}
       <div className="flex gap-3.5 sm:block items-start shrink-0">
@@ -67,7 +67,7 @@ export function JobCard({ job, onClick }: { job: Job; onClick?: (job: Job) => vo
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 min-w-0 w-full">
+      <div className="flex-1 min-w-0 w-full flex flex-col">
         
         {/* Desktop Title & Company */}
         <div className="hidden sm:block">
@@ -178,7 +178,7 @@ export function JobCard({ job, onClick }: { job: Job; onClick?: (job: Job) => vo
           )}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 mt-4 pt-4 border-t border-border/50">
+        <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t border-border/50">
           <div className="flex flex-wrap items-center gap-2">
             {job.isPremium && <Badge variant="premium">Dipromosikan</Badge>}
             <span className="text-xs text-muted-foreground" suppressHydrationWarning>{formatTimeAgo(job.postedAt)}</span>

@@ -44,7 +44,7 @@ export default function QuickPost() {
     return (
       <div className="container mx-auto px-4 py-16 sm:py-20 max-w-2xl text-center">
         <div className="bg-card rounded-2xl border border-border p-8 sm:p-12 shadow-xl animate-in zoom-in-95 fade-in duration-500">
-          <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="w-8 h-8" />
           </div>
           <h1 className="text-xl sm:text-2xl font-bold mb-4 text-foreground">Lowongan Berhasil Terkirim!</h1>
@@ -52,7 +52,7 @@ export default function QuickPost() {
             Lowongan Anda sedang dalam proses moderasi oleh Admin LokerTimika dan akan segera aktif setelah disetujui.
           </p>
           <Link href="/" className="inline-block">
-            <Button className="w-full sm:w-auto font-bold rounded-lg px-8 py-3">
+            <Button className="w-full sm:w-auto font-bold rounded-lg px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90">
               Kembali ke Beranda
             </Button>
           </Link>
@@ -62,21 +62,16 @@ export default function QuickPost() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <div className="bg-card border border-border shadow-xl rounded-2xl overflow-hidden flex flex-col">
+    <div className="container mx-auto px-0 sm:px-4 py-0 sm:py-8 max-w-3xl">
+      <div className="bg-card sm:border border-border shadow-none sm:shadow-xl rounded-none sm:rounded-2xl overflow-hidden flex flex-col min-h-[100dvh] sm:min-h-0">
         
         {/* HEADER */}
         <div className="p-6 border-b border-border/60 bg-card">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/15">
-              <Briefcase className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">Pasang Lowongan Kerja Baru</h1>
-              <p className="mt-1 text-xs text-muted-foreground font-medium">
-                Lengkapi informasi lowongan Anda agar dapat menjangkau ribuan kandidat terbaik di LokerTimika.
-              </p>
-            </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-foreground">Pasang Lowongan Kerja Baru</h1>
+            <p className="mt-1 text-xs text-muted-foreground font-medium">
+              Lengkapi informasi lowongan Anda agar dapat menjangkau ribuan kandidat terbaik di LokerTimika.
+            </p>
           </div>
         </div>
 
@@ -86,7 +81,7 @@ export default function QuickPost() {
             
             {/* Section 1: Pekerjaan */}
             <div className="space-y-5">
-              <div className="flex items-center gap-2 border-l-4 border-emerald-500 pl-3">
+              <div className="flex items-center gap-2 border-l-4 border-primary pl-3">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Detail Pekerjaan</h4>
               </div>
               
@@ -97,7 +92,7 @@ export default function QuickPost() {
                     required 
                     type="text" 
                     placeholder="Cth: Mekanik Alat Berat" 
-                    className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
+                    className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -106,7 +101,7 @@ export default function QuickPost() {
                     <select 
                       required 
                       defaultValue=""
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="" disabled hidden>Pilih Kategori</option>
                       <option value="Teknik & Engineering">Teknik & Engineering</option>
@@ -137,7 +132,7 @@ export default function QuickPost() {
                 <RichTextEditor 
                   defaultValue={requirements}
                   onChange={(val) => setRequirements(val)}
-                  placeholder="1. Pendidikan minimal...&#10;2. Pengalaman kerja..." 
+                  placeholder={"1. Pendidikan minimal...\n2. Pengalaman kerja..."} 
                 />
               </div>
             </div>
@@ -147,7 +142,7 @@ export default function QuickPost() {
 
             {/* Section 2: Kualifikasi */}
             <div className="space-y-5">
-              <div className="flex items-center gap-2 border-l-4 border-emerald-500 pl-3">
+              <div className="flex items-center gap-2 border-l-4 border-primary pl-3">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Kualifikasi Kandidat</h4>
               </div>
               
@@ -158,7 +153,7 @@ export default function QuickPost() {
                     <select 
                       required 
                       defaultValue="Full-time"
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="Full-time">Full-time</option>
                       <option value="Part-time">Part-time</option>
@@ -178,7 +173,7 @@ export default function QuickPost() {
                   <div className="relative">
                     <select 
                       defaultValue="Semua"
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="Semua">Semua Jenjang</option>
                       <option value="SMA/SMK">SMA/SMK</option>
@@ -197,7 +192,7 @@ export default function QuickPost() {
                   <div className="relative">
                     <select 
                       defaultValue="Tanpa Pengalaman"
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="Tanpa Pengalaman">Fresh Graduate</option>
                       <option value="1-3 Tahun">1-3 Tahun</option>
@@ -219,7 +214,7 @@ export default function QuickPost() {
 
             {/* Section 3: Perusahaan */}
             <div className="space-y-5">
-              <div className="flex items-center gap-2 border-l-4 border-emerald-500 pl-3">
+              <div className="flex items-center gap-2 border-l-4 border-primary pl-3">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Profil Perusahaan</h4>
               </div>
               
@@ -233,7 +228,7 @@ export default function QuickPost() {
                   }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-medium transition-all cursor-pointer ${
                     !isNewCompany
-                      ? "bg-background text-emerald-500 shadow-sm border border-border/40"
+                      ? "bg-background text-primary shadow-sm border border-border/40"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -248,7 +243,7 @@ export default function QuickPost() {
                   }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-medium transition-all cursor-pointer ${
                     isNewCompany
-                      ? "bg-background text-emerald-500 shadow-sm border border-border/40"
+                      ? "bg-background text-primary shadow-sm border border-border/40"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -266,7 +261,7 @@ export default function QuickPost() {
                       required={!isNewCompany}
                       value={selectedCompanyId}
                       onChange={(e) => setSelectedCompanyId(e.target.value)}
-                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all cursor-pointer appearance-none"
+                      className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="" disabled hidden>-- Pilih Perusahaan Terdaftar --</option>
                       {companyList.map(comp => (
@@ -289,7 +284,7 @@ export default function QuickPost() {
                         required={isNewCompany} 
                         type="text" 
                         placeholder="Cth: PT. Sukses Makmur" 
-                        className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
+                        className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -302,7 +297,7 @@ export default function QuickPost() {
                           required={isNewCompany} 
                           type="text" 
                           placeholder="Cth: Timika" 
-                          className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
+                          className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
                         />
                       </div>
                     </div>
@@ -312,7 +307,7 @@ export default function QuickPost() {
                     <textarea 
                       rows={2} 
                       placeholder="Profil singkat perusahaan..." 
-                      className="w-full px-3.5 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none"
+                      className="w-full px-3.5 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
                     />
                   </div>
                 </div>
@@ -324,7 +319,7 @@ export default function QuickPost() {
 
             {/* Section 4: Kontak Pengiklan */}
             <div className="space-y-5">
-              <div className="flex items-center gap-2 border-l-4 border-emerald-500 pl-3">
+              <div className="flex items-center gap-2 border-l-4 border-primary pl-3">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Kontak Lowongan</h4>
               </div>
               
@@ -339,7 +334,7 @@ export default function QuickPost() {
                       required 
                       type="email" 
                       placeholder="hrd@perusahaan.com" 
-                      className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
+                      className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
                     />
                   </div>
                 </div>
@@ -352,7 +347,7 @@ export default function QuickPost() {
                     <input 
                       type="tel" 
                       placeholder="Cth: 081234567890" 
-                      className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" 
+                      className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
                     />
                   </div>
                 </div>
@@ -360,18 +355,18 @@ export default function QuickPost() {
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="pt-6 border-t border-border/60 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <div className="sticky bottom-0 z-10 bg-card p-4 sm:p-0 border-t sm:border-none border-border/60 mt-auto sm:mt-6 sm:pt-6 sm:border-t flex flex-col-reverse sm:flex-row sm:justify-end gap-3 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] sm:shadow-none">
               <button 
                 type="button" 
                 onClick={() => window.history.back()}
-                className="px-5 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground bg-background border border-border hover:bg-secondary hover:text-foreground transition-all shadow-sm w-full sm:w-auto cursor-pointer"
+                className="px-5 py-3.5 sm:py-2.5 rounded-xl sm:rounded-lg text-[15px] sm:text-sm font-semibold text-muted-foreground bg-background border border-border hover:bg-secondary hover:text-foreground transition-all shadow-sm w-full sm:w-auto cursor-pointer"
               >
                 Batal
               </button>
               <button 
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 hover:shadow-md hover:shadow-emerald-500/10 transition-all w-full sm:w-auto flex items-center justify-center gap-2 cursor-pointer"
+                className="px-6 py-3.5 sm:py-2.5 rounded-xl sm:rounded-lg text-[15px] sm:text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 hover:shadow-md hover:shadow-primary/10 transition-all w-full sm:w-auto flex items-center justify-center gap-2 cursor-pointer"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 {isSubmitting ? "Memproses..." : "Kirim Lowongan"}

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { jobs } from '@/lib/dummy-data';
 import { JobCard } from '@/components/JobCard';
 import { JobCardSkeleton } from '@/components/JobCardSkeleton';
 import { Button } from '@/components/ui/Button';
 import { JobType, EducationLevel, ExperienceLevel, Job } from '@/types';
-import { Settings2, X, Search, SearchX, Building2 } from 'lucide-react';
+import { Settings2, X, Search, SearchX, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 const PLACEHOLDERS = [
@@ -37,6 +37,18 @@ export default function Home() {
   const [placeholderText, setPlaceholderText] = useState('');
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth; // Scroll exactly one visible area
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   useEffect(() => {
     let typeSpeed = isDeleting ? 50 : 80;
@@ -113,6 +125,12 @@ export default function Home() {
   const expLevels = ['Semua', 'Tanpa Pengalaman', '1-3 Tahun', '3-5 Tahun', '> 5 Tahun'];
   const dateFilters = ['Semua', '24 Jam Terakhir', '3 Hari Terakhir', '7 Hari Terakhir', 'Bulan Ini'];
 
+  // Latest jobs for the new section
+  const latestJobs = [...jobs]
+    .filter(j => j.postedAt)
+    .sort((a, b) => new Date(b.postedAt!).getTime() - new Date(a.postedAt!).getTime())
+    .slice(0, 6);
+
   return (
     <div className="container mx-auto px-4 lg:px-0 max-w-[1128px]">
       
@@ -179,6 +197,47 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Rekomendasi Section (Horizontal Scroll) */}
+      <div className="mb-10 w-full overflow-hidden">
+        <div className="flex justify-between items-end mb-4 px-1">
+          <div>
+            <h2 className="font-bold text-lg sm:text-xl">Rekomendasi untuk Anda</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">Berdasarkan profil dan riwayat pencarian</p>
+          </div>
+          <div className="hidden sm:flex items-center gap-2">
+            <button 
+              onClick={() => scrollCarousel('left')}
+              className="w-10 h-10 rounded-full border border-border/60 flex items-center justify-center bg-card hover:bg-secondary shadow-sm transition-colors text-muted-foreground hover:text-foreground"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button 
+              onClick={() => scrollCarousel('right')}
+              className="w-10 h-10 rounded-full border border-border/60 flex items-center justify-center bg-card hover:bg-secondary shadow-sm transition-colors text-muted-foreground hover:text-foreground"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+        <div 
+          ref={carouselRef}
+          className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 px-1 -mx-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          {latestJobs.map(job => (
+            <div key={`latest-${job.id}`} className="w-[85vw] sm:w-[350px] shrink-0 flex">
+              <JobCard 
+                job={job} 
+                onClick={setSelectedJob} 
+                className="w-full flex-col !flex-col mb-0 h-full"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
 
         {/* Category Filter - Mobile (Horizontal Scroll) */}
@@ -204,8 +263,8 @@ export default function Home() {
         <div className="w-full lg:w-3/4 flex-1">
           <div className="mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 px-1">
             <div>
-              <h2 className="font-bold text-lg sm:text-xl">Rekomendasi untuk Anda</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">Berdasarkan profil dan riwayat pencarian</p>
+              <h2 className="font-bold text-lg sm:text-xl">Lowongan Terbaru</h2>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">Pekerjaan yang baru saja ditambahkan</p>
             </div>
             <span className="text-xs sm:text-sm font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full shrink-0">{filteredJobs.length} Lowongan</span>
           </div>
