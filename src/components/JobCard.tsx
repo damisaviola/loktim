@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Job } from "@/types";
 import { Badge } from "./ui/Badge";
-import { Building2, Bookmark, GraduationCap, Award, MapPin, Users, CalendarRange, Briefcase, Banknote } from "lucide-react";
+import { Building2, Bookmark, GraduationCap, Award, MapPin, Users, CalendarRange, Briefcase, Banknote, Sparkles } from "lucide-react";
 
 export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job: Job) => void; className?: string }) {
   const handleClick = (e: React.MouseEvent) => {
@@ -30,17 +30,33 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
   };
 
   const salary = formatSalary(job.salaryMin, job.salaryMax);
+  
+  const isPremium = job.isPremium;
+  const cardClasses = isPremium 
+    ? `bg-card border-2 border-blue-400/80 dark:border-blue-700/50 shadow-blue-100/50 dark:shadow-none`
+    : `bg-card border border-border/60`;
 
   return (
-    <div className={`bg-card border border-border/60 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-all group relative flex flex-col sm:flex-row gap-3 sm:gap-5 ${className || 'mb-4'}`}>
+    <div className={`${cardClasses} rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-all group relative flex flex-col sm:flex-row gap-3 sm:gap-5 ${className || 'mb-4'} overflow-hidden`}>
       
+      {isPremium && (
+        <div className="absolute top-0 right-0 z-10">
+          <div 
+            className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-2 rounded-bl-xl shadow-sm border-l border-b border-blue-400/30 flex items-center justify-center"
+            title="Lowongan Promosi"
+          >
+            <Sparkles className="w-4 h-4 fill-white/20" />
+          </div>
+        </div>
+      )}
+
       {/* Mobile Top Row (Logo + Title) & Desktop Logo */}
       <div className="flex gap-3.5 sm:block items-start shrink-0">
-        <Link href={`/job/${job.id}`} onClick={handleClick} className="shrink-0">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white border border-border/50 flex items-center justify-center overflow-hidden rounded-lg shadow-sm">
-            {job.company?.logoUrl ? (
+        <Link href={`/job/${job.id}`} onClick={handleClick} className="shrink-0 relative z-10">
+          <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-white border ${isPremium ? 'border-blue-200' : 'border-border/50'} flex items-center justify-center overflow-hidden rounded-lg shadow-sm`}>
+            {(job.imageUrl || job.company?.logoUrl) ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={job.company.logoUrl} alt={job.company.name} className="w-full h-full object-contain p-1" />
+              <img src={job.imageUrl || job.company?.logoUrl} alt={job.company?.name || "Company Logo"} className="w-full h-full object-contain p-1" />
             ) : (
               <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
             )}
@@ -48,16 +64,13 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
         </Link>
         
         {/* Mobile Title & Company */}
-        <div className="sm:hidden flex-1 min-w-0">
+        <div className="sm:hidden flex-1 min-w-0 pr-12">
           <div className="flex justify-between items-start gap-2">
-            <Link href={`/job/${job.id}`} onClick={handleClick} className="min-w-0 flex-1">
+            <Link href={`/job/${job.id}`} onClick={handleClick} className="min-w-0 flex-1 relative z-10">
               <h3 className="text-base font-bold text-primary group-hover:underline truncate leading-snug">
                 {job.title}
               </h3>
             </Link>
-            <button className="text-muted-foreground hover:bg-secondary p-1 -mr-1 -mt-1 rounded-full transition-colors shrink-0" title="Simpan">
-              <Bookmark className="w-4 h-4" />
-            </button>
           </div>
           <div className="flex items-center gap-1.5 text-sm font-bold text-foreground mt-0.5">
             <Building2 className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
@@ -67,19 +80,16 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 min-w-0 w-full flex flex-col">
+      <div className="flex-1 min-w-0 w-full flex flex-col relative z-10">
         
         {/* Desktop Title & Company */}
-        <div className="hidden sm:block">
+        <div className="hidden sm:block pr-12">
           <div className="flex justify-between items-start gap-2">
             <Link href={`/job/${job.id}`} onClick={handleClick} className="min-w-0 flex-1">
               <h3 className="text-lg font-bold text-primary group-hover:underline truncate leading-snug">
                 {job.title}
               </h3>
             </Link>
-            <button className="text-muted-foreground hover:bg-secondary p-2 -mr-2 -mt-2 rounded-full transition-colors shrink-0" title="Simpan">
-              <Bookmark className="w-5 h-5" />
-            </button>
           </div>
           <div className="flex items-center gap-1.5 text-sm font-bold text-foreground mt-1.5 mb-2.5">
             <Building2 className="w-4 h-4 shrink-0 text-muted-foreground" />
@@ -180,7 +190,6 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
 
         <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t border-border/50">
           <div className="flex flex-wrap items-center gap-2">
-            {job.isPremium && <Badge variant="premium">Dipromosikan</Badge>}
             <span className="text-xs text-muted-foreground" suppressHydrationWarning>{formatTimeAgo(job.postedAt)}</span>
             <span className="text-xs text-muted-foreground hidden sm:inline mx-1">•</span>
             <span className="text-xs text-[#057642] font-semibold hidden sm:inline">Jadilah pelamar pertama</span>

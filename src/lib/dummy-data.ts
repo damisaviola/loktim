@@ -272,7 +272,7 @@ export const jobs: Job[] = [
     salaryMin: 8000000,
     salaryMax: 12000000,
     isPremium: false,
-    postedAt: new Date(Date.now() - 3600000 * 24).toISOString(), // 1 day ago
+    postedAt: new Date(Date.now() - 3600000 * 25).toISOString(), // 25 hours ago
     description: 'Kami mencari teknisi listrik berpengalaman untuk instalasi bangunan perumahan di area Kuala Kencana.',
     requirements: [
       'Lulusan SMK Jurusan Teknik Instalasi Tenaga Listrik',

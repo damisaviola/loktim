@@ -28,6 +28,7 @@ export interface Job {
   description: string;
   requirements: string[];
   contactUrl?: string; // Fallback
+  imageUrl?: string | null;
   status?: 'pending' | 'approved' | 'rejected';
   contacts?: {
     whatsapp?: string;

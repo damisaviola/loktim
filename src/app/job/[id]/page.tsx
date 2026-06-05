@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { jobs } from '@/lib/dummy-data';
+import prisma from '@/lib/prisma';
 import { Button } from '@/components/ui/Button';
 import { Building2, Briefcase, Bookmark, ExternalLink, Banknote, MapPin, GraduationCap, Users, Flag, MessageSquare, CalendarRange } from 'lucide-react';
 import Link from 'next/link';
@@ -10,7 +11,13 @@ import { ApplyModal } from '@/components/ApplyModal';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const job = jobs.find(j => j.id === resolvedParams.id);
+  let job: any = jobs.find(j => j.id === resolvedParams.id);
+  if (!job) {
+    job = await prisma.job.findUnique({
+      where: { id: resolvedParams.id },
+      include: { company: true }
+    });
+  }
 
   if (!job) {
     return {
@@ -30,7 +37,19 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
   // Artificial delay to demonstrate skeleton loading
   await new Promise(resolve => setTimeout(resolve, 800));
 
-  const job = jobs.find(j => j.id === resolvedParams.id);
+  let job: any = jobs.find(j => j.id === resolvedParams.id);
+  if (!job) {
+    const dbJob = await prisma.job.findUnique({
+      where: { id: resolvedParams.id },
+      include: { company: true }
+    });
+    if (dbJob) {
+      job = {
+        ...dbJob,
+        postedAt: dbJob.postedAt.toISOString(),
+      };
+    }
+  }
 
   if (!job) {
     notFound();
@@ -76,9 +95,9 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
             <div className={`h-24 sm:h-32 relative bg-gradient-to-r ${bgGradient}`}>
               <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white to-transparent"></div>
               <div className="absolute -bottom-8 sm:-bottom-10 left-4 sm:left-6 w-16 h-16 sm:w-20 sm:h-20 bg-white border-2 border-white rounded-md overflow-hidden shadow-sm flex items-center justify-center z-10">
-                {job.company?.logoUrl ? (
+                {(job.imageUrl || job.company?.logoUrl) ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={job.company.logoUrl} alt={job.company.name} className="w-full h-full object-contain p-1" />
+                  <img src={job.imageUrl || job.company?.logoUrl} alt={job.company?.name || "Company Logo"} className="w-full h-full object-contain p-1" />
                 ) : (
                   <Building2 className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
                 )}
@@ -165,7 +184,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
               <h3 className="text-base font-bold mb-3">Persyaratan Khusus:</h3>
               <ul className="list-disc pl-5 space-y-2 text-sm mb-2">
-                {job.requirements.map((req, i) => (
+                {job.requirements?.map((req: string, i: number) => (
                   <li key={i}>{req}</li>
                 ))}
               </ul>
@@ -179,9 +198,9 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
             <h2 className="font-bold text-lg mb-4">Tentang Perusahaan</h2>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-white border border-border flex items-center justify-center shrink-0">
-                {job.company?.logoUrl ? (
+                {(job.imageUrl || job.company?.logoUrl) ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={job.company.logoUrl} alt={job.company.name} className="w-full h-full object-contain p-1" />
+                  <img src={job.imageUrl || job.company?.logoUrl} alt={job.company?.name || "Company Logo"} className="w-full h-full object-contain p-1" />
                 ) : (
                   <Building2 className="w-6 h-6 text-muted-foreground" />
                 )}

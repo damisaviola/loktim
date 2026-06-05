@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { jobs } from '@/lib/dummy-data';
+import { jobs as dummyJobs } from '@/lib/dummy-data';
 import { JobCard } from '@/components/JobCard';
 import { JobCardSkeleton } from '@/components/JobCardSkeleton';
+import { getApprovedJobsAction } from '@/app/actions/job';
 import { Button } from '@/components/ui/Button';
 import { JobType, EducationLevel, ExperienceLevel, Job } from '@/types';
 import { Settings2, X, Search, SearchX, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -33,6 +34,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [visibleCount, setVisibleCount] = useState(5);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   const [placeholderText, setPlaceholderText] = useState('');
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
@@ -90,10 +92,18 @@ export default function Home() {
   }, [searchQuery, activeType, activeCategory, activeEdu, activeExp, activeDate]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1200);
-    return () => clearTimeout(timer);
+    async function fetchJobs() {
+      try {
+        const fetchedJobs = await getApprovedJobsAction();
+        setJobs([...(fetchedJobs as unknown as Job[]), ...dummyJobs]);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+        setJobs(dummyJobs);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchJobs();
   }, []);
 
   const filteredJobs = jobs.filter(job => {
@@ -128,7 +138,11 @@ export default function Home() {
   // Latest jobs for the new section
   const latestJobs = [...jobs]
     .filter(j => j.postedAt)
-    .sort((a, b) => new Date(b.postedAt!).getTime() - new Date(a.postedAt!).getTime())
+    .sort((a, b) => {
+      const timeDiff = new Date(b.postedAt!).getTime() - new Date(a.postedAt!).getTime();
+      if (timeDiff === 0) return a.id.localeCompare(b.id);
+      return timeDiff;
+    })
     .slice(0, 6);
 
   return (

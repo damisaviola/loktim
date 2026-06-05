@@ -15,7 +15,6 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Cari Lowongan", active: pathname === "/" || pathname?.startsWith("/job") },
-    { href: "/dashboard", label: "Dasbor HRD", active: pathname?.startsWith("/dashboard") },
   ];
 
   return (

@@ -1,25 +1,27 @@
-"use client";
-
-import { jobs, companies } from "@/lib/dummy-data";
+import prisma from "@/lib/prisma";
 import { 
   Briefcase, 
   Building, 
   CheckCircle2,
-  AlertCircle,
-  Eye,
-  Edit,
-  Trash2
+  AlertCircle
 } from "lucide-react";
+import JobActionButtons from "./JobActionButtons";
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
   // Hitung statistik
-  const totalJobs = jobs.length;
-  const expiredJobs = Math.floor(totalJobs * 0.2); // Anggap 20% kadaluarsa
-  const activeJobs = totalJobs - expiredJobs;
-  const totalCompanies = Object.keys(companies).length;
+  const totalJobs = await prisma.job.count();
+  const activeJobs = await prisma.job.count({ where: { status: "approved" } });
+  // We don't have an explicit expired status, assuming pending or rejected as the rest,
+  // but let's just count rejected as expired for now, or just pending
+  const expiredJobs = await prisma.job.count({ where: { status: "rejected" } }); 
+  const totalCompanies = await prisma.company.count();
 
   // Ambil lowongan yang menunggu approval
-  const pendingJobs = jobs.filter(job => job.status === 'pending');
+  const pendingJobs = await prisma.job.findMany({
+    where: { status: 'pending' },
+    include: { company: true },
+    orderBy: { createdAt: 'desc' }
+  });
 
   return (
     <div className="space-y-8 pb-10">
@@ -66,11 +68,11 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Widget 3: Lowongan Kadaluarsa */}
+        {/* Widget 3: Lowongan Ditolak */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex justify-between">
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-500">Lowongan Kadaluarsa</p>
+              <p className="text-sm font-medium text-gray-500">Lowongan Ditolak</p>
               <p className="text-3xl font-bold tracking-tight text-gray-900">{expiredJobs}</p>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/10 text-red-600">
@@ -78,7 +80,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="mt-4 flex items-center text-sm">
-            <span className="text-gray-500">Melewati batas waktu</span>
+            <span className="text-gray-500">Ditolak / Kadaluarsa</span>
           </div>
         </div>
 
@@ -163,22 +165,7 @@ export default function AdminDashboard() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex justify-end gap-3">
-                        {job.status === 'pending' && (
-                          <button className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 p-1.5 rounded-md transition-colors" title="Approve">
-                            <CheckCircle2 className="h-5 w-5" />
-                          </button>
-                        )}
-                        <button className="text-primary hover:text-primary/80 hover:bg-primary/5 p-1.5 rounded-md transition-colors" title="Lihat Detail">
-                          <Eye className="h-5 w-5" />
-                        </button>
-                        <button className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 p-1.5 rounded-md transition-colors" title="Edit">
-                          <Edit className="h-5 w-5" />
-                        </button>
-                        <button className="text-red-500 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-md transition-colors" title="Hapus">
-                          <Trash2 className="h-5 w-5" />
-                        </button>
-                      </div>
+                      <JobActionButtons job={job} />
                     </td>
                   </tr>
                 ))
@@ -201,3 +188,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
