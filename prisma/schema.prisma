@@ -12,6 +12,7 @@ model Company {
   name     String
   location String
   logoUrl  String?
+  email    String?
   jobs     Job[]
 }
 

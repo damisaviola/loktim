@@ -5,11 +5,24 @@ import prisma from "@/lib/prisma";
 export async function getCompaniesAction() {
   try {
     const companies = await prisma.company.findMany({
-      select: { id: true, name: true }
+      select: { id: true, name: true, email: true }
     });
     return companies;
   } catch (error) {
     console.error("Failed to fetch companies:", error);
+    return [];
+  }
+}
+
+export async function getCompaniesByEmailAction(email: string) {
+  try {
+    const companies = await prisma.company.findMany({
+      where: { email },
+      select: { id: true, name: true, email: true }
+    });
+    return companies;
+  } catch (error) {
+    console.error("Failed to fetch companies by email:", error);
     return [];
   }
 }
@@ -20,6 +33,7 @@ export async function createJobAction(formData: FormData) {
     
     let companyId = formData.get("companyId") as string;
     const imageUrl = formData.get("imageUrl") as string | null;
+    const email = formData.get("email") as string;
 
     if (isNewCompany) {
       const companyName = formData.get("newCompanyName") as string;
@@ -30,15 +44,23 @@ export async function createJobAction(formData: FormData) {
         data: {
           name: companyName,
           location: companyLocation,
-          logoUrl: imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(companyName)}`
+          logoUrl: imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(companyName)}`,
+          email: email
         }
       });
       companyId = newCompany.id;
-    } else if (imageUrl) {
-      await prisma.company.update({
-        where: { id: companyId },
-        data: { logoUrl: imageUrl }
-      });
+    } else {
+      // If the company doesn't have an email set yet, we might want to update it.
+      // But mainly, update the logo if present
+      const updateData: any = {};
+      if (imageUrl) updateData.logoUrl = imageUrl;
+      
+      if (Object.keys(updateData).length > 0) {
+        await prisma.company.update({
+          where: { id: companyId },
+          data: updateData
+        });
+      }
     }
 
     if (!companyId) {
@@ -55,7 +77,6 @@ export async function createJobAction(formData: FormData) {
     const experience = formData.get("experience") as string;
     const gender = formData.get("gender") as string || "Pria/Wanita";
     const ageRange = formData.get("ageRange") as string || "Bebas";
-    const email = formData.get("email") as string;
     const whatsapp = formData.get("whatsapp") as string;
     
     const salaryMinStr = formData.get("salaryMin") as string;

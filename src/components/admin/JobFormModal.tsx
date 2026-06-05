@@ -9,8 +9,10 @@ import {
   DialogDescription,
 } from "@/components/ui/Dialog";
 import { companies } from "@/lib/dummy-data";
-import { Plus, Briefcase, MapPin, Building, CheckCircle2 } from "lucide-react";
+import { Plus, Briefcase, MapPin, Building, CheckCircle2, Mail } from "lucide-react";
 import RichTextEditor from "@/components/ui/RichTextEditor";
+import { getCompaniesByEmailAction } from "@/app/actions/job";
+import { useEffect } from "react";
 
 interface JobFormModalProps {
   open: boolean;
@@ -18,11 +20,40 @@ interface JobFormModalProps {
 }
 
 export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) {
-  const [isNewCompany, setIsNewCompany] = useState(false);
-  const companyList = Object.values(companies);
+  const [isNewCompany, setIsNewCompany] = useState(true);
+  const [companyList, setCompanyList] = useState<{id: string, name: string}[]>([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
+  
+  const [email, setEmail] = useState("");
+  const [debouncedEmail, setDebouncedEmail] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedEmail(email);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [email]);
+
+  useEffect(() => {
+    if (debouncedEmail && debouncedEmail.includes("@")) {
+      getCompaniesByEmailAction(debouncedEmail).then((list) => {
+        setCompanyList(list);
+        if (list.length > 0) {
+          setIsNewCompany(false);
+          setSelectedCompanyId(list[0].id);
+        } else {
+          setIsNewCompany(true);
+          setSelectedCompanyId("");
+        }
+      });
+    } else {
+      setCompanyList([]);
+      setIsNewCompany(true);
+      setSelectedCompanyId("");
+    }
+  }, [debouncedEmail]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,10 +72,12 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
     }
 
     alert("Berhasil! Lowongan baru telah tersimpan sebagai 'Menunggu Approval'.");
-    setIsNewCompany(false);
+    setIsNewCompany(true);
     setSelectedCompanyId("");
     setDescription("");
     setRequirements("");
+    setEmail("");
+    setCompanyList([]);
     onOpenChange(false);
   };
 
@@ -212,39 +245,57 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Profil Perusahaan</h4>
               </div>
               
-              {/* Segmented Control */}
-              <div className="flex bg-secondary/30 border border-border p-1 rounded-xl text-sm max-w-md">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsNewCompany(false);
-                    setSelectedCompanyId("");
-                  }}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-medium transition-all cursor-pointer ${
-                    !isNewCompany
-                      ? "bg-background text-primary shadow-sm border border-border/40"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Building className="h-4 w-4" />
-                  Perusahaan Terdaftar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsNewCompany(true);
-                    setSelectedCompanyId("");
-                  }}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-medium transition-all cursor-pointer ${
-                    isNewCompany
-                      ? "bg-background text-primary shadow-sm border border-border/40"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Plus className="h-4 w-4" />
-                  Perusahaan Baru
-                </button>
+              {/* Field Email (Move to top) */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground/80 block">Email Perusahaan / Perekrut <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Mail className="h-4 w-4 text-muted-foreground/60" />
+                  </div>
+                  <input required name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hrd@perusahaan.com" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1 ml-1">
+                  {email.length === 0 ? "Ketik email untuk memuat daftar perusahaan terdaftar." : 
+                   companyList.length > 0 ? "✅ Perusahaan ditemukan untuk email ini." :
+                   debouncedEmail.includes("@") ? "ℹ️ Email belum terdaftar. Isi form perusahaan baru." : ""}
+                </p>
               </div>
+
+              {/* Segmented Control */}
+              {companyList.length > 0 && (
+                <div className="flex bg-secondary/30 border border-border p-1 rounded-xl text-sm max-w-md mt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsNewCompany(false);
+                      setSelectedCompanyId(companyList[0]?.id || "");
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-medium transition-all cursor-pointer ${
+                      !isNewCompany
+                        ? "bg-background text-primary shadow-sm border border-border/40"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Building className="h-4 w-4" />
+                    Perusahaan Terdaftar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsNewCompany(true);
+                      setSelectedCompanyId("");
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-medium transition-all cursor-pointer ${
+                      isNewCompany
+                        ? "bg-background text-primary shadow-sm border border-border/40"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Perusahaan Baru
+                  </button>
+                </div>
+              )}
 
               {/* Conditional Form Selection */}
               {!isNewCompany ? (

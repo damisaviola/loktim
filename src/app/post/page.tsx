@@ -9,7 +9,7 @@ import {
   GraduationCap, Award, Users, CalendarRange, LayoutList, Building2, UploadCloud, Info
 } from "lucide-react";
 import RichTextEditor from "@/components/ui/RichTextEditor";
-import { createJobAction, getCompaniesAction } from "@/app/actions/job";
+import { createJobAction, getCompaniesByEmailAction } from "@/app/actions/job";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/utils/supabase/client";
 
@@ -17,7 +17,7 @@ export default function QuickPost() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const [isNewCompany, setIsNewCompany] = useState(false);
+  const [isNewCompany, setIsNewCompany] = useState(true);
   const [companyList, setCompanyList] = useState<{id: string, name: string}[]>([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [description, setDescription] = useState("");
@@ -25,12 +25,37 @@ export default function QuickPost() {
   
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  
+  const [email, setEmail] = useState("");
+  const [debouncedEmail, setDebouncedEmail] = useState("");
 
   const supabase = createClient();
 
   useEffect(() => {
-    getCompaniesAction().then(setCompanyList);
-  }, []);
+    const handler = setTimeout(() => {
+      setDebouncedEmail(email);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [email]);
+
+  useEffect(() => {
+    if (debouncedEmail && debouncedEmail.includes("@")) {
+      getCompaniesByEmailAction(debouncedEmail).then((list) => {
+        setCompanyList(list);
+        if (list.length > 0) {
+          setIsNewCompany(false);
+          setSelectedCompanyId(list[0].id);
+        } else {
+          setIsNewCompany(true);
+          setSelectedCompanyId("");
+        }
+      });
+    } else {
+      setCompanyList([]);
+      setIsNewCompany(true);
+      setSelectedCompanyId("");
+    }
+  }, [debouncedEmail]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -400,23 +425,41 @@ export default function QuickPost() {
             </div>
 
             <div className="space-y-8">
-              {/* Switch Perusahaan */}
-              <div className="bg-secondary/40 p-1.5 rounded-xl flex max-w-md mx-auto sm:mx-0 shadow-inner border border-border/50">
-                <button
-                  type="button"
-                  onClick={() => { setIsNewCompany(false); setSelectedCompanyId(""); }}
-                  className={`flex-1 flex justify-center items-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all ${!isNewCompany ? "bg-white dark:bg-background text-orange-600 dark:text-orange-400 shadow-sm border border-border/40" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  <Building className="h-4 w-4" /> Perusahaan Terdaftar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setIsNewCompany(true); setSelectedCompanyId(""); }}
-                  className={`flex-1 flex justify-center items-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all ${isNewCompany ? "bg-white dark:bg-background text-orange-600 dark:text-orange-400 shadow-sm border border-border/40" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  <Plus className="h-4 w-4" /> Perusahaan Baru
-                </button>
+              {/* Field Email (Move to top) */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground/90 block">Email Perusahaan / Perekrut <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-muted-foreground/60" />
+                  </div>
+                  <input required name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hrd@perusahaan.com" className="w-full h-14 pl-12 pr-4 bg-background border border-border hover:border-orange-300 rounded-xl text-base text-foreground focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1.5 ml-1">
+                  {email.length === 0 ? "Ketik email Anda untuk memuat daftar perusahaan yang terdaftar." : 
+                   companyList.length > 0 ? "✅ Perusahaan ditemukan untuk email ini." :
+                   debouncedEmail.includes("@") ? "ℹ️ Email ini belum memiliki perusahaan terdaftar. Silakan isi form perusahaan baru." : ""}
+                </p>
               </div>
+
+              {/* Switch Perusahaan (only show if companyList > 0) */}
+              {companyList.length > 0 && (
+                <div className="bg-secondary/40 p-1.5 rounded-xl flex max-w-md mx-auto sm:mx-0 shadow-inner border border-border/50">
+                  <button
+                    type="button"
+                    onClick={() => { setIsNewCompany(false); setSelectedCompanyId(companyList[0]?.id || ""); }}
+                    className={`flex-1 flex justify-center items-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all ${!isNewCompany ? "bg-white dark:bg-background text-orange-600 dark:text-orange-400 shadow-sm border border-border/40" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    <Building className="h-4 w-4" /> Perusahaan Terdaftar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setIsNewCompany(true); setSelectedCompanyId(""); }}
+                    className={`flex-1 flex justify-center items-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all ${isNewCompany ? "bg-white dark:bg-background text-orange-600 dark:text-orange-400 shadow-sm border border-border/40" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    <Plus className="h-4 w-4" /> Perusahaan Baru
+                  </button>
+                </div>
+              )}
 
               {/* Form Perusahaan */}
               <div className="bg-secondary/10 p-5 rounded-2xl border border-border/50">
@@ -470,17 +513,8 @@ export default function QuickPost() {
                 )}
               </div>
 
-              {/* Kontak */}
+              {/* Kontak Tambahan */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground/90 block">Email Lamaran <span className="text-red-500">*</span></label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-muted-foreground/60" />
-                    </div>
-                    <input required name="email" type="email" placeholder="hrd@perusahaan.com" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
-                  </div>
-                </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground/90 block flex justify-between">
                     Nomor WhatsApp <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
