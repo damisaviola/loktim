@@ -9,9 +9,11 @@ import {
   DialogDescription,
 } from "@/components/ui/Dialog";
 import { companies } from "@/lib/dummy-data";
-import { Plus, Briefcase, MapPin, Building, CheckCircle2, Mail } from "lucide-react";
+import { Plus, Briefcase, MapPin, Building, CheckCircle2, Mail, UploadCloud, Info, Wallet, Users, CalendarRange, Phone } from "lucide-react";
 import RichTextEditor from "@/components/ui/RichTextEditor";
-import { getCompaniesByEmailAction } from "@/app/actions/job";
+import { getCompaniesByEmailAction, createJobAction } from "@/app/actions/job";
+import imageCompression from "browser-image-compression";
+import { createClient } from "@/utils/supabase/client";
 import { useEffect } from "react";
 
 interface JobFormModalProps {
@@ -28,6 +30,19 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
   
   const [email, setEmail] = useState("");
   const [debouncedEmail, setDebouncedEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const supabase = createClient();
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -55,7 +70,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
     }
   }, [debouncedEmail]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Validasi konten teks editor
@@ -71,14 +86,68 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
       return;
     }
 
-    alert("Berhasil! Lowongan baru telah tersimpan sebagai 'Menunggu Approval'.");
-    setIsNewCompany(true);
-    setSelectedCompanyId("");
-    setDescription("");
-    setRequirements("");
-    setEmail("");
-    setCompanyList([]);
-    onOpenChange(false);
+    setIsSubmitting(true);
+    let uploadedImageUrl = "";
+    
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      if (selectedImage) {
+        const options = {
+          maxSizeMB: 0.2,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true,
+          fileType: "image/webp" as any
+        };
+        const compressedFile = await imageCompression(selectedImage, options);
+        
+        const fileExt = "webp";
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `posters/${fileName}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("images")
+          .upload(filePath, compressedFile);
+
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          alert("Gagal mengunggah gambar. Pastikan bucket 'images' tersedia di Supabase.");
+        } else if (uploadData) {
+          const { data: { publicUrl } } = supabase.storage
+            .from("images")
+            .getPublicUrl(filePath);
+          uploadedImageUrl = publicUrl;
+        }
+      }
+
+      formData.append("description", description);
+      formData.append("requirements", requirements);
+      formData.append("isNewCompany", isNewCompany.toString());
+      if (uploadedImageUrl) {
+        formData.append("imageUrl", uploadedImageUrl);
+      }
+      const result = await createJobAction(formData);
+      setIsSubmitting(false);
+
+      if (result.success) {
+        alert("Berhasil! Lowongan baru telah tersimpan.");
+        setIsNewCompany(true);
+        setSelectedCompanyId("");
+        setDescription("");
+        setRequirements("");
+        setEmail("");
+        setSelectedImage(null);
+        setImagePreview(null);
+        setCompanyList([]);
+        onOpenChange(false);
+      } else {
+        alert("Gagal menyimpan lowongan: " + result.error);
+      }
+    } catch (error) {
+      console.error(error);
+      setIsSubmitting(false);
+      alert("Terjadi kesalahan sistem.");
+    }
   };
 
   return (
@@ -117,6 +186,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   <label className="text-sm font-medium text-foreground/80">Posisi Pekerjaan <span className="text-red-500">*</span></label>
                   <input 
                     required 
+                    name="title"
                     type="text" 
                     placeholder="Cth: Mekanik Alat Berat" 
                     className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
@@ -127,6 +197,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   <div className="relative">
                     <select 
                       required 
+                      name="category"
                       defaultValue=""
                       className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
@@ -142,6 +213,56 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                       </svg>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground/80 block flex justify-between items-center">
+                    Gaji Minimal (Rp) <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <Wallet className="h-4 w-4 text-muted-foreground/60" />
+                    </div>
+                    <input name="salaryMin" type="number" placeholder="Cth: 5000000" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                  </div>
+                </div>
+                
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground/80 block flex justify-between items-center">
+                    Gaji Maksimal (Rp) <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <Wallet className="h-4 w-4 text-muted-foreground/60" />
+                    </div>
+                    <input name="salaryMax" type="number" placeholder="Cth: 8000000" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground/90 block">Poster / Banner Lowongan <span className="text-xs text-muted-foreground font-normal ml-2">(Opsional)</span></label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <label className="flex items-center justify-center w-full sm:w-auto h-11 px-6 border border-dashed border-primary/40 bg-primary/5 text-primary rounded-lg cursor-pointer hover:bg-primary/10 hover:border-primary/60 transition-all group">
+                    <UploadCloud className="w-4 h-4 mr-2 group-hover:-translate-y-1 transition-transform" />
+                    <span className="text-sm font-bold tracking-wide">Pilih Gambar</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                  </label>
+                  
+                  {imagePreview ? (
+                    <div className="relative w-20 h-20 rounded-lg border border-border shadow-sm overflow-hidden bg-card shrink-0">
+                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button type="button" onClick={(e) => { e.preventDefault(); setSelectedImage(null); setImagePreview(null); }} className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 hover:bg-red-500 transition-colors">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-xs text-muted-foreground leading-relaxed max-w-xs flex items-start gap-2 bg-secondary/50 p-2.5 rounded-lg border border-border/40">
+                      <Info className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+                      <p>Format JPG, PNG, WEBP. Maks. 5MB. Gambar akan dioptimasi otomatis.</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -179,6 +300,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   <div className="relative">
                     <select 
                       required 
+                      name="type"
                       defaultValue="Full-time"
                       className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
@@ -199,6 +321,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   <label className="text-sm font-medium text-foreground/80">Pendidikan</label>
                   <div className="relative">
                     <select 
+                      name="education"
                       defaultValue="Semua"
                       className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
@@ -218,6 +341,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   <label className="text-sm font-medium text-foreground/80">Pengalaman</label>
                   <div className="relative">
                     <select 
+                      name="experience"
                       defaultValue="Tanpa Pengalaman"
                       className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
@@ -231,6 +355,37 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground/80">Preferensi Gender</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <Users className="h-4 w-4 text-muted-foreground/60" />
+                    </div>
+                    <select name="gender" defaultValue="Pria/Wanita" className="w-full h-11 pl-10 pr-10 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none">
+                      <option value="Pria/Wanita">Pria / Wanita (Bebas)</option>
+                      <option value="Pria">Khusus Pria</option>
+                      <option value="Wanita">Khusus Wanita</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-muted-foreground">
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground/80 block flex justify-between">
+                    Batasan Umur <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <CalendarRange className="h-4 w-4 text-muted-foreground/60" />
+                    </div>
+                    <input name="ageRange" type="text" defaultValue="Bebas" placeholder="Cth: Maks. 35 Tahun" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
                   </div>
                 </div>
               </div>
@@ -304,6 +459,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   <div className="relative">
                     <select 
                       required={!isNewCompany}
+                      name="companyId"
                       value={selectedCompanyId}
                       onChange={(e) => setSelectedCompanyId(e.target.value)}
                       className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
@@ -327,6 +483,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                       <label className="text-sm font-medium text-foreground/80">Nama Perusahaan <span className="text-red-500">*</span></label>
                       <input 
                         required={isNewCompany} 
+                        name="newCompanyName"
                         type="text" 
                         placeholder="Cth: PT. Timika Sentosa" 
                         className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
@@ -340,6 +497,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                         </div>
                         <input 
                           required={isNewCompany} 
+                          name="newCompanyLocation"
                           type="text" 
                           placeholder="Cth: Tembagapura" 
                           className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" 
@@ -350,6 +508,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-foreground/80">Deskripsi Singkat Perusahaan</label>
                     <textarea 
+                      name="newCompanyDesc"
                       rows={2} 
                       placeholder="Profil singkat perusahaan..." 
                       className="w-full px-3.5 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
@@ -357,6 +516,20 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   </div>
                 </div>
               )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground/80 block flex justify-between">
+                    Nomor WhatsApp <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <Phone className="h-4 w-4 text-muted-foreground/60" />
+                    </div>
+                    <input name="whatsapp" type="tel" placeholder="081234567890" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                  </div>
+                </div>
+              </div>
+
             </div>
           </form>
         </div>
@@ -374,10 +547,11 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
             <button 
               form="create-job-form"
               type="submit"
-              className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary/90 hover:shadow-md hover:shadow-primary/10 transition-all w-full sm:w-auto flex items-center justify-center gap-2 cursor-pointer"
+              disabled={isSubmitting}
+              className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary/90 hover:shadow-md hover:shadow-primary/10 transition-all w-full sm:w-auto flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <CheckCircle2 className="h-4 w-4" />
-              Publikasikan Lowongan
+              {isSubmitting ? "Memproses..." : "Publikasikan Lowongan"}
             </button>
           </div>
         </div>

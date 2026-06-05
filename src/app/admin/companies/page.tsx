@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { companies, jobs } from "@/lib/dummy-data";
+import { useState, useEffect } from "react";
+import { getAdminCompaniesAction } from "@/app/actions/job";
 import { 
   Building, 
   MapPin, 
@@ -15,15 +15,20 @@ import {
 
 export default function CompaniesPage() {
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
+  const [dbCompanies, setDbCompanies] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Hitung jumlah lowongan per perusahaan dan saring hanya yang memiliki lowongan
-  const companiesWithJobs = Object.values(companies).map(company => {
-    const jobCount = jobs.filter(job => job.companyId === company.id).length;
-    return {
-      ...company,
-      jobCount
-    };
-  }).filter(company => company.jobCount > 0);
+  useEffect(() => {
+    getAdminCompaniesAction().then(data => {
+      setDbCompanies(data);
+      setIsLoading(false);
+    });
+  }, []);
+
+  const companiesList = dbCompanies.map(company => ({
+    ...company,
+    jobCount: company.jobs?.length || 0
+  }));
 
   return (
     <div className="space-y-8 pb-10">
@@ -48,7 +53,7 @@ export default function CompaniesPage() {
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">Total:</span>
             <span className="inline-flex items-center justify-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-              {companiesWithJobs.length} Perusahaan
+              {companiesList.length} Perusahaan
             </span>
           </div>
         </div>
@@ -65,8 +70,14 @@ export default function CompaniesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {companiesWithJobs.length > 0 ? (
-                companiesWithJobs.map((company) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                    Memuat data perusahaan...
+                  </td>
+                </tr>
+              ) : companiesList.length > 0 ? (
+                companiesList.map((company) => (
                   <tr key={company.id} className="hover:bg-gray-50 transition-colors group">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-4">
@@ -127,7 +138,7 @@ export default function CompaniesPage() {
                     <div className="flex flex-col items-center justify-center">
                       <Building className="h-10 w-10 text-gray-300 mb-3" />
                       <p className="font-medium text-gray-900">Belum Ada Data</p>
-                      <p className="text-sm mt-1">Tidak ditemukan perusahaan yang memiliki lowongan aktif.</p>
+                      <p className="text-sm mt-1">Tidak ada perusahaan yang terdaftar di database.</p>
                     </div>
                   </td>
                 </tr>
@@ -188,30 +199,34 @@ export default function CompaniesPage() {
               <div>
                 <h3 className="font-bold text-gray-900 mb-3 text-lg">Lowongan yang Dipublikasikan</h3>
                 <div className="space-y-3">
-                  {jobs.filter(j => j.companyId === selectedCompany.id).map(job => (
-                    <div key={job.id} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:bg-gray-50 transition-colors group">
-                      <div>
-                        <h4 className="font-bold text-gray-900 group-hover:text-primary transition-colors">{job.title}</h4>
-                        <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500 font-medium">
-                          <span className="flex items-center gap-1"><Briefcase className="w-3.5 h-3.5" /> {job.type}</span>
-                          <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                          <span>{job.category}</span>
+                  {selectedCompany.jobs?.length > 0 ? (
+                    selectedCompany.jobs.map((job: any) => (
+                      <div key={job.id} className="border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:bg-gray-50 transition-colors group">
+                        <div>
+                          <h4 className="font-bold text-gray-900 group-hover:text-primary transition-colors">{job.title}</h4>
+                          <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500 font-medium">
+                            <span className="flex items-center gap-1"><Briefcase className="w-3.5 h-3.5" /> {job.type}</span>
+                            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                            <span>{job.category}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          {job.status === 'pending' ? (
+                            <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-600 border border-blue-200">
+                              Pending Review
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-600 border border-emerald-200">
+                              Aktif
+                            </span>
+                          )}
+                          <span className="text-xs text-gray-400">{new Date(job.postedAt).toLocaleDateString('id-ID')}</span>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end gap-2">
-                        {job.status === 'pending' ? (
-                          <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-600 border border-blue-200">
-                            Pending Review
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-600 border border-emerald-200">
-                            Aktif
-                          </span>
-                        )}
-                        <span className="text-xs text-gray-400">{new Date(job.postedAt).toLocaleDateString('id-ID')}</span>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500">Belum ada lowongan yang dipublikasikan.</p>
+                  )}
                 </div>
               </div>
             </div>
