@@ -83,7 +83,7 @@ export async function createJobAction(formData: FormData) {
     const validatedData = createJobSchema.safeParse(rawData);
 
     if (!validatedData.success) {
-      const errorMessage = validatedData.error.errors.map(err => err.message).join(", ");
+      const errorMessage = validatedData.error.issues.map(err => err.message).join(", ");
       return { success: false, error: errorMessage };
     }
 

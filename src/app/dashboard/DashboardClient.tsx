@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { BarChart2, Users, Eye, TrendingUp, X, MoreHorizontal, CheckCircle2, Zap, Trophy, Shield, ChevronRight } from 'lucide-react';
+import { BarChart2, Users, Eye, TrendingUp, X, MoreHorizontal, CheckCircle2, Zap, Trophy, Shield, ChevronRight, Search, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
+import { useTableSortAndSearch } from '@/hooks/useTableSortAndSearch';
 import Link from 'next/link';
 
 export default function DashboardClient({ hrdJobs }: { hrdJobs: any[] }) {
@@ -14,6 +16,25 @@ export default function DashboardClient({ hrdJobs }: { hrdJobs: any[] }) {
   const handleBoostClick = (jobId: string) => {
     setSelectedJobId(jobId);
     setShowBoostModal(true);
+  };
+
+  const {
+    inputValue,
+    setInputValue,
+    sortKey,
+    sortDirection,
+    handleSort,
+    processedData
+  } = useTableSortAndSearch(
+    hrdJobs,
+    (job, query) => 
+      job.title.toLowerCase().includes(query) || 
+      (job.isPremium ? "dipromosikan" : "aktif").includes(query)
+  );
+
+  const SortIcon = ({ columnKey }: { columnKey: string }) => {
+    if (sortKey !== columnKey) return <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity inline-block ml-1" />;
+    return sortDirection === 'asc' ? <ChevronUp className="w-4 h-4 text-primary inline-block ml-1" /> : <ChevronDown className="w-4 h-4 text-primary inline-block ml-1" />;
   };
 
   const packages = [
@@ -79,82 +100,109 @@ export default function DashboardClient({ hrdJobs }: { hrdJobs: any[] }) {
 
         {/* Jobs Table */}
         <div className="bg-background rounded-xl border border-border/60 shadow-sm overflow-hidden">
-          <div className="p-5 sm:p-6 border-b border-border/60 flex items-center justify-between">
+          <div className="p-5 sm:p-6 border-b border-border/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <h2 className="text-lg font-bold">Daftar Lowongan</h2>
-            <button className="text-sm text-primary font-medium hover:underline flex items-center gap-1">
-              Lihat Semua <ChevronRight className="w-4 h-4" />
-            </button>
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Cari posisi atau status..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                className="pl-9 h-9 border-border/60 shadow-sm text-sm"
+              />
+            </div>
           </div>
           
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
                 <tr className="border-b border-border/60 bg-muted/10 text-xs text-muted-foreground uppercase tracking-wider">
-                  <th className="px-6 py-4 font-semibold w-[45%]">Posisi Pekerjaan</th>
-                  <th className="px-6 py-4 font-semibold">Status</th>
+                  <th 
+                    className="px-6 py-4 font-semibold w-[45%] cursor-pointer select-none group hover:text-foreground transition-colors"
+                    onClick={() => handleSort('title')}
+                  >
+                    Posisi Pekerjaan <SortIcon columnKey="title" />
+                  </th>
+                  <th 
+                    className="px-6 py-4 font-semibold cursor-pointer select-none group hover:text-foreground transition-colors"
+                    onClick={() => handleSort('isPremium')}
+                  >
+                    Status <SortIcon columnKey="isPremium" />
+                  </th>
                   <th className="px-6 py-4 font-semibold">Performa</th>
                   <th className="px-6 py-4 font-semibold text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
-                {hrdJobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-muted/10 transition-colors group">
-                    <td className="px-6 py-5">
-                      <Link href={`/job/${job.id}`} className="font-bold text-base text-foreground hover:text-primary transition-colors block mb-1">
-                        {job.title}
-                      </Link>
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <span>Dibuat: {new Date(job.postedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                        <span>•</span>
-                        <span>Berakhir: {new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      {job.isPremium ? (
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold border border-amber-200">
-                          <Zap className="w-3.5 h-3.5 fill-current" />
-                          Dipromosikan
+                {processedData.length > 0 ? (
+                  processedData.map((job) => (
+                    <tr key={job.id} className="hover:bg-muted/10 transition-colors group">
+                      <td className="px-6 py-5">
+                        <Link href={`/job/${job.id}`} className="font-bold text-base text-foreground hover:text-primary transition-colors block mb-1">
+                          {job.title}
+                        </Link>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <span>Dibuat: {new Date(job.postedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                          <span>•</span>
+                          <span>Berakhir: {new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                         </div>
-                      ) : (
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold border border-emerald-200">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          Aktif
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-5 text-sm">
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-foreground">1.2K</span>
-                          <span className="text-xs text-muted-foreground">Dilihat</span>
-                        </div>
-                        <div className="w-px h-8 bg-border/60"></div>
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-foreground">45</span>
-                          <span className="text-xs text-muted-foreground">Pelamar</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <div className="flex items-center justify-end gap-3 opacity-100 sm:opacity-80 group-hover:opacity-100 transition-opacity">
-                        {!job.isPremium && (
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => handleBoostClick(job.id)} 
-                            className="font-semibold text-xs h-9 border-primary/20 text-primary hover:bg-primary/5"
-                          >
-                            <Zap className="w-3.5 h-3.5 mr-1.5 fill-current opacity-70" />
-                            Promosikan
-                          </Button>
+                      </td>
+                      <td className="px-6 py-5">
+                        {job.isPremium ? (
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold border border-amber-200">
+                            <Zap className="w-3.5 h-3.5 fill-current" />
+                            Dipromosikan
+                          </div>
+                        ) : (
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold border border-emerald-200">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Aktif
+                          </div>
                         )}
-                        <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors">
-                          <MoreHorizontal className="w-5 h-5" />
-                        </button>
+                      </td>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-5 text-sm">
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-foreground">1.2K</span>
+                            <span className="text-xs text-muted-foreground">Dilihat</span>
+                          </div>
+                          <div className="w-px h-8 bg-border/60"></div>
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-foreground">45</span>
+                            <span className="text-xs text-muted-foreground">Pelamar</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                        <div className="flex items-center justify-end gap-3 opacity-100 sm:opacity-80 group-hover:opacity-100 transition-opacity">
+                          {!job.isPremium && (
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleBoostClick(job.id)} 
+                              className="font-semibold text-xs h-9 border-primary/20 text-primary hover:bg-primary/5"
+                            >
+                              <Zap className="w-3.5 h-3.5 mr-1.5 fill-current opacity-70" />
+                              Promosikan
+                            </Button>
+                          )}
+                          <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors">
+                            <MoreHorizontal className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
+                      <div className="flex flex-col items-center justify-center">
+                        <Search className="h-8 w-8 text-muted-foreground/50 mb-3" />
+                        <p>Tidak ada data yang cocok dengan pencarian Anda.</p>
                       </div>
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

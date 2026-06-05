@@ -10,8 +10,14 @@ import {
   Trash2,
   Briefcase,
   X,
-  ChevronRight
+  ChevronRight,
+  Search,
+  ArrowUpDown,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { useTableSortAndSearch } from "@/hooks/useTableSortAndSearch";
 
 export default function CompaniesPage() {
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
@@ -29,6 +35,25 @@ export default function CompaniesPage() {
     ...company,
     jobCount: company.jobs?.length || 0
   }));
+
+  const {
+    inputValue,
+    setInputValue,
+    sortKey,
+    sortDirection,
+    handleSort,
+    processedData
+  } = useTableSortAndSearch(
+    companiesList,
+    (company, query) => 
+      company.name.toLowerCase().includes(query) || 
+      company.location.toLowerCase().includes(query)
+  );
+
+  const SortIcon = ({ columnKey }: { columnKey: string }) => {
+    if (sortKey !== columnKey) return <ArrowUpDown className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity inline-block ml-1" />;
+    return sortDirection === 'asc' ? <ChevronUp className="w-4 h-4 text-primary inline-block ml-1" /> : <ChevronDown className="w-4 h-4 text-primary inline-block ml-1" />;
+  };
 
   return (
     <div className="space-y-8 pb-10">
@@ -48,13 +73,22 @@ export default function CompaniesPage() {
       {/* Table Section */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         
-        {/* Table Toolbar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-200 p-4 sm:p-6 bg-gray-50/30">
+        {/* Table Toolbar & Search */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-200 p-4 sm:p-6 bg-gray-50/30">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">Total:</span>
             <span className="inline-flex items-center justify-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
               {companiesList.length} Perusahaan
             </span>
+          </div>
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Cari perusahaan atau lokasi..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="pl-9 h-9 bg-white border-gray-200 shadow-sm text-sm focus-visible:ring-primary/20"
+            />
           </div>
         </div>
 
@@ -63,9 +97,29 @@ export default function CompaniesPage() {
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50/50 text-gray-500 border-b border-gray-200">
               <tr>
-                <th scope="col" className="px-6 py-3 font-medium">Perusahaan</th>
-                <th scope="col" className="px-6 py-3 font-medium">Lokasi</th>
-                <th scope="col" className="px-6 py-3 font-medium text-center">Total Lowongan</th>
+                <th 
+                  scope="col" 
+                  className="px-6 py-3 font-medium cursor-pointer select-none group hover:text-gray-900 transition-colors"
+                  onClick={() => handleSort('name')}
+                >
+                  Perusahaan <SortIcon columnKey="name" />
+                </th>
+                <th 
+                  scope="col" 
+                  className="px-6 py-3 font-medium cursor-pointer select-none group hover:text-gray-900 transition-colors"
+                  onClick={() => handleSort('location')}
+                >
+                  Lokasi <SortIcon columnKey="location" />
+                </th>
+                <th 
+                  scope="col" 
+                  className="px-6 py-3 font-medium text-center cursor-pointer select-none group hover:text-gray-900 transition-colors"
+                  onClick={() => handleSort('jobCount')}
+                >
+                  <div className="flex items-center justify-center">
+                    Total Lowongan <SortIcon columnKey="jobCount" />
+                  </div>
+                </th>
                 <th scope="col" className="px-6 py-3 font-medium text-right">Aksi</th>
               </tr>
             </thead>
@@ -76,8 +130,8 @@ export default function CompaniesPage() {
                     Memuat data perusahaan...
                   </td>
                 </tr>
-              ) : companiesList.length > 0 ? (
-                companiesList.map((company) => (
+              ) : processedData.length > 0 ? (
+                processedData.map((company) => (
                   <tr key={company.id} className="hover:bg-gray-50 transition-colors group">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-4">
@@ -136,9 +190,9 @@ export default function CompaniesPage() {
                 <tr>
                   <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
                     <div className="flex flex-col items-center justify-center">
-                      <Building className="h-10 w-10 text-gray-300 mb-3" />
-                      <p className="font-medium text-gray-900">Belum Ada Data</p>
-                      <p className="text-sm mt-1">Tidak ada perusahaan yang terdaftar di database.</p>
+                      <Search className="h-8 w-8 text-gray-300 mb-3" />
+                      <p className="font-medium text-gray-900">Pencarian tidak ditemukan</p>
+                      <p className="text-sm mt-1">Tidak ada perusahaan yang cocok dengan kriteria pencarian Anda.</p>
                     </div>
                   </td>
                 </tr>

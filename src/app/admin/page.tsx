@@ -6,6 +6,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import JobActionButtons from "./JobActionButtons";
+import PendingJobsNativeTable from "./PendingJobsNativeTable";
 
 export default async function AdminDashboard() {
   // Hitung statistik
@@ -112,77 +113,8 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        {/* Table Native Implementation */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600">
-            <thead className="bg-gray-50/50 text-gray-500 border-b border-gray-200">
-              <tr>
-                <th scope="col" className="px-6 py-3 font-medium">Posisi</th>
-                <th scope="col" className="px-6 py-3 font-medium">Perusahaan</th>
-                <th scope="col" className="px-6 py-3 font-medium">Kategori</th>
-                <th scope="col" className="px-6 py-3 font-medium">Status</th>
-                <th scope="col" className="px-6 py-3 font-medium text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {pendingJobs.length > 0 ? (
-                pendingJobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-gray-50 transition-colors group">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-semibold text-gray-900">{job.title}</div>
-                      <div className="text-xs text-gray-500 mt-1">{job.type}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        {job.company?.logoUrl ? (
-                          <img 
-                            src={job.company.logoUrl} 
-                            alt={job.company.name} 
-                            className="h-8 w-8 rounded bg-gray-100 object-cover border border-gray-200" 
-                          />
-                        ) : (
-                          <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
-                            {job.company?.name.charAt(0) || "?"}
-                          </div>
-                        )}
-                        <span className="font-medium">{job.company?.name || "Tidak diketahui"}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {job.category}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex flex-col items-start gap-1.5">
-                        {job.status === 'pending' ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600 border border-blue-200">
-                            Menunggu Approval
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-600 border border-emerald-200">
-                            Aktif
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <JobActionButtons job={job} />
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    <div className="flex flex-col items-center justify-center">
-                      <CheckCircle2 className="h-10 w-10 text-emerald-500 mb-3 opacity-50" />
-                      <p className="font-medium text-gray-900">Semua Beres!</p>
-                      <p className="text-sm mt-1">Tidak ada lowongan yang menunggu persetujuan saat ini.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        {/* Native Table Implementation with Sorting/Searching */}
+        <PendingJobsNativeTable pendingJobs={pendingJobs} />
         
       </div>
     </div>
