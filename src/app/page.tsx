@@ -240,15 +240,23 @@ export default function Home() {
           className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 px-1 -mx-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
-          {latestJobs.map(job => (
-            <div key={`latest-${job.id}`} className="w-[85vw] sm:w-[350px] shrink-0 flex">
-              <JobCard 
-                job={job} 
-                onClick={setSelectedJob} 
-                className="w-full flex-col !flex-col mb-0 h-full"
-              />
-            </div>
-          ))}
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={`rec-skeleton-${i}`} className="w-[85vw] sm:w-[350px] shrink-0 flex">
+                <JobCardSkeleton className="w-full flex-col !flex-col mb-0 h-full" />
+              </div>
+            ))
+          ) : (
+            latestJobs.map(job => (
+              <div key={`latest-${job.id}`} className="w-[85vw] sm:w-[350px] shrink-0 flex">
+                <JobCard 
+                  job={job} 
+                  onClick={setSelectedJob} 
+                  className="w-full flex-col !flex-col mb-0 h-full"
+                />
+              </div>
+            ))
+          )}
         </div>
       </div>
 
