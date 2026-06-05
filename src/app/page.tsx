@@ -7,7 +7,7 @@ import { JobCardSkeleton } from '@/components/JobCardSkeleton';
 import { getApprovedJobsAction } from '@/app/actions/job';
 import { Button } from '@/components/ui/Button';
 import { JobType, EducationLevel, ExperienceLevel, Job } from '@/types';
-import { Settings2, X, Search, SearchX, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Settings2, X, Search, SearchX, Building2, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 const PLACEHOLDERS = [
@@ -148,28 +148,38 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4 lg:px-0 max-w-[1128px]">
       
-      {/* Banner / Header */}
-      <div className="mt-4 sm:mt-6 w-full bg-card rounded-2xl mb-8 text-foreground relative overflow-hidden border border-border/60 shadow-sm">
-        <div className="absolute top-0 right-0 -mt-16 -mr-16 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-72 h-72 bg-emerald-600/5 rounded-full blur-3xl"></div>
+      {/* Premium Search Banner */}
+      <div className="mt-4 sm:mt-6 w-full bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#312e81] rounded-2xl mb-8 text-white relative overflow-hidden shadow-md">
+        <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
         
-        <div className="p-6 sm:p-10 relative z-10 space-y-5">
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full bg-secondary/30 p-2 rounded-2xl sm:rounded-full border border-border/40">
+        <div className="p-6 sm:p-10 relative z-10 flex flex-col space-y-5">
+          
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight text-white">
+              Temukan Pekerjaan Impian di Mimika
+            </h1>
+            <p className="text-sm sm:text-base text-blue-100/90 font-medium">
+              Jelajahi ratusan lowongan kerja terbaik dari perusahaan terkemuka di kawasan Timika.
+            </p>
+          </div>
+
+          <div className="w-full flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white/10 backdrop-blur-md p-2 rounded-2xl sm:rounded-full border border-white/20 shadow-inner">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder={placeholderText ? `${placeholderText}|` : "|"}
-                className="w-full h-12 sm:h-14 pl-12 pr-10 bg-background border border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl sm:rounded-full focus:outline-none text-sm sm:text-base text-foreground font-medium placeholder:text-muted-foreground transition-all"
+                className="w-full h-12 sm:h-14 pl-12 pr-10 bg-transparent border-none focus:ring-0 focus:outline-none text-sm sm:text-base text-white font-medium placeholder:text-white/60 transition-all"
               />
               {searchQuery && (
                 <button
                   onClick={() => handleSearchChange('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs font-bold bg-secondary w-5 h-5 rounded-full flex items-center justify-center cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-white/80 bg-white/20 hover:bg-white/30 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors"
                 >
-                  ×
+                  <X className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -177,15 +187,14 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => handleSearchChange(searchQuery)}
-                className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-14 sm:px-0 rounded-xl sm:rounded-full shadow-md bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 transition-all cursor-pointer font-bold text-sm"
-                title="Cari"
+                className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-auto rounded-xl sm:rounded-full shadow-md bg-white text-blue-700 hover:bg-blue-50 flex items-center justify-center gap-2 transition-all cursor-pointer font-bold text-sm"
               >
                 <Search className="w-5 h-5" />
                 <span className="sm:hidden">Cari</span>
               </button>
               <button
                 type="button"
-                className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-full shrink-0 shadow-sm bg-background hover:bg-secondary text-foreground flex items-center justify-center transition-all cursor-pointer border border-border"
+                className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-full shrink-0 shadow-sm bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20"
                 onClick={() => setIsFilterOpen(true)}
                 title="Filter Lanjutan"
               >
@@ -195,15 +204,14 @@ export default function Home() {
           </div>
 
           {/* Popular Searches */}
-          <div className="flex flex-wrap items-center gap-2 pt-2 text-xs">
-            <span className="text-muted-foreground font-medium">Populer:</span>
+          <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+            <span className="text-blue-200/80 font-medium">Populer:</span>
             {['Freeport', 'Mekanik', 'Barista', 'Admin Gudang', 'Kuala Kencana'].map((tag) => (
               <button
                 key={tag}
                 onClick={() => handleSearchChange(tag)}
-                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/50 border border-border/50 text-foreground hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors font-medium cursor-pointer"
               >
-                <Search className="w-3 h-3 text-muted-foreground" />
                 {tag}
               </button>
             ))}
