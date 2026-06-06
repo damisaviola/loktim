@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 import { JobMoreOptions } from '@/components/JobMoreOptions';
 import { ApplyModal } from '@/components/ApplyModal';
+import { CompanyJobsModal } from '@/components/CompanyJobsModal';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -53,6 +54,23 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
   if (!job) {
     notFound();
+  }
+
+  let companyJobs: any[] = [];
+  if (job.companyId) {
+    const dbCompanyJobs = await prisma.job.findMany({
+      where: { companyId: job.companyId, status: 'approved' },
+      include: { company: true },
+      orderBy: { postedAt: 'desc' }
+    });
+    const dummyCompanyJobs = jobs.filter(j => j.companyId === job.companyId);
+    
+    const combined = [...dbCompanyJobs, ...dummyCompanyJobs].filter(j => j.id !== job.id);
+    const uniqueMap = new Map();
+    combined.forEach(j => uniqueMap.set(j.id, j));
+    companyJobs = Array.from(uniqueMap.values());
+  } else if (job.company?.name) {
+    companyJobs = jobs.filter(j => j.company?.name === job.company?.name && j.id !== job.id);
   }
 
   const formatSalary = (min?: number, max?: number) => {
@@ -213,7 +231,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
             <p className="text-sm text-muted-foreground mb-4">
               {job.company?.about || `${job.company?.name} adalah perusahaan terkemuka yang berlokasi di ${job.company?.location}.`}
             </p>
-            <Button variant="outline" className="w-full font-bold">+ Ikuti Perusahaan</Button>
+            <CompanyJobsModal jobs={companyJobs} companyName={job.company?.name || "Perusahaan"} />
           </div>
 
           <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
