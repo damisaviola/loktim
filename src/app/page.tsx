@@ -108,7 +108,10 @@ export default function Home() {
 
   const filteredJobs = jobs.filter(job => {
     const matchType = activeType === 'Semua' || job.type === activeType;
-    const matchCategory = activeCategory === 'Semua' || job.category === activeCategory;
+    const matchCategory = activeCategory === 'Semua' || 
+      job.category === activeCategory ||
+      (activeCategory.includes('IT') && job.category?.includes('IT')) ||
+      (activeCategory.includes('Admin') && job.category?.includes('Admin'));
     const matchEdu = activeEdu === 'Semua' || job.education === activeEdu || job.education === 'Semua' || !job.education;
     const matchExp = activeExp === 'Semua' || job.experience === activeExp || job.experience === 'Semua' || !job.experience;
     const matchDate = activeDate === 'Semua' || (() => {
@@ -125,12 +128,16 @@ export default function Home() {
       (job.company?.name && job.company.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (job.description && job.description.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchType && matchCategory && matchEdu && matchExp && matchDate && matchQuery;
+  }).sort((a, b) => {
+    const dateA = a.postedAt ? new Date(a.postedAt).getTime() : 0;
+    const dateB = b.postedAt ? new Date(b.postedAt).getTime() : 0;
+    return dateB - dateA;
   });
 
   const displayedJobs = filteredJobs.slice(0, visibleCount);
 
-  const jobCategories = ['Semua', 'Pertambangan', 'F&B', 'Administrasi', 'IT/Teknologi', 'Desain/Kreatif', 'Logistik', 'Pelayanan'];
-  const jobTypes = ['Semua', 'Full-time', 'Part-time', 'Magang', 'Freelance'];
+  const jobCategories = ['Semua', 'Pertambangan', 'Teknik & Engineering', 'Operasional', 'Admin & HR (Administrasi)', 'IT & Software', 'F&B', 'Pelayanan', 'Logistik', 'Desain/Kreatif'];
+  const jobTypes = ['Semua', 'Full-time', 'Part-time', 'Kontrak', 'Magang', 'Freelance'];
   const eduLevels = ['Semua', 'SMA/SMK', 'D3', 'S1', 'S2'];
   const expLevels = ['Semua', 'Tanpa Pengalaman', '1-3 Tahun', '3-5 Tahun', '> 5 Tahun'];
   const dateFilters = ['Semua', '24 Jam Terakhir', '3 Hari Terakhir', '7 Hari Terakhir', 'Bulan Ini'];

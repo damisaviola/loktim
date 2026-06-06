@@ -202,10 +202,15 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                       className="w-full h-11 px-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer appearance-none"
                     >
                       <option value="" disabled hidden>Pilih Kategori</option>
+                      <option value="Pertambangan">Pertambangan</option>
                       <option value="Teknik & Engineering">Teknik & Engineering</option>
                       <option value="Operasional">Operasional</option>
-                      <option value="Admin & HR">Admin & HR</option>
+                      <option value="Admin & HR">Admin & HR (Administrasi)</option>
                       <option value="IT & Software">IT & Software</option>
+                      <option value="F&B">F&B</option>
+                      <option value="Pelayanan">Pelayanan</option>
+                      <option value="Logistik">Logistik</option>
+                      <option value="Desain/Kreatif">Desain/Kreatif</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-muted-foreground">
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
