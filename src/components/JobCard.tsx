@@ -137,7 +137,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
               <span className="text-muted-foreground/50">•</span>
               <div className="flex items-center gap-1">
                 <CalendarRange className="w-3.5 h-3.5 shrink-0" />
-                <span>{job.ageRange}</span>
+                <span>{job.ageRange} tahun</span>
               </div>
             </>
           )}

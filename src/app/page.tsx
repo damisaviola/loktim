@@ -534,9 +534,16 @@ export default function Home() {
 
               <div className="mt-8">
                 <h3 className="font-bold mb-3 text-lg">Deskripsi Pekerjaan</h3>
-                <div className="text-foreground/80 text-sm whitespace-pre-wrap leading-relaxed">
-                  {selectedJob.description || "Deskripsi tidak tersedia."}
-                </div>
+                {selectedJob.description ? (
+                  <div 
+                    className="text-foreground/80 text-sm leading-relaxed [&>p]:mb-3 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-3 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-3 [&>li]:mb-1"
+                    dangerouslySetInnerHTML={{ __html: selectedJob.description }}
+                  />
+                ) : (
+                  <div className="text-foreground/80 text-sm leading-relaxed">
+                    Deskripsi tidak tersedia.
+                  </div>
+                )}
               </div>
             </div>
 

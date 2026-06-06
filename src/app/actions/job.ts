@@ -8,12 +8,13 @@ const createJobSchema = z.object({
   companyId: z.string().optional().nullable(),
   newCompanyName: z.string().optional().nullable(),
   newCompanyLocation: z.string().optional().nullable(),
+  newCompanyDesc: z.string().optional().nullable(),
   email: z.string().email("Format email tidak valid"),
   imageUrl: z.string().url("Format URL gambar tidak valid").optional().nullable().or(z.literal("")),
   title: z.string().min(3, "Posisi pekerjaan minimal 3 karakter"),
   category: z.string().min(1, "Kategori wajib dipilih"),
-  description: z.string().min(10, "Deskripsi terlalu singkat"),
-  requirementsRaw: z.string().min(5, "Persyaratan terlalu singkat"),
+  description: z.string().min(1, "Deskripsi wajib diisi"),
+  requirementsRaw: z.string().min(1, "Persyaratan wajib diisi"),
   type: z.string().min(1, "Tipe kontrak wajib dipilih"),
   education: z.string().default("Semua").nullable(),
   experience: z.string().default("Tanpa Pengalaman").nullable(),
@@ -64,6 +65,7 @@ export async function createJobAction(formData: FormData) {
       companyId: formData.get("companyId") as string | null,
       newCompanyName: formData.get("newCompanyName") as string | null,
       newCompanyLocation: formData.get("newCompanyLocation") as string | null,
+      newCompanyDesc: formData.get("newCompanyDesc") as string | null,
       email: formData.get("email") as string,
       imageUrl: formData.get("imageUrl") as string | null,
       title: formData.get("title") as string,
@@ -96,7 +98,8 @@ export async function createJobAction(formData: FormData) {
           name: data.newCompanyName!,
           location: data.newCompanyLocation!,
           logoUrl: data.imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(data.newCompanyName!)}`,
-          email: data.email
+          email: data.email,
+          about: data.newCompanyDesc || null,
         }
       });
       finalCompanyId = newCompany.id;
@@ -121,6 +124,7 @@ export async function createJobAction(formData: FormData) {
 
     // Sanitize requirements
     const requirements = data.requirementsRaw
+      .replace(/<\/p>|<\/li>|<br\s*\/?>/gi, '\n')
       .split('\n')
       .map(r => r.trim().replace(/<[^>]*>/g, ""))
       .filter(r => r.length > 0);
@@ -135,7 +139,7 @@ export async function createJobAction(formData: FormData) {
         education: data.education || "Semua",
         experience: data.experience || "Tanpa Pengalaman",
         gender: data.gender || "Pria/Wanita",
-        ageRange: data.ageRange || "Bebas",
+        ageRange: data.ageRange && data.ageRange !== "Bebas" ? `${data.ageRange} Tahun` : "Bebas",
         companyId: finalCompanyId,
         salaryMin,
         salaryMax,

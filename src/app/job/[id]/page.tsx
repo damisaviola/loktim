@@ -145,7 +145,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                         <span className="text-muted-foreground/60">•</span>
                         <div className="flex items-center gap-1.5">
                           <CalendarRange className="w-4 h-4 shrink-0" />
-                          <span>{job.ageRange}</span>
+                          <span>{job.ageRange} tahun</span>
                         </div>
                       </>
                     )}
@@ -178,9 +178,10 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
             <div className="p-4 sm:p-6">
               <h2 className="text-lg sm:text-xl font-bold mb-4">Tentang Pekerjaan</h2>
-              <div className="text-sm leading-relaxed whitespace-pre-line mb-6">
-                {job.description}
-              </div>
+              <div 
+                className="text-sm leading-relaxed mb-6 [&>p]:mb-4 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-4 [&>li]:mb-1"
+                dangerouslySetInnerHTML={{ __html: job.description }}
+              />
 
               <h3 className="text-base font-bold mb-3">Persyaratan Khusus:</h3>
               <ul className="list-disc pl-5 space-y-2 text-sm mb-2">

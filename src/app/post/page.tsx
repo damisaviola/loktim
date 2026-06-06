@@ -12,10 +12,13 @@ import RichTextEditor from "@/components/ui/RichTextEditor";
 import { createJobAction, getCompaniesByEmailAction } from "@/app/actions/job";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/utils/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/Dialog";
+import { Copy } from "lucide-react";
 
 export default function QuickPost() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [createdJobId, setCreatedJobId] = useState<string | null>(null);
 
   const [isNewCompany, setIsNewCompany] = useState(true);
   const [companyList, setCompanyList] = useState<{id: string, name: string}[]>([]);
@@ -125,6 +128,7 @@ export default function QuickPost() {
 
       setIsSubmitting(false);
       if (result.success) {
+        setCreatedJobId(result.jobId || null);
         setSuccess(true);
       } else {
         alert("Gagal mengirim lowongan: " + result.error);
@@ -136,36 +140,53 @@ export default function QuickPost() {
     }
   };
 
-  if (success) {
-    return (
-      <div className="container mx-auto px-4 py-16 sm:py-24 max-w-2xl text-center min-h-[80vh] flex flex-col items-center justify-center">
-        <div className="bg-card rounded-3xl border border-border p-8 sm:p-14 shadow-2xl shadow-blue-500/5 animate-in zoom-in-95 fade-in duration-500 w-full relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-emerald-400 to-blue-500"></div>
-          <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm rotate-3">
-            <CheckCircle2 className="w-10 h-10" />
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mb-4 text-foreground tracking-tight">Lowongan Berhasil Terkirim!</h1>
-          <p className="text-base sm:text-lg text-muted-foreground mb-10 max-w-md mx-auto leading-relaxed">
-            Lowongan Anda sedang dalam proses moderasi oleh tim kami. Lowongan akan segera aktif setelah disetujui.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/" className="inline-block w-full sm:w-auto">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto font-bold rounded-xl px-8 h-12 border-border hover:bg-secondary transition-all">
-                Kembali ke Beranda
-              </Button>
-            </Link>
-            <Button size="lg" onClick={() => window.location.reload()} className="w-full sm:w-auto font-bold rounded-xl px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 transition-all">
-              Pasang Lowongan Lain
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const magicLink = createdJobId && typeof window !== 'undefined' ? `${window.location.origin}/manage/${createdJobId}` : "";
+
+  const copyToClipboard = () => {
+    if (magicLink) {
+      navigator.clipboard.writeText(magicLink);
+      alert("Link disalin!");
+    }
+  };
 
   return (
     <div className="container mx-auto px-0 sm:px-4 py-0 sm:py-10 max-w-[900px]">
       <div className="bg-background sm:bg-transparent overflow-hidden flex flex-col min-h-[100dvh] sm:min-h-0 sm:gap-6">
+        
+        <Dialog open={success} onOpenChange={setSuccess}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader className="flex flex-col items-center text-center space-y-3">
+              <div className="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                <CheckCircle2 className="w-8 h-8" />
+              </div>
+              <DialogTitle className="text-xl sm:text-2xl">Berhasil</DialogTitle>
+              <DialogDescription className="text-base text-foreground/80 mt-2">
+                Lowongan berhasil dikirim dan sedang menunggu review admin.<br/><br/>
+                Simpan link berikut untuk melihat status lowongan Anda.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center space-x-2 mt-4 bg-secondary/50 p-3 rounded-lg border border-border">
+              <div className="grid flex-1 gap-2">
+                <p className="text-sm font-medium text-muted-foreground truncate" title={magicLink}>
+                  {magicLink}
+                </p>
+              </div>
+              <Button size="icon" variant="ghost" className="shrink-0" onClick={copyToClipboard} title="Copy Link">
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
+            <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-6 sm:justify-center">
+              <Button type="button" variant="outline" className="w-full sm:w-auto font-bold" onClick={copyToClipboard}>
+                Copy Link
+              </Button>
+              <Link href={`/manage/${createdJobId}`} className="w-full sm:w-auto">
+                <Button type="button" className="w-full font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md">
+                  Buka Halaman Status
+                </Button>
+              </Link>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* HEADER BANNER */}
         <div className="relative p-8 sm:p-12 sm:rounded-[2rem] overflow-hidden bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#312e81] text-white shadow-xl shadow-blue-900/10">
@@ -398,13 +419,13 @@ export default function QuickPost() {
               
               <div className="space-y-2 sm:col-span-2 md:col-span-1">
                 <label className="text-sm font-semibold text-foreground/90 block flex justify-between">
-                  Batasan Umur <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                  Batasan Umur Maksimal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <CalendarRange className="h-5 w-5 text-muted-foreground/60" />
                   </div>
-                  <input name="ageRange" type="text" defaultValue="Bebas" placeholder="Cth: Maks. 35 Tahun" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
+                  <input name="ageRange" type="number" min="15" max="100" placeholder="Cth: 35" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                 </div>
               </div>
             </div>

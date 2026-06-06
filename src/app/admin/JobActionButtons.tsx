@@ -150,9 +150,10 @@ export default function JobActionButtons({
 
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Deskripsi Pekerjaan</h3>
-                <div className="text-gray-700 whitespace-pre-wrap text-sm leading-relaxed">
-                  {job.description}
-                </div>
+                <div 
+                  className="text-gray-700 text-sm leading-relaxed [&>p]:mb-3 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-3 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-3 [&>li]:mb-1"
+                  dangerouslySetInnerHTML={{ __html: job.description }}
+                />
               </div>
 
               {job.requirements && job.requirements.length > 0 && (
