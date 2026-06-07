@@ -3,9 +3,15 @@
 import { useState, useRef, useEffect } from "react";
 import { MoreHorizontal, Flag, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { ReportJobModal } from "./ReportJobModal";
 
-export function JobMoreOptions() {
+interface JobMoreOptionsProps {
+  jobId: string;
+}
+
+export function JobMoreOptions({ jobId }: JobMoreOptionsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,12 +49,21 @@ export function JobMoreOptions() {
           </button>
           <button 
             className="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-secondary flex items-center gap-2 whitespace-nowrap"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+              setIsReportModalOpen(true);
+            }}
           >
             <Flag className="w-4 h-4 shrink-0" /> Laporkan Lowongan
           </button>
         </div>
       )}
+
+      <ReportJobModal 
+        jobId={jobId} 
+        isOpen={isReportModalOpen} 
+        onClose={() => setIsReportModalOpen(false)} 
+      />
     </div>
   );
 }

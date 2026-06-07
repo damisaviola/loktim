@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { jobs } from '@/lib/dummy-data';
 import prisma from '@/lib/prisma';
 import { Button } from '@/components/ui/Button';
-import { Building2, Briefcase, Bookmark, ExternalLink, Banknote, MapPin, GraduationCap, Users, Flag, MessageSquare, CalendarRange } from 'lucide-react';
+import { Building2, Briefcase, ExternalLink, Banknote, MapPin, GraduationCap, Users, Flag, MessageSquare, CalendarRange } from 'lucide-react';
 import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 import { JobMoreOptions } from '@/components/JobMoreOptions';
@@ -101,6 +101,8 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
   const bgGradient = getGradient(job.id);
 
+  const isExpired = job.deadline ? new Date(job.deadline) < new Date() : false;
+
   return (
     <div className="container mx-auto px-4 lg:px-0 max-w-[1128px] mt-4 mb-24 sm:mb-10">
 
@@ -133,6 +135,14 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                     </span>
                     <span className="text-muted-foreground hidden sm:inline text-xs mt-0.5"> • </span>
                     <span className="text-muted-foreground">Diposting: {new Date(job.postedAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                    {job.deadline && (
+                      <>
+                        <span className="text-muted-foreground hidden sm:inline text-xs mt-0.5"> • </span>
+                        <span className={`font-medium ${isExpired ? 'text-red-500' : 'text-orange-500'}`}>
+                          Batas Lamaran: {new Date(job.deadline).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2 mt-4 text-sm text-muted-foreground">
@@ -183,12 +193,10 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
               {/* Desktop Action Buttons */}
               <div className="mt-8 hidden sm:flex flex-row gap-3 w-full">
-                <ApplyModal job={job} />
-                <Button variant="outline" size="icon" className="rounded-full w-12 h-12 shrink-0 text-muted-foreground hover:text-primary transition-colors" title="Simpan lowongan">
-                  <Bookmark className="w-5 h-5" />
-                </Button>
+                <ApplyModal job={job} isExpired={isExpired} />
+
                 <ShareButton title={job.title} className="rounded-full w-12 h-12 shrink-0 relative" />
-                <JobMoreOptions />
+                <JobMoreOptions jobId={job.id} />
               </div>
             </div>
 
@@ -277,12 +285,10 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
       {/* Mobile Sticky Bottom Action Bar */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 flex flex-row gap-2 z-50 shadow-[0_-8px_15px_-3px_rgba(0,0,0,0.05)] dark:shadow-none">
-        <ApplyModal job={job} isMobile={true} />
-        <Button variant="outline" size="icon" className="rounded-full w-12 h-12 shrink-0 text-muted-foreground hover:text-primary transition-colors bg-card" title="Simpan lowongan">
-          <Bookmark className="w-5 h-5" />
-        </Button>
+        <ApplyModal job={job} isMobile={true} isExpired={isExpired} />
+
         <ShareButton title={job.title} className="rounded-full w-12 h-12 shrink-0 relative bg-card" />
-        <JobMoreOptions />
+        <JobMoreOptions jobId={job.id} />
       </div>
 
     </div>

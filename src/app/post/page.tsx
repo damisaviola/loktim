@@ -428,6 +428,18 @@ export default function QuickPost() {
                   <input name="ageRange" type="number" min="15" max="100" placeholder="Cth: 35" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                 </div>
               </div>
+
+              <div className="space-y-2 sm:col-span-2 md:col-span-1">
+                <label className="text-sm font-semibold text-foreground/90 block flex justify-between">
+                  Batas Lamaran <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <CalendarRange className="h-5 w-5 text-muted-foreground/60" />
+                  </div>
+                  <input name="deadline" type="date" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
+                </div>
+              </div>
             </div>
           </div>
 

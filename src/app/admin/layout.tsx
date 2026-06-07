@@ -14,7 +14,8 @@ import {
   ChevronRight,
   ChevronDown,
   Menu,
-  X
+  X,
+  Flag
 } from "lucide-react";
 import JobFormModal from "@/components/admin/JobFormModal";
 
@@ -24,6 +25,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({ "Lowongan": true });
   const [isCreateJobOpen, setIsCreateJobOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const toggleSubmenu = (name: string) => {
     if (isCollapsed) setIsCollapsed(false); // Auto-expand sidebar if trying to open a submenu
@@ -46,6 +48,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     { name: "Perusahaan", href: "/admin/companies", icon: Building },
     { name: "Kategori", href: "/admin/categories", icon: Tags },
     { name: "Lokasi", href: "/admin/locations", icon: MapPin },
+    { name: "Laporan", href: "/admin/reports", icon: Flag },
     { name: "Pengaturan", href: "/admin/settings", icon: Settings },
   ];
 
@@ -219,10 +222,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <Search className="h-5 w-5" />
             </button>
 
-            {/* Avatar Dropdown Placeholder */}
+            {/* Logout Button */}
             <div className="relative ml-2">
-              <button className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white font-semibold text-sm shadow-sm hover:opacity-90 transition-opacity">
-                A
+              <button 
+                onClick={() => setIsLogoutModalOpen(true)}
+                className="flex items-center gap-2 px-3 h-9 rounded-md bg-red-50 text-red-600 font-semibold text-sm shadow-sm hover:bg-red-100 transition-colors"
+              >
+                Logout
               </button>
             </div>
 
@@ -248,6 +254,37 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
       {/* GLOBAL MODALS */}
       <JobFormModal open={isCreateJobOpen} onOpenChange={setIsCreateJobOpen} />
+
+      {/* Logout Modal */}
+      {isLogoutModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in p-4">
+          <div className="bg-card w-full max-w-sm rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 p-6 text-center">
+            <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold mb-2 text-foreground">Konfirmasi Keluar</h2>
+            <p className="text-muted-foreground text-sm mb-8">
+              Apakah Anda yakin ingin keluar dari sesi admin? Anda harus login kembali untuk masuk.
+            </p>
+            <div className="flex gap-3 w-full">
+              <button 
+                onClick={() => setIsLogoutModalOpen(false)}
+                className="flex-1 h-11 rounded-lg border border-border font-bold text-foreground hover:bg-secondary transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={() => import('@/app/actions/auth').then(m => m.logoutAction())}
+                className="flex-1 h-11 rounded-lg bg-red-600 text-white font-bold hover:bg-red-700 transition-colors"
+              >
+                Ya, Keluar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

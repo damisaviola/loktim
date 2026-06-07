@@ -5,7 +5,7 @@ import { Job } from "@/types";
 import { ExternalLink, X, Mail, MessageCircle } from "lucide-react";
 import { Button } from "./ui/Button";
 
-export function ApplyModal({ job, isMobile = false }: { job: Job, isMobile?: boolean }) {
+export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: Job, isMobile?: boolean, isExpired?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const hasWhatsapp = !!job.contacts?.whatsapp;
@@ -47,8 +47,8 @@ export function ApplyModal({ job, isMobile = false }: { job: Job, isMobile?: boo
 
   return (
     <>
-      <a
-        href={fallbackUrl || "#"}
+      <button
+        disabled={isExpired}
         onClick={handleApplyClick}
         className={
           isMobile
@@ -56,9 +56,9 @@ export function ApplyModal({ job, isMobile = false }: { job: Job, isMobile?: boo
             : "inline-flex items-center justify-center whitespace-nowrap rounded-full font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-sm sm:text-base flex-1"
         }
       >
-        {isMobile ? "Lamar Sekarang" : "Lamar"}
-        {!isMobile && <ExternalLink className="w-4 h-4 ml-2" />}
-      </a>
+        {isExpired ? "Lowongan Ditutup" : (isMobile ? "Lamar Sekarang" : "Lamar")}
+        {!isMobile && !isExpired && <ExternalLink className="w-4 h-4 ml-2" />}
+      </button>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in p-4 sm:p-0">

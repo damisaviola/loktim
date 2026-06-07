@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, MessageSquare, Send } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Bug, Send, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export default function ContactPage() {
@@ -27,69 +27,87 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 max-w-[800px] py-8">
-      {/* Back Button */}
-      <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors mb-6 group">
-        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-        Kembali ke Beranda
-      </Link>
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20">
+      
+      {/* Minimal Navbar / Header Area */}
+      <div className="w-full pt-10 px-6 sm:px-12 max-w-4xl mx-auto flex items-center justify-between">
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
+        >
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-foreground transition-colors">
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          </div>
+          Kembali
+        </Link>
+        <div className="flex items-center gap-2">
+          <Bug className="w-5 h-5 text-destructive" />
+          <span className="font-bold text-sm tracking-widest uppercase text-muted-foreground">Laporan Bug</span>
+        </div>
+      </div>
 
-      <div className="bg-card rounded-2xl border border-border/60 p-6 sm:p-10 shadow-lg">
+      {/* Main Content */}
+      <div className="w-full max-w-2xl mx-auto px-6 pt-16 pb-24">
+        
         {isSubmitted ? (
-          <div className="py-12 flex flex-col items-center text-center animate-in zoom-in-95 fade-in duration-500">
-            <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-6">
-              <CheckCircle2 className="w-10 h-10" />
+          <div className="py-20 flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mb-8">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-4 text-foreground">Pesan Berhasil Terkirim</h2>
-            <p className="text-muted-foreground mb-8 text-sm sm:text-base max-w-md">
-              Terima kasih telah menghubungi LokerTimika. Tim kami telah menerima pesan Anda dan akan segera merespons melalui email yang Anda berikan.
+            <h2 className="text-3xl font-bold mb-4 tracking-tight">Laporan Diterima</h2>
+            <p className="text-muted-foreground mb-10 text-base max-w-sm leading-relaxed">
+              Terima kasih telah meluangkan waktu. Tim teknis kami akan segera menganalisis dan memperbaiki kendala ini.
             </p>
             <Button 
               onClick={() => setIsSubmitted(false)} 
               variant="outline"
-              className="h-12 px-8 font-bold rounded-full border-border hover:bg-secondary transition-colors"
+              className="h-12 px-8 rounded-full font-semibold border-border hover:bg-secondary transition-all"
             >
-              Kirim Pesan Lainnya
+              Laporkan Bug Lainnya
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Header */}
-            <div className="border-b border-border/60 pb-6 mb-8 text-center sm:text-left">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary mb-4">
-                <MessageSquare className="w-6 h-6" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-2">Hubungi Kami</h1>
-              <p className="text-sm text-muted-foreground">
-                Apabila Anda memiliki pertanyaan, penawaran kerja sama, atau memerlukan bantuan teknis terkait layanan kami, silakan isi formulir di bawah ini.
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Header section */}
+            <div className="mb-12">
+              <h1 className="text-4xl sm:text-5xl font-black mb-4 tracking-tighter">
+                Sistem tidak berjalan semestinya?
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
+                Detailkan kendala yang Anda hadapi. Kami akan menanganinya secepat mungkin.
               </p>
             </div>
 
-            <div className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 {/* Name Input */}
-                <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-bold text-foreground px-1">Nama Lengkap / Instansi</label>
+                <div className="space-y-3">
+                  <label htmlFor="name" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground px-1">
+                    Nama Pelapor
+                  </label>
                   <input
                     type="text"
                     id="name"
                     required
-                    placeholder="Masukkan nama lengkap atau nama perusahaan"
-                    className="w-full h-12 px-4 bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl focus:outline-none text-sm text-foreground font-medium placeholder:text-muted-foreground transition-all"
+                    placeholder="John Doe"
+                    className="w-full h-14 px-5 bg-card/50 border border-border/80 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-foreground font-medium placeholder:text-muted-foreground/50 transition-all shadow-sm"
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                   />
                 </div>
 
                 {/* Email Input */}
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-bold text-foreground px-1">Alamat Email</label>
+                <div className="space-y-3">
+                  <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground px-1">
+                    Alamat Email
+                  </label>
                   <input
                     type="email"
                     id="email"
                     required
-                    placeholder="Alamat email aktif untuk balasan"
-                    className="w-full h-12 px-4 bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl focus:outline-none text-sm text-foreground font-medium placeholder:text-muted-foreground transition-all"
+                    placeholder="john@example.com"
+                    className="w-full h-14 px-5 bg-card/50 border border-border/80 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-foreground font-medium placeholder:text-muted-foreground/50 transition-all shadow-sm"
                     value={formData.email}
                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                   />
@@ -97,53 +115,64 @@ export default function ContactPage() {
               </div>
 
               {/* Subject Input */}
-              <div className="space-y-2">
-                <label htmlFor="subject" className="text-sm font-bold text-foreground px-1">Subjek Pesan</label>
-                <input
-                  type="text"
-                  id="subject"
-                  required
-                  placeholder="Contoh: Permintaan pemasangan iklan lowongan"
-                  className="w-full h-12 px-4 bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl focus:outline-none text-sm text-foreground font-medium placeholder:text-muted-foreground transition-all"
-                  value={formData.subject}
-                  onChange={e => setFormData({ ...formData, subject: e.target.value })}
-                />
+              <div className="space-y-3">
+                <label htmlFor="subject" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground px-1">
+                  Area Masalah
+                </label>
+                <div className="relative">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/50">
+                    <AlertTriangle className="w-5 h-5" />
+                  </div>
+                  <input
+                    type="text"
+                    id="subject"
+                    required
+                    placeholder="Contoh: Gagal mengunggah logo perusahaan"
+                    className="w-full h-14 pl-14 pr-5 bg-card/50 border border-border/80 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-foreground font-medium placeholder:text-muted-foreground/50 transition-all shadow-sm"
+                    value={formData.subject}
+                    onChange={e => setFormData({ ...formData, subject: e.target.value })}
+                  />
+                </div>
               </div>
 
               {/* Message Textarea */}
-              <div className="space-y-2">
-                <label htmlFor="message" className="text-sm font-bold text-foreground px-1">Isi Pesan</label>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between px-1">
+                  <label htmlFor="message" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Detail Kendala
+                  </label>
+                  <span className="text-[10px] text-muted-foreground font-medium">Opsional tapi disarankan</span>
+                </div>
                 <textarea
                   id="message"
                   required
-                  rows={5}
-                  placeholder="Tuliskan pertanyaan atau rincian pesan Anda secara lengkap..."
-                  className="w-full px-4 py-3 bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl focus:outline-none text-sm text-foreground font-medium placeholder:text-muted-foreground transition-all resize-y min-h-[120px]"
+                  rows={6}
+                  placeholder="Ceritakan langkah-langkah yang Anda lakukan sebelum error muncul..."
+                  className="w-full px-5 py-4 bg-card/50 border border-border/80 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-3xl focus:outline-none text-base text-foreground font-medium placeholder:text-muted-foreground/50 transition-all resize-y min-h-[160px] shadow-sm"
                   value={formData.message}
                   onChange={e => setFormData({ ...formData, message: e.target.value })}
                 ></textarea>
               </div>
-            </div>
 
-            <div className="flex flex-col-reverse sm:flex-row justify-between items-center pt-4 gap-4 border-t border-border/50">
-              <span className="text-xs text-muted-foreground font-medium px-1">
-                  * Semua kolom wajib diisi
-                </span>
+              {/* Submit Area */}
+              <div className="pt-6 flex justify-end">
                 <Button 
                   type="submit" 
                   disabled={isLoading} 
-                  className="w-full sm:w-auto h-12 px-8 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
+                  className="w-full sm:w-auto h-14 px-10 rounded-full font-bold text-base flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  {isLoading ? 'Mengirim...' : (
+                  {isLoading ? 'Mengirim Laporan...' : (
                     <>
-                      Kirim Pesan
-                      <Send className="w-4 h-4" />
+                      Kirim Laporan
+                      <Send className="w-5 h-5" />
                     </>
                   )}
                 </Button>
               </div>
+
             </form>
-          )}
+          </div>
+        )}
       </div>
     </div>
   );

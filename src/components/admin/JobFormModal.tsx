@@ -299,7 +299,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Kualifikasi Kandidat</h4>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground/80">Tipe Kontrak <span className="text-red-500">*</span></label>
                   <div className="relative">
@@ -362,9 +362,6 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground/80">Preferensi Gender</label>
                   <div className="relative">
@@ -391,6 +388,17 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                       <CalendarRange className="h-4 w-4 text-muted-foreground/60" />
                     </div>
                     <input name="ageRange" type="text" defaultValue="Bebas" placeholder="Cth: Maks. 35 Tahun" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground/80 block flex justify-between">
+                    Batas Lamaran <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <CalendarRange className="h-4 w-4 text-muted-foreground/60" />
+                    </div>
+                    <input name="deadline" type="date" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
                   </div>
                 </div>
               </div>

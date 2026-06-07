@@ -18,16 +18,16 @@ export function Footer() {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white font-bold text-lg shrink-0 shadow-sm">
                 LT
               </div>
-              <span className="font-extrabold text-xl tracking-tight text-primary">
-                LokerTimika
+              <span className="font-extrabold text-xl tracking-tight text-foreground">
+                Loker<span className="text-primary">Timika</span>
               </span>
             </Link>
           </div>
 
           {/* Links */}
           <div className="flex items-center gap-6 text-sm font-medium">
-            <Link href="/contact" className="hover:text-primary transition-colors">
-              Hubungi Kami
+            <Link href="/contact" className="hover:text-primary transition-colors flex items-center gap-1.5">
+              Lapor Bug
             </Link>
             <span className="text-border">|</span>
             <Link href="/privacy" className="hover:text-primary transition-colors">
@@ -44,7 +44,7 @@ export function Footer() {
           <div className="flex items-center gap-4 text-xs font-semibold">
             <span className="hover:text-primary cursor-pointer transition-colors">Bahasa Indonesia</span>
             <span className="text-border">|</span>
-            <span className="hover:text-primary cursor-pointer transition-colors">Hubungi Dukungan</span>
+            <Link href="/contact" className="hover:text-primary cursor-pointer transition-colors">Hubungi Dukungan</Link>
           </div>
         </div>
       </div>

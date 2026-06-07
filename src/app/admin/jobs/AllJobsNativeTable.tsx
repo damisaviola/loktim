@@ -9,7 +9,7 @@ export default function AllJobsNativeTable({ jobs }: { jobs: any[] }) {
   const {
     inputValue,
     setInputValue,
-    sortKey,
+    sortKey,   
     sortDirection,
     handleSort,
     processedData

@@ -23,6 +23,7 @@ const createJobSchema = z.object({
   whatsapp: z.string().optional().nullable().or(z.literal("")),
   salaryMinStr: z.string().optional().nullable().or(z.literal("")),
   salaryMaxStr: z.string().optional().nullable().or(z.literal("")),
+  deadlineStr: z.string().optional().nullable().or(z.literal("")),
 }).refine(data => {
   if (data.isNewCompany) {
     return !!data.newCompanyName && !!data.newCompanyLocation;
@@ -80,6 +81,7 @@ export async function createJobAction(formData: FormData) {
       whatsapp: formData.get("whatsapp") as string | null,
       salaryMinStr: formData.get("salaryMin") as string | null,
       salaryMaxStr: formData.get("salaryMax") as string | null,
+      deadlineStr: formData.get("deadline") as string | null,
     };
 
     const validatedData = createJobSchema.safeParse(rawData);
@@ -121,6 +123,7 @@ export async function createJobAction(formData: FormData) {
 
     const salaryMin = data.salaryMinStr ? parseInt(data.salaryMinStr, 10) : null;
     const salaryMax = data.salaryMaxStr ? parseInt(data.salaryMaxStr, 10) : null;
+    const deadline = data.deadlineStr ? new Date(data.deadlineStr) : null;
 
     // Sanitize requirements
     const requirements = data.requirementsRaw
@@ -143,6 +146,7 @@ export async function createJobAction(formData: FormData) {
         companyId: finalCompanyId,
         salaryMin,
         salaryMax,
+        deadline,
         imageUrl: data.imageUrl || null,
         contactUrl: data.whatsapp ? `https://wa.me/${data.whatsapp.replace(/\D/g, '')}` : `mailto:${data.email}`,
         contacts: {
@@ -160,9 +164,15 @@ export async function createJobAction(formData: FormData) {
 }
 
 import { revalidatePath } from "next/cache";
+import { getUserSession } from "./auth";
 
 export async function approveJobAction(jobId: string) {
   try {
+    const user = await getUserSession();
+    if (!user) {
+      return { success: false, error: "Unauthorized access" };
+    }
+
     await prisma.job.update({
       where: { id: jobId },
       data: { status: "approved" }
@@ -178,6 +188,11 @@ export async function approveJobAction(jobId: string) {
 
 export async function rejectJobAction(jobId: string) {
   try {
+    const user = await getUserSession();
+    if (!user) {
+      return { success: false, error: "Unauthorized access" };
+    }
+
     await prisma.job.update({
       where: { id: jobId },
       data: { status: "rejected" }
@@ -193,6 +208,11 @@ export async function rejectJobAction(jobId: string) {
 
 export async function deleteJobAction(jobId: string) {
   try {
+    const user = await getUserSession();
+    if (!user) {
+      return { success: false, error: "Unauthorized access" };
+    }
+
     await prisma.job.delete({
       where: { id: jobId }
     });
@@ -227,6 +247,11 @@ export async function getApprovedJobsAction() {
 
 export async function getAdminCompaniesAction() {
   try {
+    const user = await getUserSession();
+    if (!user) {
+      throw new Error("Unauthorized access");
+    }
+
     const companies = await prisma.company.findMany({
       include: {
         jobs: true
