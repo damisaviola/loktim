@@ -225,12 +225,15 @@ export async function deleteJobAction(jobId: string) {
   }
 }
 
-export async function getApprovedJobsAction() {
+import { unstable_cache } from "next/cache";
+
+export const getApprovedJobsAction = unstable_cache(async () => {
   try {
     const jobs = await prisma.job.findMany({
       where: { status: "approved" },
       include: { company: true },
       orderBy: { postedAt: "desc" },
+      take: 150, // Batasi 150 loker terbaru agar hemat RAM
     });
     
     return jobs.map(job => ({
@@ -243,7 +246,7 @@ export async function getApprovedJobsAction() {
     console.error("Failed to fetch approved jobs:", error);
     return [];
   }
-}
+}, ['approved-jobs'], { revalidate: 60, tags: ['jobs'] });
 
 export async function getAdminCompaniesAction() {
   try {
