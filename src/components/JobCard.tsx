@@ -1,10 +1,15 @@
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
 import { Job } from "@/types";
+import { useBookmarks } from "@/hooks/useBookmarks";
 import { Badge } from "./ui/Badge";
 import { Building2, Bookmark, GraduationCap, Award, MapPin, Users, CalendarRange, Briefcase, Banknote, Sparkles } from "lucide-react";
 
 export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job: Job) => void; className?: string }) {
+  const { toggleBookmark, isBookmarked, isLoaded } = useBookmarks();
+
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
       e.preventDefault();
@@ -194,11 +199,23 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
             <span className="text-xs text-muted-foreground hidden sm:inline mx-1">•</span>
             <span className="text-xs text-[#057642] font-semibold hidden sm:inline">Jadilah pelamar pertama</span>
           </div>
-          <Link href={`/job/${job.id}`}>
-            <button className="text-sm font-bold text-primary hover:text-primary/80 transition-colors w-full sm:w-auto text-center mt-2 sm:mt-0">
-              Lihat Detail
-            </button>
-          </Link>
+          <div className="flex items-center gap-4 mt-2 sm:mt-0 w-full sm:w-auto justify-end">
+            {isLoaded && (
+              <button 
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(job.id); }}
+                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                title={isBookmarked(job.id) ? "Hapus dari tersimpan" : "Simpan loker ini"}
+              >
+                <Bookmark className={`w-4 h-4 ${isBookmarked(job.id) ? 'fill-blue-500 text-blue-500' : ''}`} />
+                <span className="hidden sm:inline">{isBookmarked(job.id) ? 'Tersimpan' : 'Simpan'}</span>
+              </button>
+            )}
+            <Link href={`/job/${job.id}`}>
+              <button className="text-sm font-bold text-primary hover:text-primary/80 transition-colors text-center cursor-pointer">
+                Lihat Detail
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

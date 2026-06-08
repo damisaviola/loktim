@@ -15,6 +15,7 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Cari Lowongan", active: pathname === "/" || pathname?.startsWith("/job") },
+    { href: "/tersimpan", label: "Tersimpan", active: pathname === "/tersimpan" },
   ];
 
   return (

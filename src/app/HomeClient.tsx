@@ -16,6 +16,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
   const [activeEdu, setActiveEdu] = useState<EducationLevel | 'Semua'>('Semua');
   const [activeExp, setActiveExp] = useState<ExperienceLevel | 'Semua'>('Semua');
   const [activeDate, setActiveDate] = useState<string>('Semua');
+  const [inputValue, setInputValue] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,12 +36,16 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
   };
 
   const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
+    setInputValue(query);
+    if (query === '') {
+      setSearchQuery('');
+    }
+  };
+
+  const handleSearchSubmit = () => {
+    setSearchQuery(inputValue);
     setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
+    setTimeout(() => setIsLoading(false), 300);
   };
 
   useEffect(() => {
@@ -117,13 +122,14 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
 
           <div className="w-full flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white/10 backdrop-blur-md p-2 rounded-2xl sm:rounded-full border border-white/20 shadow-inner">
             <TypewriterSearch 
-              searchQuery={searchQuery}
+              searchQuery={inputValue}
               onSearchChange={handleSearchChange}
+              onSearchSubmit={handleSearchSubmit}
             />
             <div className="flex gap-2 shrink-0">
               <button
                 type="button"
-                onClick={() => handleSearchChange(searchQuery)}
+                onClick={handleSearchSubmit}
                 className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-auto rounded-xl sm:rounded-full shadow-md bg-white text-blue-700 hover:bg-blue-50 flex items-center justify-center gap-2 transition-all cursor-pointer font-bold text-sm"
               >
                 <Search className="w-5 h-5" />
@@ -146,7 +152,12 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
             {['Freeport', 'Mekanik', 'Barista', 'Admin Gudang', 'Kuala Kencana'].map((tag) => (
               <button
                 key={tag}
-                onClick={() => handleSearchChange(tag)}
+                onClick={() => {
+                  setInputValue(tag);
+                  setSearchQuery(tag);
+                  setIsLoading(true);
+                  setTimeout(() => setIsLoading(false), 300);
+                }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors font-medium cursor-pointer"
               >
                 {tag}
@@ -250,6 +261,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
                   variant="outline"
                   className="font-semibold rounded-full px-6 border-border hover:bg-secondary transition-colors"
                   onClick={() => {
+                    setInputValue('');
                     setSearchQuery('');
                     setActiveCategory('Semua');
                     setActiveType('Semua');

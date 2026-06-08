@@ -19,9 +19,10 @@ const PLACEHOLDERS = [
 interface TypewriterSearchProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  onSearchSubmit?: () => void;
 }
 
-export function TypewriterSearch({ searchQuery, onSearchChange }: TypewriterSearchProps) {
+export function TypewriterSearch({ searchQuery, onSearchChange, onSearchSubmit }: TypewriterSearchProps) {
   const [placeholderText, setPlaceholderText] = useState('');
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -59,6 +60,12 @@ export function TypewriterSearch({ searchQuery, onSearchChange }: TypewriterSear
         type="text"
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && onSearchSubmit) {
+            e.preventDefault();
+            onSearchSubmit();
+          }
+        }}
         placeholder={placeholderText ? `${placeholderText}|` : "|"}
         aria-label="Cari lowongan pekerjaan"
         className="w-full h-12 sm:h-14 pl-12 pr-10 bg-transparent border-none focus:ring-0 focus:outline-none text-sm sm:text-base text-white font-medium placeholder:text-white/60 transition-all"
