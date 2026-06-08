@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Job } from "@/types";
 import { Badge } from "./ui/Badge";
 import { Building2, Bookmark, GraduationCap, Award, MapPin, Users, CalendarRange, Briefcase, Banknote, Sparkles } from "lucide-react";
@@ -53,10 +54,9 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
       {/* Mobile Top Row (Logo + Title) & Desktop Logo */}
       <div className="flex gap-3.5 sm:block items-start shrink-0">
         <Link href={`/job/${job.id}`} onClick={handleClick} className="shrink-0 relative z-10">
-          <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-white border ${isPremium ? 'border-blue-200' : 'border-border/50'} flex items-center justify-center overflow-hidden rounded-lg shadow-sm`}>
+          <div className={`relative w-12 h-12 sm:w-16 sm:h-16 bg-white border ${isPremium ? 'border-blue-200' : 'border-border/50'} flex items-center justify-center overflow-hidden rounded-lg shadow-sm`}>
             {(job.imageUrl || job.company?.logoUrl) ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={job.imageUrl || job.company?.logoUrl} alt={job.company?.name || "Company Logo"} className="w-full h-full object-contain p-1" />
+              <Image src={(job.imageUrl || job.company?.logoUrl) as string} alt={job.company?.name || "Logo"} fill sizes="(max-width: 640px) 48px, 64px" className="object-contain p-1" />
             ) : (
               <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
             )}
