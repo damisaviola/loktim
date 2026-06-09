@@ -3,10 +3,11 @@ import { useState, useEffect, useMemo } from 'react';
 export function useTableSortAndSearch<T>(
   data: T[],
   searchFn: (item: T, query: string) => boolean,
-  debounceMs: number = 300
+  debounceMs: number = 300,
+  initialSearch: string = ""
 ) {
-  const [inputValue, setInputValue] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [inputValue, setInputValue] = useState(initialSearch);
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 

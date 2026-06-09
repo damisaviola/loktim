@@ -163,6 +163,79 @@ export async function createJobAction(formData: FormData) {
   }
 }
 
+export async function updateJobAction(jobId: string, formData: FormData) {
+  try {
+    const rawData = {
+      email: formData.get("email") as string,
+      imageUrl: formData.get("imageUrl") as string | null,
+      title: formData.get("title") as string,
+      category: formData.get("category") as string,
+      description: formData.get("description") as string,
+      requirementsRaw: formData.get("requirements") as string,
+      type: formData.get("type") as string,
+      education: formData.get("education") as string | null,
+      experience: formData.get("experience") as string | null,
+      gender: formData.get("gender") as string | null,
+      ageRange: formData.get("ageRange") as string | null,
+      whatsapp: formData.get("whatsapp") as string | null,
+      salaryMinStr: formData.get("salaryMin") as string | null,
+      salaryMaxStr: formData.get("salaryMax") as string | null,
+      deadlineStr: formData.get("deadline") as string | null,
+    };
+
+    const salaryMin = rawData.salaryMinStr ? parseInt(rawData.salaryMinStr, 10) : null;
+    const salaryMax = rawData.salaryMaxStr ? parseInt(rawData.salaryMaxStr, 10) : null;
+    const deadline = rawData.deadlineStr ? new Date(rawData.deadlineStr) : null;
+
+    // Sanitize requirements
+    const requirements = rawData.requirementsRaw
+      .replace(/<\/p>|<\/li>|<br\s*\/?>/gi, '\n')
+      .split('\n')
+      .map(r => r.trim().replace(/<[^>]*>/g, ""))
+      .filter(r => r.length > 0);
+
+    const updateData: any = {
+      title: rawData.title,
+      category: rawData.category,
+      description: rawData.description,
+      requirements,
+      type: rawData.type,
+      education: rawData.education || "Semua",
+      experience: rawData.experience || "Tanpa Pengalaman",
+      gender: rawData.gender || "Pria/Wanita",
+      ageRange: rawData.ageRange && rawData.ageRange !== "Bebas" ? `${rawData.ageRange.replace(" Tahun", "")} Tahun` : "Bebas",
+      salaryMin,
+      salaryMax,
+      deadline,
+      contactUrl: rawData.whatsapp ? `https://wa.me/${rawData.whatsapp.replace(/\D/g, '')}` : `mailto:${rawData.email}`,
+      contacts: {
+        email: rawData.email,
+        whatsapp: rawData.whatsapp || "",
+      },
+    };
+
+    if (rawData.imageUrl) {
+      updateData.imageUrl = rawData.imageUrl;
+    }
+
+    await prisma.job.update({
+      where: { id: jobId },
+      data: updateData
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/jobs");
+    revalidatePath("/admin/jobs/active");
+    revalidatePath("/admin/jobs/pending");
+    revalidatePath("/dashboard");
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to update job:", error);
+    return { success: false, error: error.message || "Failed to update job" };
+  }
+}
+
 import { revalidatePath } from "next/cache";
 import { getUserSession } from "./auth";
 
@@ -271,6 +344,68 @@ export async function getAdminCompaniesAction() {
     }));
   } catch (error) {
     console.error("Failed to fetch admin companies:", error);
+    return [];
+  }
+}
+
+export async function getAdminCategoriesAction() {
+  try {
+    const user = await getUserSession();
+    if (!user) {
+      throw new Error("Unauthorized access");
+    }
+
+    const dbCategories = await prisma.category.findMany({
+      orderBy: { name: 'asc' }
+    });
+    const categories = dbCategories.map(c => c.name);
+
+    const jobs = await prisma.job.findMany({
+      select: {
+        category: true,
+        company: {
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true,
+          }
+        }
+      }
+    });
+
+    const categoryData: Record<string, { count: number; companies: Map<string, any> }> = {};
+    
+    jobs.forEach(job => {
+      if (!categoryData[job.category]) {
+        categoryData[job.category] = { count: 0, companies: new Map() };
+      }
+      categoryData[job.category].count += 1;
+      if (job.company) {
+        categoryData[job.category].companies.set(job.company.id, job.company);
+      }
+    });
+
+    const result = dbCategories.map(cat => ({
+      id: cat.id,
+      name: cat.name,
+      jobCount: categoryData[cat.name]?.count || 0,
+      companies: Array.from(categoryData[cat.name]?.companies.values() || [])
+    }));
+
+    Object.keys(categoryData).forEach(cat => {
+      if (!categories.includes(cat)) {
+        result.push({
+          id: cat.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          name: cat,
+          jobCount: categoryData[cat].count,
+          companies: Array.from(categoryData[cat].companies.values())
+        });
+      }
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Failed to fetch admin categories:", error);
     return [];
   }
 }

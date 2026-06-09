@@ -110,12 +110,12 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
               <span>{job.company.location}</span>
             </div>
           )}
-          {job.education && job.education !== 'Semua' && (
+          {job.education && (
             <>
               <span className="text-muted-foreground/50">•</span>
               <div className="flex items-center gap-1">
                 <GraduationCap className="w-3.5 h-3.5 shrink-0" />
-                <span>Min. {job.education}</span>
+                <span>{job.education === 'Semua' ? 'Semua Pendidikan' : `Min. ${job.education}`}</span>
               </div>
             </>
           )}
@@ -142,7 +142,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
               <span className="text-muted-foreground/50">•</span>
               <div className="flex items-center gap-1">
                 <CalendarRange className="w-3.5 h-3.5 shrink-0" />
-                <span>{job.ageRange} tahun</span>
+                <span>Maks. {job.ageRange.replace(/ tahun/ig, '').trim()} Tahun</span>
               </div>
             </>
           )}
@@ -170,7 +170,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
               Kontak Langsung (WA)
             </span>
           )}
-          {job.contacts?.email && !job.contacts?.whatsapp && (
+          {job.contacts?.email && (
             <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] px-2.5 py-0.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]"></span>
               Kirim Email HRD

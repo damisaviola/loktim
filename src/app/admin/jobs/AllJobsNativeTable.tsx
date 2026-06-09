@@ -1,11 +1,16 @@
 "use client";
 
 import { useTableSortAndSearch } from "@/hooks/useTableSortAndSearch";
+import { useSearchParams } from "next/navigation";
 import { Briefcase, Search, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import JobActionButtons from "../JobActionButtons";
 import { Input } from "@/components/ui/Input";
+import { Suspense } from "react";
 
-export default function AllJobsNativeTable({ jobs }: { jobs: any[] }) {
+function AllJobsTableContent({ jobs }: { jobs: any[] }) {
+  const searchParams = useSearchParams();
+  const defaultSearch = searchParams.get('search') || '';
+
   const {
     inputValue,
     setInputValue,
@@ -19,7 +24,9 @@ export default function AllJobsNativeTable({ jobs }: { jobs: any[] }) {
       job.title.toLowerCase().includes(query) || 
       (job.company?.name || "").toLowerCase().includes(query) ||
       job.category.toLowerCase().includes(query) ||
-      (job.status || "").toLowerCase().includes(query)
+      (job.status || "").toLowerCase().includes(query),
+    300,
+    defaultSearch
   );
 
   const SortIcon = ({ columnKey }: { columnKey: string }) => {
@@ -175,5 +182,13 @@ export default function AllJobsNativeTable({ jobs }: { jobs: any[] }) {
         </table>
       </div>
     </div>
+  );
+}
+
+export default function AllJobsNativeTable({ jobs }: { jobs: any[] }) {
+  return (
+    <Suspense fallback={<div className="p-12 text-center text-gray-500">Memuat data...</div>}>
+      <AllJobsTableContent jobs={jobs} />
+    </Suspense>
   );
 }

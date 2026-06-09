@@ -150,12 +150,12 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                       <MapPin className="w-4 h-4 shrink-0" />
                       <span>{job.company?.location}</span>
                     </div>
-                    {job.education && job.education !== 'Semua' && (
+                    {job.education && (
                       <>
                         <span className="text-muted-foreground/60">•</span>
                         <div className="flex items-center gap-1.5">
                           <GraduationCap className="w-4 h-4 shrink-0" />
-                          <span>Min. {job.education}</span>
+                          <span>{job.education === 'Semua' ? 'Semua Pendidikan' : `Min. ${job.education}`}</span>
                         </div>
                       </>
                     )}
@@ -173,7 +173,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                         <span className="text-muted-foreground/60">•</span>
                         <div className="flex items-center gap-1.5">
                           <CalendarRange className="w-4 h-4 shrink-0" />
-                          <span>{job.ageRange} tahun</span>
+                          <span>Maks. {job.ageRange.replace(/ tahun/ig, '').trim()} Tahun</span>
                         </div>
                       </>
                     )}

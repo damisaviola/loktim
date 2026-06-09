@@ -3,6 +3,7 @@
 import { CheckCircle2, Eye, Edit, Trash2, XCircle, X, Building2, MapPin, Banknote, Briefcase, GraduationCap, Users, CalendarRange } from "lucide-react";
 import { useTransition, useState } from "react";
 import { approveJobAction, rejectJobAction, deleteJobAction } from "@/app/actions/job";
+import EditJobFormModal from "@/components/admin/EditJobFormModal";
 
 export default function JobActionButtons({ 
   job 
@@ -11,6 +12,7 @@ export default function JobActionButtons({
 }) {
   const [isPending, startTransition] = useTransition();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const jobId = job.id;
   const status = job.status;
 
@@ -66,6 +68,7 @@ export default function JobActionButtons({
         <Eye className="h-5 w-5" />
       </button>
       <button 
+        onClick={() => setIsEditModalOpen(true)}
         className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 p-1.5 rounded-md transition-colors disabled:opacity-50" 
         title="Edit"
       >
@@ -179,6 +182,14 @@ export default function JobActionButtons({
             </div>
           </div>
         </div>
+      )}
+
+      {isEditModalOpen && (
+        <EditJobFormModal 
+          open={isEditModalOpen} 
+          onOpenChange={setIsEditModalOpen} 
+          job={job} 
+        />
       )}
     </div>
   );
