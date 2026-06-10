@@ -29,10 +29,6 @@ export function Footer() {
             <Link href="/contact" className="hover:text-primary transition-colors flex items-center gap-1.5">
               Lapor Bug
             </Link>
-            <span className="text-border">|</span>
-            <Link href="/privacy" className="hover:text-primary transition-colors">
-              Kebijakan Privasi
-            </Link>
           </div>
         </div>
 
@@ -43,8 +39,6 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-4 text-xs font-semibold">
             <span className="hover:text-primary cursor-pointer transition-colors">Bahasa Indonesia</span>
-            <span className="text-border">|</span>
-            <Link href="/contact" className="hover:text-primary cursor-pointer transition-colors">Hubungi Dukungan</Link>
           </div>
         </div>
       </div>

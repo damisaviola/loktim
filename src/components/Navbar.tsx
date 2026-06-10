@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Briefcase, Menu, X } from 'lucide-react';
+import { Briefcase, Menu, X, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export function Navbar() {
@@ -14,8 +14,7 @@ export function Navbar() {
   if (pathname?.startsWith('/admin') || pathname === '/login') return null;
 
   const navLinks = [
-    { href: "/", label: "Cari Lowongan", active: pathname === "/" || pathname?.startsWith("/job") },
-    { href: "/tersimpan", label: "Tersimpan", active: pathname === "/tersimpan" },
+    { href: "/tersimpan", label: "Tersimpan", icon: <Bookmark className="w-5 h-5" />, active: pathname === "/tersimpan" },
   ];
 
   return (
@@ -34,18 +33,22 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden sm:flex items-center gap-1">
+          <nav className="hidden sm:flex items-center gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-250 ${
+                title={link.label}
+                className={`p-2.5 rounded-full transition-all duration-250 flex items-center justify-center ${
                   link.active
                     ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                {link.label}
+                {link.icon}
+                {link.label === "Tersimpan" && (
+                  <span className="ml-2 text-sm font-semibold hidden lg:inline-block">{link.label}</span>
+                )}
               </Link>
             ))}
           </nav>
@@ -55,16 +58,6 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           {/* Desktop Only Actions */}
           <div className="hidden sm:flex items-center gap-3">
-            <Link
-              href="/login"
-              className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                pathname === "/login"
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-              }`}
-            >
-              Masuk
-            </Link>
 
             <Link href="/post">
               <Button 
@@ -99,31 +92,21 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setIsMenuOpen(false)}
-              className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              className={`px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all ${
                 link.active
                   ? "text-primary bg-primary/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               }`}
             >
-              {link.label}
+              {link.icon}
+              <span>{link.label}</span>
             </Link>
           ))}
           
           <hr className="border-border/50 my-1" />
 
           <div className="flex flex-col gap-2">
-            <Link
-              href="/login"
-              onClick={() => setIsMenuOpen(false)}
-              className={`w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                pathname === "/login"
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              }`}
-            >
-              Masuk
-            </Link>
-            
+
             <Link href="/post" onClick={() => setIsMenuOpen(false)} className="w-full">
               <Button className="w-full rounded-xl font-semibold shadow-md flex items-center justify-center gap-2 py-2.5 h-10">
                 <Briefcase className="w-4 h-4" />

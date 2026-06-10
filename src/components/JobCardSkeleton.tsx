@@ -27,7 +27,7 @@ export function JobCardSkeleton({ className }: { className?: string }) {
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap items-center gap-2 mt-1 sm:mt-0">
+        <div className="flex flex-wrap items-center gap-1.5 mt-1 sm:mt-0">
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-4 w-16" />
@@ -35,7 +35,7 @@ export function JobCardSkeleton({ className }: { className?: string }) {
         </div>
 
         {/* Localized Badges */}
-        <div className="flex flex-wrap items-center gap-2 mt-4 mb-4">
+        <div className="flex flex-wrap items-center gap-2 mt-3 mb-4">
           <Skeleton className="h-5 w-32 rounded-full" />
           <Skeleton className="h-5 w-24 rounded-full" />
         </div>

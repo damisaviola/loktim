@@ -20,11 +20,11 @@ export function HomeLoadingSkeleton() {
           <div className="w-full flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white/10 backdrop-blur-md p-2 rounded-2xl sm:rounded-full border border-white/20 shadow-inner">
             <div className="relative flex-1">
               <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-              <div className="w-full h-12 sm:h-14"></div>
+              <Skeleton className="w-full h-12 sm:h-14 bg-white/5 rounded-full" />
             </div>
             <div className="flex gap-2 shrink-0">
-              <div className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-28 rounded-xl sm:rounded-full bg-white/30 flex items-center justify-center"></div>
-              <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-full shrink-0 bg-white/20 flex items-center justify-center"></div>
+              <Skeleton className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-28 rounded-xl sm:rounded-full bg-white/20" />
+              <Skeleton className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-full shrink-0 bg-white/20" />
             </div>
           </div>
 
