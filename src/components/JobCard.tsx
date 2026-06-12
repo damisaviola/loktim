@@ -36,18 +36,18 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
   };
 
   const salary = formatSalary(job.salaryMin, job.salaryMax);
-  
+
   const isPremium = job.isPremium;
-  const cardClasses = isPremium 
-    ? `bg-card border-2 border-blue-400/80 dark:border-blue-700/50 shadow-blue-100/50 dark:shadow-none`
-    : `bg-card border border-border/60`;
+  const cardClasses = isPremium
+    ? `bg-indigo-50/40 border border-indigo-200 shadow-sm hover:shadow-indigo-500/15`
+    : `bg-white border border-slate-200 hover:border-indigo-200 hover:shadow-indigo-500/10`;
 
   return (
-    <div className={`${cardClasses} rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-all group relative flex flex-col sm:flex-row gap-3 sm:gap-5 ${className || 'mb-4'} overflow-hidden`}>
-      
+    <div className={`${cardClasses} rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 group relative flex flex-col sm:flex-row gap-3 sm:gap-5 ${className || ''} overflow-hidden`}>
+
       {isPremium && (
         <div className="absolute top-0 right-0 z-10">
-          <div 
+          <div
             className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-2 rounded-bl-xl shadow-sm border-l border-b border-blue-400/30 flex items-center justify-center"
             title="Lowongan Promosi"
           >
@@ -59,7 +59,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
       {/* Mobile Top Row (Logo + Title) & Desktop Logo */}
       <div className="flex gap-3.5 sm:block items-start shrink-0">
         <Link href={`/job/${job.id}`} onClick={handleClick} className="shrink-0 relative z-10">
-          <div className={`relative w-12 h-12 sm:w-16 sm:h-16 bg-white border ${isPremium ? 'border-blue-200' : 'border-border/50'} flex items-center justify-center overflow-hidden rounded-lg shadow-sm`}>
+          <div className={`relative w-12 h-12 sm:w-16 sm:h-16 bg-white border ${isPremium ? 'border-indigo-200 shadow-indigo-500/20' : 'border-slate-100'} flex items-center justify-center overflow-hidden rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300`}>
             {(job.imageUrl || job.company?.logoUrl) ? (
               <Image src={(job.imageUrl || job.company?.logoUrl) as string} alt={job.company?.name || "Logo"} fill sizes="(max-width: 640px) 48px, 64px" className="object-contain p-1" />
             ) : (
@@ -67,7 +67,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
             )}
           </div>
         </Link>
-        
+
         {/* Mobile Title & Company */}
         <div className="sm:hidden flex-1 min-w-0 pr-12">
           <div className="flex justify-between items-start gap-2">
@@ -86,7 +86,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
 
       {/* Main Content */}
       <div className="flex-1 min-w-0 w-full flex flex-col relative z-10">
-        
+
         {/* Desktop Title & Company */}
         <div className="hidden sm:block pr-12">
           <div className="flex justify-between items-start gap-2">
@@ -201,7 +201,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
           </div>
           <div className="flex items-center gap-4 mt-2 sm:mt-0 w-full sm:w-auto justify-end">
             {isLoaded && (
-              <button 
+              <button
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(job.id); }}
                 className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                 title={isBookmarked(job.id) ? "Hapus dari tersimpan" : "Simpan loker ini"}
@@ -211,7 +211,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
               </button>
             )}
             <Link href={`/job/${job.id}`}>
-              <button className="text-sm font-bold text-primary hover:text-primary/80 transition-colors text-center cursor-pointer">
+              <button className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors text-center cursor-pointer group-hover:translate-x-1 duration-300 flex items-center gap-1">
                 Lihat Detail
               </button>
             </Link>

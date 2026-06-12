@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "LokerTimika - Info Lowongan Kerja Timika & Mimika Terbaru",
@@ -25,8 +32,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className="h-full antialiased" suppressHydrationWarning>
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans" suppressHydrationWarning>
+    <html lang="id" className={`h-full antialiased ${plusJakartaSans.variable}`} suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary" suppressHydrationWarning>
         <Navbar />
         <MainLayoutWrapper>
           {children}

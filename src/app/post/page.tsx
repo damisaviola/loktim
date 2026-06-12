@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { 
   Plus, Briefcase, MapPin, Building, CheckCircle2, 
   Mail, Phone, Image as ImageIcon, Wallet,
-  GraduationCap, Award, Users, CalendarRange, LayoutList, Building2, UploadCloud, Info
+  GraduationCap, Award, Users, CalendarRange, LayoutList, Building2, UploadCloud, Info, Link as LinkIcon
 } from "lucide-react";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { createJobAction, getCompaniesByEmailAction } from "@/app/actions/job";
@@ -557,6 +557,17 @@ export default function QuickPost() {
                       <Phone className="h-5 w-5 text-muted-foreground/60" />
                     </div>
                     <input name="whatsapp" type="tel" placeholder="081234567890" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-foreground/90 block flex justify-between">
+                    Link Google Form / Eksternal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <LinkIcon className="h-5 w-5 text-muted-foreground/60" />
+                    </div>
+                    <input name="applicationLink" type="url" placeholder="https://forms.gle/..." className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                   </div>
                 </div>
               </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Job } from "@/types";
-import { ExternalLink, X, Mail, MessageCircle } from "lucide-react";
+import { ExternalLink, X, Mail, MessageCircle, Link as LinkIcon } from "lucide-react";
 import { Button } from "./ui/Button";
 
 export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: Job, isMobile?: boolean, isExpired?: boolean }) {
@@ -10,7 +10,7 @@ export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: 
 
   const hasWhatsapp = !!job.contacts?.whatsapp;
   const hasEmail = !!job.contacts?.email;
-  const hasBoth = hasWhatsapp && hasEmail;
+  const hasApplicationLink = !!job.contacts?.applicationLink;
   const fallbackUrl = job.contactUrl;
 
   const handleApplyClick = (e: React.MouseEvent) => {
@@ -28,7 +28,7 @@ export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: 
   const getEmailUrl = (email?: string) => {
     if (!email) return fallbackUrl;
     const subject = encodeURIComponent(`Lamaran Pekerjaan: ${job.title} - [Nama Anda]`);
-    
+
     if (typeof window !== "undefined") {
       const ua = navigator.userAgent.toLowerCase();
       // Android deep link to Gmail
@@ -40,7 +40,7 @@ export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: 
         return `googlegmail:///co?to=${email}&subject=${subject}`;
       }
     }
-    
+
     // Fallback for Desktop
     return `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}`;
   };
@@ -65,14 +65,14 @@ export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: 
           <div className="bg-card w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 sm:slide-in-from-bottom-0">
             <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-secondary/30">
               <h2 className="font-bold text-lg text-foreground">Pilih Cara Melamar</h2>
-              <button 
+              <button
                 onClick={() => setIsOpen(false)}
                 className="p-2 -mr-2 rounded-full hover:bg-secondary text-muted-foreground transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="p-4 sm:p-6 space-y-4">
               <p className="text-sm text-muted-foreground mb-4">
                 Perekrut dari <strong className="text-foreground">{job.company?.name}</strong> menerima lamaran melalui:
@@ -121,8 +121,29 @@ export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: 
                   </a>
                 )}
 
+                {hasApplicationLink && (
+                  <a
+                    href={job.contacts?.applicationLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:bg-secondary/50 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
+                        <LinkIcon className="w-5 h-5 text-purple-600 dark:text-purple-500" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-foreground">Link Formulir</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">Isi formulir pendaftaran</div>
+                      </div>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-muted-foreground opacity-50 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                )}
+
                 {/* Fallback if no specific contacts are defined but contactUrl exists */}
-                {!hasWhatsapp && !hasEmail && fallbackUrl && (
+                {!hasWhatsapp && !hasEmail && !hasApplicationLink && fallbackUrl && (
                   <a
                     href={fallbackUrl}
                     target="_blank"

@@ -9,7 +9,7 @@ import {
   DialogDescription,
 } from "@/components/ui/Dialog";
 import { companies } from "@/lib/dummy-data";
-import { Plus, Briefcase, MapPin, Building, CheckCircle2, Mail, UploadCloud, Info, Wallet, Users, CalendarRange, Phone } from "lucide-react";
+import { Plus, Briefcase, MapPin, Building, CheckCircle2, Mail, UploadCloud, Info, Wallet, Users, CalendarRange, Phone, Link as LinkIcon } from "lucide-react";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { updateJobAction } from "@/app/actions/job";
 import imageCompression from "browser-image-compression";
@@ -30,6 +30,7 @@ export default function EditJobFormModal({ open, onOpenChange, job }: EditJobFor
   
   const [email, setEmail] = useState(job.contacts?.email || "");
   const [whatsapp, setWhatsapp] = useState(job.contacts?.whatsapp || "");
+  const [applicationLink, setApplicationLink] = useState(job.contacts?.applicationLink || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -403,6 +404,17 @@ export default function EditJobFormModal({ open, onOpenChange, job }: EditJobFor
                       <Phone className="h-4 w-4 text-muted-foreground/60" />
                     </div>
                     <input name="whatsapp" type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="081234567890" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground/80 block flex justify-between">
+                    Link Google Form / Eksternal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <LinkIcon className="h-4 w-4 text-muted-foreground/60" />
+                    </div>
+                    <input name="applicationLink" type="url" value={applicationLink} onChange={(e) => setApplicationLink(e.target.value)} placeholder="https://forms.gle/..." className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
                   </div>
                 </div>
               </div>

@@ -3,11 +3,27 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { getUserSession } from './auth'
+import { jobs as dummyJobs } from '@/lib/dummy-data'
 
 export async function reportJobAction(jobId: string, reason: string, details?: string) {
   try {
     if (!jobId || !reason) {
       return { success: false, error: 'Data laporan tidak lengkap' }
+    }
+
+    // Cek apakah job ada di database (bukan dummy job)
+    const jobExists = await prisma.job.findUnique({
+      where: { id: jobId }
+    })
+
+    if (!jobExists) {
+      const isDummy = dummyJobs.some(j => j.id === jobId)
+      if (isDummy) {
+        // Jika ini adalah data dummy, pura-pura sukses saja 
+        // karena tidak bisa masuk database (akan error foreign key)
+        return { success: true }
+      }
+      return { success: false, error: 'Lowongan tidak ditemukan' }
     }
 
     await prisma.jobReport.create({

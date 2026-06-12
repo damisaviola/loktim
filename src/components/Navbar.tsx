@@ -18,17 +18,17 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-card/80 backdrop-blur-md border-b border-border/80 shadow-sm transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-lg border-b border-white/20 shadow-lg shadow-black/5 transition-all duration-300">
       <div className="container mx-auto flex h-16 max-w-[1128px] items-center justify-between px-4 sm:px-6 lg:px-0">
-        
+
         {/* Brand / Logo & Desktop Nav Links */}
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-600 text-white font-black text-lg shrink-0 shadow-md shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-400 text-white font-black text-lg shrink-0 shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform duration-300">
               LT
             </div>
-            <span className="font-black text-xl tracking-tight text-foreground transition-colors duration-300 hidden min-[360px]:inline-block">
-              Loker<span className="text-primary group-hover:text-primary/80 transition-colors">Timika</span>
+            <span className="font-black text-xl tracking-tight text-slate-800 transition-colors duration-300 hidden min-[360px]:inline-block">
+              Loker<span className="text-indigo-600 group-hover:text-indigo-500 transition-colors">Timika</span>
             </span>
           </Link>
 
@@ -39,11 +39,10 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 title={link.label}
-                className={`p-2.5 rounded-full transition-all duration-250 flex items-center justify-center ${
-                  link.active
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                }`}
+                className={`p-2.5 rounded-full transition-all duration-250 flex items-center justify-center ${link.active
+                  ? "text-primary bg-primary/10"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  }`}
               >
                 {link.icon}
                 {link.label === "Tersimpan" && (
@@ -60,10 +59,10 @@ export function Navbar() {
           <div className="hidden sm:flex items-center gap-3">
 
             <Link href="/post">
-              <Button 
-                variant="default" 
+              <Button
+                variant="default"
                 size="sm"
-                className="rounded-xl font-semibold shadow-md shadow-primary/15 hover:shadow-lg transition-all duration-300 flex items-center gap-2 px-4 h-9"
+                className="rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 px-5 h-10"
               >
                 <Briefcase className="w-4 h-4" />
                 <span>Pasang Loker</span>
@@ -92,17 +91,16 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setIsMenuOpen(false)}
-              className={`px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all ${
-                link.active
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              }`}
+              className={`px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all ${link.active
+                ? "text-primary bg-primary/10"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                }`}
             >
               {link.icon}
               <span>{link.label}</span>
             </Link>
           ))}
-          
+
           <hr className="border-border/50 my-1" />
 
           <div className="flex flex-col gap-2">

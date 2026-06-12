@@ -41,8 +41,8 @@ export default function ContactPage() {
           Kembali
         </Link>
         <div className="flex items-center gap-2">
-          <Bug className="w-5 h-5 text-destructive" />
-          <span className="font-bold text-sm tracking-widest uppercase text-muted-foreground">Laporan Bug</span>
+          <Bug className="w-5 h-5 text-indigo-600" />
+          <span className="font-bold text-sm tracking-widest uppercase text-slate-500">Laporan Bug</span>
         </div>
       </div>
 
@@ -61,7 +61,7 @@ export default function ContactPage() {
             <Button 
               onClick={() => setIsSubmitted(false)} 
               variant="outline"
-              className="h-12 px-8 rounded-full font-semibold border-border hover:bg-secondary transition-all"
+              className="h-12 px-8 rounded-full font-semibold border-slate-200 hover:bg-slate-50 hover:border-indigo-200 hover:text-indigo-600 transition-all"
             >
               Laporkan Bug Lainnya
             </Button>
@@ -83,7 +83,7 @@ export default function ContactPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 {/* Name Input */}
                 <div className="space-y-3">
-                  <label htmlFor="name" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground px-1">
+                  <label htmlFor="name" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 px-1">
                     Nama Pelapor
                   </label>
                   <input
@@ -91,7 +91,7 @@ export default function ContactPage() {
                     id="name"
                     required
                     placeholder="John Doe"
-                    className="w-full h-14 px-5 bg-card/50 border border-border/80 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-foreground font-medium placeholder:text-muted-foreground/50 transition-all shadow-sm"
+                    className="w-full h-14 px-5 bg-white border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-indigo-200"
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                   />
@@ -99,7 +99,7 @@ export default function ContactPage() {
 
                 {/* Email Input */}
                 <div className="space-y-3">
-                  <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground px-1">
+                  <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 px-1">
                     Alamat Email
                   </label>
                   <input
@@ -107,7 +107,7 @@ export default function ContactPage() {
                     id="email"
                     required
                     placeholder="john@example.com"
-                    className="w-full h-14 px-5 bg-card/50 border border-border/80 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-foreground font-medium placeholder:text-muted-foreground/50 transition-all shadow-sm"
+                    className="w-full h-14 px-5 bg-white border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-indigo-200"
                     value={formData.email}
                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                   />
@@ -116,11 +116,11 @@ export default function ContactPage() {
 
               {/* Subject Input */}
               <div className="space-y-3">
-                <label htmlFor="subject" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground px-1">
+                <label htmlFor="subject" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 px-1">
                   Area Masalah
                 </label>
                 <div className="relative">
-                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/50">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">
                     <AlertTriangle className="w-5 h-5" />
                   </div>
                   <input
@@ -128,7 +128,7 @@ export default function ContactPage() {
                     id="subject"
                     required
                     placeholder="Contoh: Gagal mengunggah logo perusahaan"
-                    className="w-full h-14 pl-14 pr-5 bg-card/50 border border-border/80 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-foreground font-medium placeholder:text-muted-foreground/50 transition-all shadow-sm"
+                    className="w-full h-14 pl-14 pr-5 bg-white border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-indigo-200"
                     value={formData.subject}
                     onChange={e => setFormData({ ...formData, subject: e.target.value })}
                   />
@@ -138,17 +138,17 @@ export default function ContactPage() {
               {/* Message Textarea */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between px-1">
-                  <label htmlFor="message" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <label htmlFor="message" className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
                     Detail Kendala
                   </label>
-                  <span className="text-[10px] text-muted-foreground font-medium">Opsional tapi disarankan</span>
+                  <span className="text-[10px] text-slate-400 font-medium">Opsional tapi disarankan</span>
                 </div>
                 <textarea
                   id="message"
                   required
                   rows={6}
                   placeholder="Ceritakan langkah-langkah yang Anda lakukan sebelum error muncul..."
-                  className="w-full px-5 py-4 bg-card/50 border border-border/80 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-3xl focus:outline-none text-base text-foreground font-medium placeholder:text-muted-foreground/50 transition-all resize-y min-h-[160px] shadow-sm"
+                  className="w-full px-5 py-4 bg-white border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-3xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all resize-y min-h-[160px] shadow-sm hover:border-indigo-200"
                   value={formData.message}
                   onChange={e => setFormData({ ...formData, message: e.target.value })}
                 ></textarea>
@@ -159,7 +159,7 @@ export default function ContactPage() {
                 <Button 
                   type="submit" 
                   disabled={isLoading} 
-                  className="w-full sm:w-auto h-14 px-10 rounded-full font-bold text-base flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full sm:w-auto h-14 px-10 rounded-full font-bold text-base flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:-translate-y-1 transition-all duration-300"
                 >
                   {isLoading ? 'Mengirim Laporan...' : (
                     <>

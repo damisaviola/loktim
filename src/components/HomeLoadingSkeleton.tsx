@@ -5,12 +5,12 @@ import { Search, Settings2 } from 'lucide-react';
 export function HomeLoadingSkeleton() {
   return (
     <div className="container mx-auto px-4 lg:px-0 max-w-[1128px]">
-      
+
       {/* Premium Search Banner Skeleton */}
       <div className="mt-4 sm:mt-6 w-full bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#312e81] rounded-2xl mb-8 text-white relative overflow-hidden shadow-md">
         <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
-        
+
         <div className="p-6 sm:p-10 relative z-10 flex flex-col space-y-5">
           <div className="space-y-3">
             <Skeleton className="h-8 sm:h-10 w-[80%] max-w-[400px] bg-white/20 rounded-lg" />

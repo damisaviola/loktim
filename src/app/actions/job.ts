@@ -24,6 +24,7 @@ const createJobSchema = z.object({
   salaryMinStr: z.string().optional().nullable().or(z.literal("")),
   salaryMaxStr: z.string().optional().nullable().or(z.literal("")),
   deadlineStr: z.string().optional().nullable().or(z.literal("")),
+  applicationLink: z.string().url("Format URL tidak valid").optional().nullable().or(z.literal("")),
 }).refine(data => {
   if (data.isNewCompany) {
     return !!data.newCompanyName && !!data.newCompanyLocation;
@@ -82,6 +83,7 @@ export async function createJobAction(formData: FormData) {
       salaryMinStr: formData.get("salaryMin") as string | null,
       salaryMaxStr: formData.get("salaryMax") as string | null,
       deadlineStr: formData.get("deadline") as string | null,
+      applicationLink: formData.get("applicationLink") as string | null,
     };
 
     const validatedData = createJobSchema.safeParse(rawData);
@@ -148,10 +150,11 @@ export async function createJobAction(formData: FormData) {
         salaryMax,
         deadline,
         imageUrl: data.imageUrl || null,
-        contactUrl: data.whatsapp ? `https://wa.me/${data.whatsapp.replace(/\D/g, '')}` : `mailto:${data.email}`,
+        contactUrl: data.applicationLink || (data.whatsapp ? `https://wa.me/${data.whatsapp.replace(/\D/g, '')}` : `mailto:${data.email}`),
         contacts: {
           email: data.email,
           whatsapp: data.whatsapp || "",
+          applicationLink: data.applicationLink || "",
         },
       }
     });
@@ -181,6 +184,7 @@ export async function updateJobAction(jobId: string, formData: FormData) {
       salaryMinStr: formData.get("salaryMin") as string | null,
       salaryMaxStr: formData.get("salaryMax") as string | null,
       deadlineStr: formData.get("deadline") as string | null,
+      applicationLink: formData.get("applicationLink") as string | null,
     };
 
     const salaryMin = rawData.salaryMinStr ? parseInt(rawData.salaryMinStr, 10) : null;
@@ -207,10 +211,11 @@ export async function updateJobAction(jobId: string, formData: FormData) {
       salaryMin,
       salaryMax,
       deadline,
-      contactUrl: rawData.whatsapp ? `https://wa.me/${rawData.whatsapp.replace(/\D/g, '')}` : `mailto:${rawData.email}`,
+      contactUrl: rawData.applicationLink || (rawData.whatsapp ? `https://wa.me/${rawData.whatsapp.replace(/\D/g, '')}` : `mailto:${rawData.email}`),
       contacts: {
         email: rawData.email,
         whatsapp: rawData.whatsapp || "",
+        applicationLink: rawData.applicationLink || "",
       },
     };
 

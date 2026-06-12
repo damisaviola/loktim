@@ -55,7 +55,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
   const filteredJobs = useMemo(() => {
     return initialJobs.filter(job => {
       const matchType = activeType === 'Semua' || job.type === activeType;
-      const matchCategory = activeCategory === 'Semua' || 
+      const matchCategory = activeCategory === 'Semua' ||
         job.category === activeCategory ||
         (activeCategory.includes('IT') && job.category?.includes('IT')) ||
         (activeCategory.includes('Admin') && job.category?.includes('Admin'));
@@ -103,14 +103,14 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
 
   return (
     <div className="container mx-auto px-4 lg:px-0 max-w-[1128px]">
-      
+
       {/* Premium Search Banner */}
-      <div className="mt-4 sm:mt-6 w-full bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#312e81] rounded-2xl mb-8 text-white relative overflow-hidden shadow-md">
-        <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
-        
+      <div className="mt-4 sm:mt-6 w-full bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 rounded-3xl mb-8 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-indigo-500/40 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-72 h-72 bg-blue-500/30 rounded-full blur-[80px] pointer-events-none"></div>
+
         <div className="p-6 sm:p-10 relative z-10 flex flex-col space-y-5">
-          
+
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight text-white">
               Temukan Pekerjaan Impian di Mimika
@@ -120,8 +120,8 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
             </p>
           </div>
 
-          <div className="w-full flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white/10 backdrop-blur-md p-2 rounded-2xl sm:rounded-full border border-white/20 shadow-inner">
-            <TypewriterSearch 
+          <div className="w-full flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white/10 backdrop-blur-xl p-2.5 rounded-2xl sm:rounded-full border border-white/20">
+            <TypewriterSearch
               searchQuery={inputValue}
               onSearchChange={handleSearchChange}
               onSearchSubmit={handleSearchSubmit}
@@ -130,14 +130,14 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
               <button
                 type="button"
                 onClick={handleSearchSubmit}
-                className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-auto rounded-xl sm:rounded-full shadow-md bg-white text-blue-700 hover:bg-blue-50 flex items-center justify-center gap-2 transition-all cursor-pointer font-bold text-sm"
+                className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-auto rounded-xl sm:rounded-full shadow-lg shadow-black/5 bg-white text-indigo-700 hover:bg-indigo-50 hover:scale-105 hover:shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer font-bold text-sm"
               >
                 <Search className="w-5 h-5" />
                 <span className="sm:hidden">Cari</span>
               </button>
               <button
                 type="button"
-                className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-full shrink-0 shadow-sm bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20"
+                className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-full shrink-0 shadow-lg shadow-black/5 bg-white/10 hover:bg-white/20 text-white flex items-center justify-center hover:scale-105 transition-all duration-300 cursor-pointer border border-white/20"
                 onClick={() => setIsFilterOpen(true)}
                 title="Filter Lanjutan"
               >
@@ -175,14 +175,14 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">Berdasarkan profil dan riwayat pencarian</p>
           </div>
           <div className="hidden sm:flex items-center gap-2">
-            <button 
+            <button
               onClick={() => scrollCarousel('left')}
               className="w-10 h-10 rounded-full border border-border/60 flex items-center justify-center bg-card hover:bg-secondary shadow-sm transition-colors text-muted-foreground hover:text-foreground"
               aria-label="Scroll left"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <button 
+            <button
               onClick={() => scrollCarousel('right')}
               className="w-10 h-10 rounded-full border border-border/60 flex items-center justify-center bg-card hover:bg-secondary shadow-sm transition-colors text-muted-foreground hover:text-foreground"
               aria-label="Scroll right"
@@ -191,16 +191,16 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
             </button>
           </div>
         </div>
-        <div 
+        <div
           ref={carouselRef}
           className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 px-1 -mx-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           {latestJobs.map(job => (
             <div key={`latest-${job.id}`} className="w-[85vw] sm:w-[350px] shrink-0 flex">
-              <JobCard 
-                job={job} 
-                onClick={setSelectedJob} 
+              <JobCard
+                job={job}
+                onClick={setSelectedJob}
                 className="w-full flex-col !flex-col mb-0 h-full"
               />
             </div>
@@ -211,17 +211,16 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
 
         {/* Category Filter - Mobile */}
-        <div className="w-full overflow-x-auto pb-2 lg:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="flex gap-2 min-w-max">
+        <div className="w-full overflow-x-auto pb-4 pt-2 px-2 -mx-2 lg:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex gap-3 min-w-max">
             {jobCategories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all ${
-                  activeCategory === cat
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-card text-muted-foreground hover:bg-secondary border border-border/60 hover:border-blue-300'
-                }`}
+                className={`px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-300 ${activeCategory === cat
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 -translate-y-0.5'
+                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:shadow-sm'
+                  }`}
               >
                 {cat}
               </button>
@@ -230,7 +229,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
         </div>
 
         {/* Main Content - Feed */}
-        <div className="w-full lg:w-3/4 flex-1">
+        <div className={`w-full ${selectedJob ? 'lg:w-[45%]' : 'lg:w-3/4'} flex-1 transition-all duration-300`}>
           <div className="mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 px-1">
             <div>
               <h2 className="font-bold text-lg sm:text-xl">Lowongan Terbaru</h2>
@@ -239,7 +238,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
             <span className="text-xs sm:text-sm font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full shrink-0">{filteredJobs.length} Lowongan</span>
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-4">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <JobCardSkeleton key={i} />
@@ -278,9 +277,9 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
 
           {!isLoading && visibleCount < filteredJobs.length && (
             <div className="mt-4 text-center">
-              <Button 
+              <Button
                 onClick={() => setVisibleCount(filteredJobs.length)}
-                variant="outline" 
+                variant="outline"
                 className="w-full sm:w-auto px-8 rounded-full border-primary text-primary hover:bg-primary/5 font-bold"
               >
                 Tampilkan lebih banyak
@@ -289,27 +288,107 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
           )}
         </div>
 
-        {/* Right Sidebar - Desktop Categories */}
-        <div className="hidden lg:flex flex-col w-1/4 shrink-0">
-          <div className="sticky top-24 bg-card rounded-2xl border border-border/60 p-5 shadow-sm">
-            <h3 className="font-bold text-lg mb-4 text-foreground">Kategori Pekerjaan</h3>
-            <div className="flex flex-col gap-2">
-              {jobCategories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-between ${
-                    activeCategory === cat
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-background text-muted-foreground hover:bg-secondary border border-border/40 hover:border-blue-300'
-                  }`}
-                >
-                  {cat}
-                  {activeCategory === cat && <span className="w-2 h-2 rounded-full bg-white shrink-0"></span>}
+        {/* Right Sidebar - Desktop Categories or Job Details */}
+        <div className={`hidden lg:flex flex-col ${selectedJob ? 'lg:w-[55%]' : 'w-1/4'} shrink-0 transition-all duration-300`}>
+          {selectedJob ? (
+            <div className="sticky top-24 bg-white/95 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 overflow-hidden flex flex-col h-[calc(100vh-8rem)] animate-in fade-in slide-in-from-right-4 duration-500">
+              <div className="flex justify-between items-center p-5 pb-4 border-b border-slate-200 bg-white z-10">
+                <h2 className="text-lg font-bold">Detail Pekerjaan</h2>
+                <button onClick={() => setSelectedJob(null)} className="p-1 rounded-full hover:bg-slate-100 transition-colors">
+                  <X className="w-6 h-6 text-muted-foreground" />
                 </button>
-              ))}
+              </div>
+
+              <div className="overflow-y-auto flex-1 p-5 lg:p-6 bg-slate-50/50">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="relative w-16 h-16 bg-white border border-slate-200 flex items-center justify-center overflow-hidden rounded-lg shadow-sm shrink-0 mt-1">
+                    {selectedJob.company?.logoUrl ? (
+                      <Image src={selectedJob.company.logoUrl as string} alt={selectedJob.company.name} fill sizes="64px" className="object-contain p-1" />
+                    ) : (
+                      <Building2 className="w-8 h-8 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div>
+                    <h1 className="text-xl lg:text-2xl font-bold text-primary leading-tight">{selectedJob.title}</h1>
+                    <div className="flex items-center gap-2 text-foreground mt-2">
+                      <Building2 className="w-4 h-4 text-muted-foreground shrink-0" />
+                      <span className="font-medium text-sm lg:text-base">{selectedJob.company?.name}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 text-sm bg-white p-5 rounded-xl border border-slate-200 shadow-sm mb-8">
+                  <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                    <span className="text-muted-foreground">Lokasi</span>
+                    <span className="font-semibold text-right">{selectedJob.company?.location}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                    <span className="text-muted-foreground">Tipe</span>
+                    <span className="font-semibold text-[#057642] text-right">{selectedJob.type}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                    <span className="text-muted-foreground">Pengalaman</span>
+                    <span className="font-semibold text-right">{selectedJob.experience}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-muted-foreground">Pendidikan</span>
+                    <span className="font-semibold text-right">{selectedJob.education}</span>
+                  </div>
+                  {selectedJob.salaryMin && (
+                    <div className="flex justify-between items-center py-2 border-t border-slate-100">
+                      <span className="text-muted-foreground">Gaji</span>
+                      <span className="font-semibold text-[#057642] text-right">
+                        {selectedJob.salaryMax && selectedJob.salaryMax !== selectedJob.salaryMin
+                          ? `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')} - Rp ${selectedJob.salaryMax.toLocaleString('id-ID')}`
+                          : `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')}`}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="font-bold mb-4 text-lg border-b border-slate-200 pb-2">Deskripsi Pekerjaan</h3>
+                  {selectedJob.description ? (
+                    <div
+                      className="text-foreground/80 text-sm leading-relaxed [&>p]:mb-4 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-4 [&>li]:mb-1.5"
+                      dangerouslySetInnerHTML={{ __html: selectedJob.description }}
+                    />
+                  ) : (
+                    <div className="text-foreground/80 text-sm leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100">
+                      Deskripsi tidak tersedia.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-5 border-t border-slate-200 bg-white/90 backdrop-blur-sm z-10">
+                <Link href={`/job/${selectedJob.id}`} className="block w-full">
+                  <Button size="lg" className="w-full font-bold h-14 rounded-2xl shadow-xl shadow-indigo-600/20 bg-indigo-600 hover:bg-indigo-700 text-white hover:-translate-y-1 transition-all duration-300">
+                    Lihat Selengkapnya & Lamar
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="sticky top-24 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+              <h3 className="font-bold text-lg mb-4 text-foreground">Kategori Pekerjaan</h3>
+              <div className="flex flex-col gap-2">
+                {jobCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`w-full text-left px-5 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-300 flex items-center justify-between ${activeCategory === cat
+                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 translate-x-2'
+                      : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:shadow-sm'
+                      }`}
+                  >
+                    {cat}
+                    {activeCategory === cat && <span className="w-2 h-2 rounded-full bg-white shrink-0"></span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -409,15 +488,15 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
         </div>
       )}
 
-      {/* Job Detail Side Drawer */}
+      {/* Job Detail Side Drawer (Mobile Only) */}
       {selectedJob && (
-        <>
+        <div className="lg:hidden">
           <div
             className="fixed inset-0 z-[110] bg-black/60 transition-opacity animate-in fade-in duration-300"
             onClick={() => setSelectedJob(null)}
           />
 
-          <div className="fixed inset-y-0 right-0 z-[120] w-full max-w-md bg-card shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col border-l border-border overflow-hidden">
+          <div className="fixed inset-y-0 right-0 z-[120] w-full max-w-md bg-white shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col border-l border-slate-200 overflow-hidden">
             <div className="flex justify-between items-center p-5 pb-4 border-b border-border">
               <h2 className="text-lg font-bold">Detail Pekerjaan</h2>
               <button onClick={() => setSelectedJob(null)} className="p-1 rounded-full hover:bg-secondary">
@@ -475,7 +554,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
               <div className="mt-8">
                 <h3 className="font-bold mb-3 text-lg">Deskripsi Pekerjaan</h3>
                 {selectedJob.description ? (
-                  <div 
+                  <div
                     className="text-foreground/80 text-sm leading-relaxed [&>p]:mb-3 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-3 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-3 [&>li]:mb-1"
                     dangerouslySetInnerHTML={{ __html: selectedJob.description }}
                   />
@@ -495,9 +574,8 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
               </Link>
             </div>
           </div>
-        </>
+        </div>
       )}
-
     </div>
   );
 }

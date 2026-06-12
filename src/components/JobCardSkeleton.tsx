@@ -2,7 +2,7 @@ import { Skeleton } from "./ui/Skeleton";
 
 export function JobCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={`bg-card border border-border/60 rounded-xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row gap-3 sm:gap-5 overflow-hidden relative ${className || 'mb-4'}`}>
+    <div className={`bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row gap-3 sm:gap-5 overflow-hidden relative ${className || ''}`}>
       
       {/* Mobile Top Row (Logo + Title) & Desktop Logo */}
       <div className="flex gap-3.5 sm:block items-start shrink-0">
