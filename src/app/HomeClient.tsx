@@ -160,6 +160,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
                 }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors font-medium cursor-pointer"
               >
+                <Search className="w-3 h-3 opacity-70" />
                 {tag}
               </button>
             ))}

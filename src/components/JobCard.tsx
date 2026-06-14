@@ -79,7 +79,13 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
           </div>
           <div className="flex items-center gap-1.5 text-sm font-bold text-foreground mt-0.5">
             <Building2 className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
-            <span className="truncate">{job.company?.name}</span>
+            <Link 
+              href={`/perusahaan/${job.companyId || job.company?.id || ''}`}
+              className="truncate hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {job.company?.name}
+            </Link>
           </div>
         </div>
       </div>
@@ -98,7 +104,13 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
           </div>
           <div className="flex items-center gap-1.5 text-sm font-bold text-foreground mt-1.5 mb-2.5">
             <Building2 className="w-4 h-4 shrink-0 text-muted-foreground" />
-            <span className="hover:underline cursor-pointer">{job.company?.name}</span>
+            <Link 
+              href={`/perusahaan/${job.companyId || job.company?.id || ''}`}
+              className="hover:underline cursor-pointer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {job.company?.name}
+            </Link>
           </div>
         </div>
 
@@ -142,7 +154,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
               <span className="text-muted-foreground/50">•</span>
               <div className="flex items-center gap-1">
                 <CalendarRange className="w-3.5 h-3.5 shrink-0" />
-                <span>Maks. {job.ageRange.replace(/ tahun/ig, '').trim()} Tahun</span>
+                <span>{job.ageRange}</span>
               </div>
             </>
           )}

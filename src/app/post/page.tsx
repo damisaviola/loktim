@@ -468,7 +468,7 @@ export default function QuickPost() {
                   <input required name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hrd@perusahaan.com" className="w-full h-14 pl-12 pr-4 bg-background border border-border hover:border-orange-300 rounded-xl text-base text-foreground focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1.5 ml-1">
-                  {email.length === 0 ? "Ketik email Anda untuk memuat daftar perusahaan yang terdaftar." : 
+                  Email aktif untuk menerima CV/Lamaran. {email.length === 0 ? "Ketik email Anda untuk memuat daftar perusahaan yang terdaftar." : 
                    companyList.length > 0 ? "✅ Perusahaan ditemukan untuk email ini." :
                    debouncedEmail.includes("@") ? "ℹ️ Email ini belum memiliki perusahaan terdaftar. Silakan isi form perusahaan baru." : ""}
                 </p>
@@ -558,6 +558,9 @@ export default function QuickPost() {
                     </div>
                     <input name="whatsapp" type="tel" placeholder="081234567890" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                   </div>
+                  <p className="text-xs text-muted-foreground mt-1.5 ml-1">
+                    Isi jika Anda ingin menerima lamaran atau pertanyaan via WhatsApp.
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground/90 block flex justify-between">
@@ -569,6 +572,9 @@ export default function QuickPost() {
                     </div>
                     <input name="applicationLink" type="url" placeholder="https://forms.gle/..." className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                   </div>
+                  <p className="text-xs text-muted-foreground mt-1.5 ml-1">
+                    Gunakan link khusus (misal Google Form) jika ada. Pelamar akan diarahkan ke link ini.
+                  </p>
                 </div>
               </div>
 

@@ -9,7 +9,7 @@ import {
   DialogDescription,
 } from "@/components/ui/Dialog";
 import { companies } from "@/lib/dummy-data";
-import { Plus, Briefcase, MapPin, Building, CheckCircle2, Mail, UploadCloud, Info, Wallet, Users, CalendarRange, Phone } from "lucide-react";
+import { Plus, Briefcase, MapPin, Building, CheckCircle2, Mail, UploadCloud, Info, Wallet, Users, CalendarRange, Phone, Link as LinkIcon } from "lucide-react";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { getCompaniesByEmailAction, createJobAction } from "@/app/actions/job";
 import imageCompression from "browser-image-compression";
@@ -384,13 +384,13 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                 
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground/80 block flex justify-between">
-                    Batasan Umur <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                    Batasan Umur Maksimal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                       <CalendarRange className="h-4 w-4 text-muted-foreground/60" />
                     </div>
-                    <input name="ageRange" type="text" defaultValue="Bebas" placeholder="Cth: Maks. 35 Tahun" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                    <input name="ageRange" type="number" min="15" max="100" placeholder="Cth: 35" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
                   </div>
                 </div>
                 <div className="space-y-1.5">
@@ -542,6 +542,17 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                       <Phone className="h-4 w-4 text-muted-foreground/60" />
                     </div>
                     <input name="whatsapp" type="tel" placeholder="081234567890" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground/80 block flex justify-between">
+                    Link Google Form / Eksternal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <LinkIcon className="h-4 w-4 text-muted-foreground/60" />
+                    </div>
+                    <input name="applicationLink" type="url" placeholder="https://forms.gle/..." className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
                   </div>
                 </div>
               </div>

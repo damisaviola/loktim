@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 import { JobMoreOptions } from '@/components/JobMoreOptions';
 import { ApplyModal } from '@/components/ApplyModal';
-import { CompanyJobsModal } from '@/components/CompanyJobsModal';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -173,7 +172,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                         <span className="text-muted-foreground/60">•</span>
                         <div className="flex items-center gap-1.5">
                           <CalendarRange className="w-4 h-4 shrink-0" />
-                          <span>Maks. {job.ageRange.replace(/ tahun/ig, '').trim()} Tahun</span>
+                          <span>{job.ageRange}</span>
                         </div>
                       </>
                     )}
@@ -239,7 +238,11 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
             <p className="text-sm text-muted-foreground mb-4">
               {job.company?.about || `${job.company?.name} adalah perusahaan terkemuka yang berlokasi di ${job.company?.location}.`}
             </p>
-            <CompanyJobsModal jobs={companyJobs} companyName={job.company?.name || "Perusahaan"} />
+            <Link href={`/perusahaan/${job.companyId || job.company?.id || ''}`} className="block w-full">
+              <Button variant="outline" className="w-full font-bold">
+                Lihat Semua Lowongan ({companyJobs.length + 1})
+              </Button>
+            </Link>
           </div>
 
           <div className="bg-card rounded-lg border border-border p-4 sm:p-6">

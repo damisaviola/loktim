@@ -351,13 +351,13 @@ export default function EditJobFormModal({ open, onOpenChange, job }: EditJobFor
                 
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground/80 block flex justify-between">
-                    Batasan Umur <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                    Batasan Umur Maksimal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                       <CalendarRange className="h-4 w-4 text-muted-foreground/60" />
                     </div>
-                    <input name="ageRange" type="text" defaultValue={job.ageRange || "Bebas"} placeholder="Cth: Maks. 35 Tahun" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                    <input name="ageRange" type="number" min="15" max="100" defaultValue={job.ageRange && job.ageRange !== "Bebas" ? job.ageRange.replace(/\D/g, '') : ""} placeholder="Cth: 35" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
                   </div>
                 </div>
                 <div className="space-y-1.5">

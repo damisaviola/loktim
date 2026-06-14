@@ -75,7 +75,7 @@ export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: 
 
             <div className="p-4 sm:p-6 space-y-4">
               <p className="text-sm text-muted-foreground mb-4">
-                Perekrut dari <strong className="text-foreground">{job.company?.name}</strong> menerima lamaran melalui:
+                Silakan kirimkan lamaran Anda ke <strong className="text-foreground">{job.company?.name}</strong> melalui:
               </p>
 
               <div className="space-y-3">
