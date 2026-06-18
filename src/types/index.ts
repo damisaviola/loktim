@@ -33,6 +33,7 @@ export interface Job {
   contacts?: {
     whatsapp?: string;
     email?: string;
+    applicationLink?: string;
   };
 }
 

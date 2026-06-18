@@ -38,6 +38,8 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
   const salary = formatSalary(job.salaryMin, job.salaryMax);
 
   const isPremium = job.isPremium;
+  const isExpired = job.deadline ? new Date(job.deadline) < new Date() : false;
+  
   const cardClasses = isPremium
     ? `bg-indigo-50/40 border border-indigo-200 shadow-sm hover:shadow-indigo-500/15`
     : `bg-white border border-slate-200 hover:border-indigo-200 hover:shadow-indigo-500/10`;
@@ -176,13 +178,19 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
 
         {/* Localized Badges for authentic, non-AI look */}
         <div className="flex flex-wrap items-center gap-2 mt-3 mb-4">
-          {job.contacts?.whatsapp && (
+          {isExpired && (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-700 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 px-2.5 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-600 dark:bg-red-500"></span>
+              Lowongan Ditutup
+            </span>
+          )}
+          {!isExpired && job.contacts?.whatsapp && (
             <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#15803d] bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-0.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse"></span>
               Kontak Langsung (WA)
             </span>
           )}
-          {job.contacts?.email && (
+          {!isExpired && job.contacts?.email && (
             <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] px-2.5 py-0.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]"></span>
               Kirim Email HRD
@@ -209,7 +217,11 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-muted-foreground" suppressHydrationWarning>{formatTimeAgo(job.postedAt)}</span>
             <span className="text-xs text-muted-foreground hidden sm:inline mx-1">•</span>
-            <span className="text-xs text-[#057642] font-semibold hidden sm:inline">Jadilah pelamar pertama</span>
+            {isExpired ? (
+              <span className="text-xs text-red-600 dark:text-red-400 font-bold hidden sm:inline">Telah Berakhir</span>
+            ) : (
+              <span className="text-xs text-[#057642] font-semibold hidden sm:inline">Jadilah pelamar pertama</span>
+            )}
           </div>
           <div className="flex items-center gap-4 mt-2 sm:mt-0 w-full sm:w-auto justify-end">
             {isLoaded && (

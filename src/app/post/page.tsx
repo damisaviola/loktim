@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { 
   Plus, Briefcase, MapPin, Building, CheckCircle2, 
   Mail, Phone, Image as ImageIcon, Wallet,
-  GraduationCap, Award, Users, CalendarRange, LayoutList, Building2, UploadCloud, Info, Link as LinkIcon
+  GraduationCap, Award, Users, CalendarRange, LayoutList, Building2, UploadCloud, Info, Link as LinkIcon, User, CalendarClock
 } from "lucide-react";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { createJobAction, getCompaniesByEmailAction } from "@/app/actions/job";
@@ -205,6 +205,31 @@ export default function QuickPost() {
 
         {/* MAIN FORM */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 p-4 sm:p-0">
+
+          {/* INFORMATION SECTION */}
+          <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-200/60 dark:border-blue-900/30 sm:rounded-[1.5rem] rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center relative overflow-hidden shadow-sm">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
+            <div className="w-12 h-12 rounded-2xl bg-white dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200/50 dark:border-blue-800/50 shadow-sm">
+              <Info className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-foreground mb-3 text-lg">Informasi Pemasangan Lowongan</h3>
+              <ul className="text-sm sm:text-base text-muted-foreground space-y-2.5">
+                <li className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-sm shadow-blue-500/40"></div>
+                  <span className="leading-relaxed">Pemasangan lowongan kerja di platform kami <strong className="text-foreground font-bold">100% Gratis</strong> tanpa dipungut biaya apapun.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-sm shadow-blue-500/40"></div>
+                  <span className="leading-relaxed">Setiap lowongan akan melalui proses <strong className="text-foreground font-bold">review oleh tim kami</strong> sebelum ditayangkan publik (maksimal 1x24 jam).</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-sm shadow-blue-500/40"></div>
+                  <span className="leading-relaxed">Pastikan mencantumkan <strong className="text-foreground font-bold">informasi kontak yang aktif</strong> (Email/WhatsApp) agar pelamar dapat menghubungi Anda dengan mudah.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
 
           {/* Section 1: Informasi Pekerjaan */}
           <div className="bg-card border border-border/60 sm:rounded-[1.5rem] p-6 sm:p-10 shadow-sm relative overflow-hidden group">
@@ -423,7 +448,7 @@ export default function QuickPost() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <CalendarRange className="h-5 w-5 text-muted-foreground/60" />
+                    <User className="h-5 w-5 text-muted-foreground/60" />
                   </div>
                   <input name="ageRange" type="number" min="15" max="100" placeholder="Cth: 35" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                 </div>
@@ -435,7 +460,7 @@ export default function QuickPost() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <CalendarRange className="h-5 w-5 text-muted-foreground/60" />
+                    <CalendarClock className="h-5 w-5 text-muted-foreground/60" />
                   </div>
                   <input name="deadline" type="date" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                 </div>

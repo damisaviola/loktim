@@ -74,7 +74,7 @@ export function HomeLoadingSkeleton() {
             <Skeleton className="h-7 w-24 rounded-full" />
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <JobCardSkeleton key={`feed-skel-${i}`} />
             ))}
