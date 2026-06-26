@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { 
   Plus, Briefcase, MapPin, Building, CheckCircle2, 
   Mail, Phone, Image as ImageIcon, Wallet,
-  GraduationCap, Award, Users, CalendarRange, LayoutList, Building2, UploadCloud, Info, Link as LinkIcon, User, CalendarClock
+  GraduationCap, Award, Users, CalendarRange, LayoutList, Building2, UploadCloud, Info, Link as LinkIcon, User, CalendarClock, ArrowRight
 } from "lucide-react";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { createJobAction, getCompaniesByEmailAction } from "@/app/actions/job";
@@ -207,27 +207,33 @@ export default function QuickPost() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 p-4 sm:p-0">
 
           {/* INFORMATION SECTION */}
-          <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-200/60 dark:border-blue-900/30 sm:rounded-[1.5rem] rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center relative overflow-hidden shadow-sm">
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
-            <div className="w-12 h-12 rounded-2xl bg-white dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200/50 dark:border-blue-800/50 shadow-sm">
-              <Info className="w-6 h-6" />
+          <div className="px-4 sm:px-6 py-2 mb-2">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg shrink-0">
+                <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="font-bold text-foreground text-lg tracking-tight">Informasi Pemasangan Lowongan</h3>
             </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-foreground mb-3 text-lg">Informasi Pemasangan Lowongan</h3>
-              <ul className="text-sm sm:text-base text-muted-foreground space-y-2.5">
+            <div className="pl-11">
+              <ul className="text-sm sm:text-base text-muted-foreground space-y-3">
                 <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-sm shadow-blue-500/40"></div>
-                  <span className="leading-relaxed">Pemasangan lowongan kerja di platform kami <strong className="text-foreground font-bold">100% Gratis</strong> tanpa dipungut biaya apapun.</span>
+                  <span className="text-blue-500 font-bold mt-0.5">•</span>
+                  <span className="leading-relaxed">Pemasangan lowongan kerja di platform kami <strong className="text-foreground">100% Gratis</strong> tanpa dipungut biaya apapun.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-sm shadow-blue-500/40"></div>
-                  <span className="leading-relaxed">Setiap lowongan akan melalui proses <strong className="text-foreground font-bold">review oleh tim kami</strong> sebelum ditayangkan publik (maksimal 1x24 jam).</span>
+                  <span className="text-blue-500 font-bold mt-0.5">•</span>
+                  <span className="leading-relaxed">Setiap lowongan akan melalui proses <strong className="text-foreground">review oleh tim kami</strong> sebelum ditayangkan publik (maksimal 1x24 jam).</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-sm shadow-blue-500/40"></div>
-                  <span className="leading-relaxed">Pastikan mencantumkan <strong className="text-foreground font-bold">informasi kontak yang aktif</strong> (Email/WhatsApp) agar pelamar dapat menghubungi Anda dengan mudah.</span>
+                  <span className="text-blue-500 font-bold mt-0.5">•</span>
+                  <span className="leading-relaxed">Pastikan mencantumkan <strong className="text-foreground">informasi kontak yang aktif</strong> (Email/WhatsApp) agar pelamar dapat menghubungi Anda dengan mudah.</span>
                 </li>
               </ul>
+              <div className="mt-5">
+                <Link href="/ketentuan-pasang-loker" target="_blank" className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                  Baca Panduan & Ketentuan Selengkapnya <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -604,6 +610,20 @@ export default function QuickPost() {
               </div>
 
             </div>
+          </div>
+
+          {/* PERSETUJUAN KETENTUAN */}
+          <div className="bg-secondary/30 p-4 sm:p-5 border border-border/60 rounded-2xl flex items-start gap-3 sm:mx-0 mx-4">
+            <input 
+              type="checkbox" 
+              id="terms" 
+              name="terms" 
+              required 
+              className="mt-1 w-5 h-5 shrink-0 rounded text-blue-600 focus:ring-blue-500 bg-background border-border/60 cursor-pointer transition-all"
+            />
+            <label htmlFor="terms" className="text-sm font-medium leading-relaxed text-foreground/90 cursor-pointer select-none">
+              Saya telah membaca dan menyetujui <Link href="/ketentuan-pasang-loker" target="_blank" className="text-blue-600 dark:text-blue-400 hover:underline font-bold">Panduan & Ketentuan Pasang Lowongan</Link>. Saya memahami bahwa form ini akan di-review dan jika melanggar dapat ditolak/dihapus.
+            </label>
           </div>
 
           {/* ACTION BUTTONS (Sticky Bottom) */}

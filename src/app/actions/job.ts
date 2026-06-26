@@ -2,6 +2,11 @@
 
 import prisma from "@/lib/prisma";
 import { z } from "zod";
+import { sendEmail } from "@/lib/email";
+import JobSubmittedEmail from "@/emails/JobSubmittedEmail";
+import JobApprovedEmail from "@/emails/JobApprovedEmail";
+import JobRejectedEmail from "@/emails/JobRejectedEmail";
+import { render } from "@react-email/render";
 
 const createJobSchema = z.object({
   isNewCompany: z.boolean(),
@@ -156,8 +161,25 @@ export async function createJobAction(formData: FormData) {
           whatsapp: data.whatsapp || "",
           applicationLink: data.applicationLink || "",
         },
+      },
+      include: {
+        company: true
       }
     });
+
+    // Send email non-blocking
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const manageLink = `${baseUrl}/manage/${newJob.id}`;
+    
+    sendEmail({
+      to: data.email,
+      subject: `Lowongan ${newJob.title} Sedang Direview`,
+      react: JobSubmittedEmail({ 
+        jobTitle: newJob.title, 
+        companyName: newJob.company?.name || "Perusahaan", 
+        manageLink 
+      }) as any,
+    }).catch(console.error);
 
     return { success: true, jobId: newJob.id };
   } catch (error: any) {
@@ -251,10 +273,30 @@ export async function approveJobAction(jobId: string) {
       return { success: false, error: "Unauthorized access" };
     }
 
-    await prisma.job.update({
+    const job = await prisma.job.update({
       where: { id: jobId },
-      data: { status: "approved" }
+      data: { status: "approved" },
+      include: { company: true }
     });
+
+    // Extract email from contacts json or company email
+    const posterEmail = (job.contacts as any)?.email || job.company?.email;
+    
+    if (posterEmail) {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const publicLink = `${baseUrl}/job/${job.id}`;
+      
+      sendEmail({
+        to: posterEmail,
+        subject: `✅ Lowongan ${job.title} Telah Disetujui`,
+        react: JobApprovedEmail({
+          jobTitle: job.title,
+          companyName: job.company?.name || "Perusahaan",
+          publicLink
+        }) as any
+      }).catch(console.error);
+    }
+
     revalidatePath("/admin");
     revalidatePath("/dashboard");
     return { success: true };
@@ -271,10 +313,29 @@ export async function rejectJobAction(jobId: string) {
       return { success: false, error: "Unauthorized access" };
     }
 
-    await prisma.job.update({
+    const job = await prisma.job.update({
       where: { id: jobId },
-      data: { status: "rejected" }
+      data: { status: "rejected" },
+      include: { company: true }
     });
+
+    const posterEmail = (job.contacts as any)?.email || job.company?.email;
+    
+    if (posterEmail) {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const manageLink = `${baseUrl}/manage/${job.id}`;
+      
+      sendEmail({
+        to: posterEmail,
+        subject: `❌ Lowongan ${job.title} Belum Dapat Ditayangkan`,
+        react: JobRejectedEmail({
+          jobTitle: job.title,
+          companyName: job.company?.name || "Perusahaan",
+          manageLink
+        }) as any
+      }).catch(console.error);
+    }
+
     revalidatePath("/admin");
     revalidatePath("/dashboard");
     return { success: true };
