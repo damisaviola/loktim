@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export function Footer() {
@@ -14,12 +15,19 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           {/* Logo & Name */}
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2 text-primary">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white font-bold text-lg shrink-0 shadow-sm">
-                LT
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0 group-hover:scale-105 transition-transform duration-300 overflow-hidden bg-transparent">
+                <Image 
+                  src="/logo.png" 
+                  alt="Logo Loker Timika" 
+                  width={120} 
+                  height={120} 
+                  quality={100}
+                  className="w-full h-full object-cover scale-[1.35]"
+                />
               </div>
               <span className="font-extrabold text-xl tracking-tight text-foreground">
-                Loker<span className="text-primary">Timika</span>
+                Loker<span className="text-[#026CA0] group-hover:text-[#015883] transition-colors">Timika</span>
               </span>
             </Link>
           </div>

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Briefcase, Menu, X, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -24,11 +25,18 @@ export function Navbar() {
         {/* Brand / Logo & Desktop Nav Links */}
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-400 text-white font-black text-lg shrink-0 shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform duration-300">
-              LT
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 group-hover:scale-105 transition-transform duration-300 overflow-hidden bg-transparent">
+              <Image 
+                src="/logo.png" 
+                alt="Logo Loker Timika" 
+                width={120} 
+                height={120} 
+                quality={100}
+                className="w-full h-full object-cover scale-[1.35]"
+              />
             </div>
             <span className="font-black text-xl tracking-tight text-slate-800 transition-colors duration-300 hidden min-[360px]:inline-block">
-              Loker<span className="text-indigo-600 group-hover:text-indigo-500 transition-colors">Timika</span>
+              Loker<span className="text-[#026CA0] group-hover:text-[#015883] transition-colors">Timika</span>
             </span>
           </Link>
 
@@ -62,7 +70,7 @@ export function Navbar() {
               <Button
                 variant="default"
                 size="sm"
-                className="rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 px-5 h-10"
+                className="rounded-xl font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 px-5 h-10"
               >
                 <Briefcase className="w-4 h-4" />
                 <span>Pasang Loker</span>

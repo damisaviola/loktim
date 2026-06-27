@@ -105,9 +105,9 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
     <div className="container mx-auto px-4 lg:px-0 max-w-[1128px]">
 
       {/* Premium Search Banner */}
-      <div className="mt-4 sm:mt-6 w-full bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 rounded-3xl mb-8 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-indigo-500/40 rounded-full blur-[100px] pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-72 h-72 bg-blue-500/30 rounded-full blur-[80px] pointer-events-none"></div>
+      <div className="mt-4 sm:mt-6 w-full bg-gradient-to-br from-primary via-[#015883] to-[#014264] rounded-3xl mb-8 text-white relative overflow-hidden shadow-lg shadow-primary/20">
+        <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-sky-400/30 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-72 h-72 bg-blue-300/20 rounded-full blur-[80px] pointer-events-none"></div>
 
         <div className="p-6 sm:p-10 relative z-10 flex flex-col space-y-5">
 
@@ -130,7 +130,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
               <button
                 type="button"
                 onClick={handleSearchSubmit}
-                className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-auto rounded-xl sm:rounded-full shadow-lg shadow-black/5 bg-white text-indigo-700 hover:bg-indigo-50 hover:scale-105 hover:shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer font-bold text-sm"
+                className="flex-1 sm:flex-none h-12 sm:h-14 px-6 sm:w-auto rounded-xl sm:rounded-full shadow-lg shadow-black/5 bg-white text-primary hover:bg-primary/5 hover:scale-105 hover:shadow-primary/20 flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer font-bold text-sm"
               >
                 <Search className="w-5 h-5" />
                 <span className="sm:hidden">Cari</span>
@@ -169,7 +169,8 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
       </div>
 
       {/* Rekomendasi Section (Horizontal Scroll) */}
-      <div className="mb-10 w-full overflow-hidden">
+      {!searchQuery && activeCategory === 'Semua' && activeType === 'Semua' && (
+        <div className="mb-10 w-full overflow-hidden">
         <div className="flex justify-between items-end mb-4 px-1">
           <div>
             <h2 className="font-bold text-lg sm:text-xl">Rekomendasi untuk Anda</h2>
@@ -208,6 +209,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
           ))}
         </div>
       </div>
+      )}
 
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
 
@@ -219,8 +221,8 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`px-5 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-300 ${activeCategory === cat
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 -translate-y-0.5'
-                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:shadow-sm'
+                  ? 'bg-primary text-white shadow-lg shadow-primary/30 -translate-y-0.5'
+                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 hover:border-primary/40 hover:shadow-sm'
                   }`}
               >
                 {cat}
@@ -233,8 +235,14 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
         <div className={`w-full ${selectedJob ? 'lg:w-[45%]' : 'lg:w-3/4'} flex-1 transition-all duration-300`}>
           <div className="mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 px-1">
             <div>
-              <h2 className="font-bold text-lg sm:text-xl">Lowongan Terbaru</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">Pekerjaan yang baru saja ditambahkan</p>
+              <h2 className="font-bold text-lg sm:text-xl">
+                {searchQuery || activeCategory !== 'Semua' || activeType !== 'Semua' ? 'Hasil Pencarian' : 'Lowongan Terbaru'}
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
+                {searchQuery || activeCategory !== 'Semua' || activeType !== 'Semua' 
+                  ? 'Lowongan yang sesuai dengan kriteria Anda' 
+                  : 'Pekerjaan yang baru saja ditambahkan'}
+              </p>
             </div>
             <span className="text-xs sm:text-sm font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full shrink-0">{filteredJobs.length} Lowongan</span>
           </div>
@@ -364,7 +372,7 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
 
               <div className="p-5 border-t border-slate-200 bg-white/90 backdrop-blur-sm z-10">
                 <Link href={`/job/${selectedJob.id}`} className="block w-full">
-                  <Button size="lg" className="w-full font-bold h-14 rounded-2xl shadow-xl shadow-indigo-600/20 bg-indigo-600 hover:bg-indigo-700 text-white hover:-translate-y-1 transition-all duration-300">
+                  <Button size="lg" className="w-full font-bold h-14 rounded-2xl shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 text-white hover:-translate-y-1 transition-all duration-300">
                     Lihat Selengkapnya & Lamar
                   </Button>
                 </Link>
@@ -379,8 +387,8 @@ export function HomeClient({ initialJobs }: { initialJobs: Job[] }) {
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
                     className={`w-full text-left px-5 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-300 flex items-center justify-between ${activeCategory === cat
-                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 translate-x-2'
-                      : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:shadow-sm'
+                      ? 'bg-primary text-white shadow-lg shadow-primary/30 translate-x-2'
+                      : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 hover:border-primary/40 hover:shadow-sm'
                       }`}
                   >
                     {cat}

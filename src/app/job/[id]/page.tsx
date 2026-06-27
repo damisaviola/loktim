@@ -82,7 +82,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
   };
 
   const gradients = [
-    "from-blue-600 to-indigo-600",
+    "from-blue-600 to-primary",
     "from-emerald-500 to-teal-600",
     "from-purple-600 to-fuchsia-600",
     "from-orange-500 to-amber-500",

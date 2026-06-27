@@ -16,7 +16,7 @@ export default function Icon() {
       <div
         style={{
           fontSize: 20,
-          background: '#1c4ed8', // var(--primary) in light mode
+          background: '#026ca0', // var(--primary) in light mode
           width: '100%',
           height: '100%',
           display: 'flex',

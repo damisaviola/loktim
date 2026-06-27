@@ -4,6 +4,8 @@ import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { getUserSession } from './auth'
 import { jobs as dummyJobs } from '@/lib/dummy-data'
+import { sendEmail } from '@/lib/email'
+import JobReportedEmail from '@/emails/JobReportedEmail'
 
 export async function reportJobAction(jobId: string, reason: string, details?: string) {
   try {
@@ -34,6 +36,20 @@ export async function reportJobAction(jobId: string, reason: string, details?: s
         status: 'pending'
       }
     })
+
+    const adminEmail = process.env.ADMIN_EMAIL || 'damimaturbongs@gmail.com';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    
+    sendEmail({
+      to: adminEmail,
+      subject: `🚨 Laporan Lowongan Baru: ${jobExists.title}`,
+      react: JobReportedEmail({
+        jobTitle: jobExists.title,
+        reportReason: reason,
+        reportDetails: details || undefined,
+        adminLink: `${baseUrl}/admin` 
+      }) as any
+    }).catch(console.error);
 
     return { success: true }
   } catch (error: any) {

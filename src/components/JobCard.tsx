@@ -41,8 +41,8 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
   const isExpired = job.deadline ? new Date(job.deadline) < new Date() : false;
   
   const cardClasses = isPremium
-    ? `bg-indigo-50/40 border border-indigo-200 shadow-sm hover:shadow-indigo-500/15`
-    : `bg-white border border-slate-200 hover:border-indigo-200 hover:shadow-indigo-500/10`;
+    ? `bg-primary/5 border border-primary/20 shadow-sm hover:shadow-primary/15`
+    : `bg-white border border-slate-200 hover:border-primary/20 hover:shadow-primary/10`;
 
   return (
     <div className={`${cardClasses} rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 group relative flex flex-col sm:flex-row gap-3 sm:gap-5 ${className || ''} overflow-hidden`}>
@@ -50,7 +50,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
       {isPremium && (
         <div className="absolute top-0 right-0 z-10">
           <div
-            className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-2 rounded-bl-xl shadow-sm border-l border-b border-blue-400/30 flex items-center justify-center"
+            className="bg-gradient-to-br from-blue-500 to-primary text-white p-2 rounded-bl-xl shadow-sm border-l border-b border-blue-400/30 flex items-center justify-center"
             title="Lowongan Promosi"
           >
             <Sparkles className="w-4 h-4 fill-white/20" />
@@ -61,7 +61,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
       {/* Mobile Top Row (Logo + Title) & Desktop Logo */}
       <div className="flex gap-3.5 sm:block items-start shrink-0">
         <Link href={`/job/${job.id}`} onClick={handleClick} className="shrink-0 relative z-10">
-          <div className={`relative w-12 h-12 sm:w-16 sm:h-16 bg-white border ${isPremium ? 'border-indigo-200 shadow-indigo-500/20' : 'border-slate-100'} flex items-center justify-center overflow-hidden rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300`}>
+          <div className={`relative w-12 h-12 sm:w-16 sm:h-16 bg-white border ${isPremium ? 'border-primary/20 shadow-primary/20' : 'border-slate-100'} flex items-center justify-center overflow-hidden rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300`}>
             {(job.imageUrl || job.company?.logoUrl) ? (
               <Image src={(job.imageUrl || job.company?.logoUrl) as string} alt={job.company?.name || "Logo"} fill sizes="(max-width: 640px) 48px, 64px" className="object-contain p-1" />
             ) : (
@@ -179,8 +179,11 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
         {/* Localized Badges for authentic, non-AI look */}
         <div className="flex flex-wrap items-center gap-2 mt-3 mb-4">
           {isExpired && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-700 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 px-2.5 py-0.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-600 dark:bg-red-500"></span>
+            <span className="inline-flex items-center gap-2 text-xs font-bold text-red-700 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 px-3 py-1 rounded-full shadow-sm">
+              <span className="relative flex w-2.5 h-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full w-2.5 h-2.5 bg-red-600 dark:bg-red-500"></span>
+              </span>
               Lowongan Ditutup
             </span>
           )}
@@ -235,7 +238,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
               </button>
             )}
             <Link href={`/job/${job.id}`}>
-              <button className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors text-center cursor-pointer group-hover:translate-x-1 duration-300 flex items-center gap-1">
+              <button className="text-sm font-bold text-primary hover:text-primary/80 transition-colors text-center cursor-pointer group-hover:translate-x-1 duration-300 flex items-center gap-1">
                 Lihat Detail
               </button>
             </Link>
