@@ -35,6 +35,7 @@ export interface Job {
     email?: string;
     applicationLink?: string;
   };
+  deadline?: string | Date | null;
 }
 
 export interface User {

@@ -14,8 +14,8 @@ export default function KetentuanPasangLoker() {
       
       {/* Header */}
       <header className="mb-16">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold tracking-wide uppercase mb-6">
-          <Info className="w-3.5 h-3.5" /> Panduan Pengguna
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold tracking-wide uppercase mb-6 shadow-sm">
+          <Info className="w-4 h-4" /> Panduan Pengguna
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground mb-6 leading-tight">
           Ketentuan Pasang <span className="text-blue-600">Lowongan</span>

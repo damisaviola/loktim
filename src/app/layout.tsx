@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import NextTopLoader from "nextjs-toploader";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="id" className={`h-full antialiased ${plusJakartaSans.variable}`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary" suppressHydrationWarning>
+        <NextTopLoader color="#0066cc" showSpinner={false} />
         <Navbar />
         <MainLayoutWrapper>
           {children}

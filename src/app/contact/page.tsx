@@ -41,7 +41,7 @@ export default function ContactPage() {
           Kembali
         </Link>
         <div className="flex items-center gap-2">
-          <Bug className="w-5 h-5 text-indigo-600" />
+          <Bug className="w-5 h-5 text-primary" />
           <span className="font-bold text-sm tracking-widest uppercase text-slate-500">Laporan Bug</span>
         </div>
       </div>
@@ -61,7 +61,7 @@ export default function ContactPage() {
             <Button 
               onClick={() => setIsSubmitted(false)} 
               variant="outline"
-              className="h-12 px-8 rounded-full font-semibold border-slate-200 hover:bg-slate-50 hover:border-indigo-200 hover:text-indigo-600 transition-all"
+              className="h-12 px-8 rounded-full font-semibold border-slate-200 hover:bg-slate-50 hover:border-primary/40 hover:text-primary transition-all"
             >
               Laporkan Bug Lainnya
             </Button>
@@ -91,7 +91,7 @@ export default function ContactPage() {
                     id="name"
                     required
                     placeholder="John Doe"
-                    className="w-full h-14 px-5 bg-white border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-indigo-200"
+                    className="w-full h-14 px-5 bg-white border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-primary/40"
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                   />
@@ -107,7 +107,7 @@ export default function ContactPage() {
                     id="email"
                     required
                     placeholder="john@example.com"
-                    className="w-full h-14 px-5 bg-white border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-indigo-200"
+                    className="w-full h-14 px-5 bg-white border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-primary/40"
                     value={formData.email}
                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                   />
@@ -128,7 +128,7 @@ export default function ContactPage() {
                     id="subject"
                     required
                     placeholder="Contoh: Gagal mengunggah logo perusahaan"
-                    className="w-full h-14 pl-14 pr-5 bg-white border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-indigo-200"
+                    className="w-full h-14 pl-14 pr-5 bg-white border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-primary/40"
                     value={formData.subject}
                     onChange={e => setFormData({ ...formData, subject: e.target.value })}
                   />
@@ -148,7 +148,7 @@ export default function ContactPage() {
                   required
                   rows={6}
                   placeholder="Ceritakan langkah-langkah yang Anda lakukan sebelum error muncul..."
-                  className="w-full px-5 py-4 bg-white border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-3xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all resize-y min-h-[160px] shadow-sm hover:border-indigo-200"
+                  className="w-full px-5 py-4 bg-white border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-3xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all resize-y min-h-[160px] shadow-sm hover:border-primary/40"
                   value={formData.message}
                   onChange={e => setFormData({ ...formData, message: e.target.value })}
                 ></textarea>
@@ -159,7 +159,7 @@ export default function ContactPage() {
                 <Button 
                   type="submit" 
                   disabled={isLoading} 
-                  className="w-full sm:w-auto h-14 px-10 rounded-full font-bold text-base flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:-translate-y-1 transition-all duration-300"
+                  className="w-full sm:w-auto h-14 px-10 rounded-full font-bold text-base flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all duration-300"
                 >
                   {isLoading ? 'Mengirim Laporan...' : (
                     <>
