@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.5.3",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -19,6 +20,7 @@
     "@supabase/supabase-js": "^2.107.0",
     "bcryptjs": "^3.0.3",
     "browser-image-compression": "^2.0.2",
+    "isomorphic-dompurify": "^3.18.0",
     "jose": "^6.2.3",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",

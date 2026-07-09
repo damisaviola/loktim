@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Briefcase, Menu, X, Bookmark } from 'lucide-react';
+import { Briefcase, Menu, X, Bookmark, Search } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export function Navbar() {
@@ -15,6 +15,7 @@ export function Navbar() {
   if (pathname?.startsWith('/admin') || pathname === '/login') return null;
 
   const navLinks = [
+    { href: "/jobs", label: "Cari Lowongan", icon: <Search className="w-5 h-5" />, active: pathname === "/jobs" || pathname?.startsWith("/job/") },
     { href: "/tersimpan", label: "Tersimpan", icon: <Bookmark className="w-5 h-5" />, active: pathname === "/tersimpan" },
   ];
 
@@ -31,7 +32,6 @@ export function Navbar() {
                 alt="Logo Loker Timika" 
                 width={120} 
                 height={120} 
-                quality={100}
                 className="w-full h-full object-cover scale-[1.35]"
               />
             </div>

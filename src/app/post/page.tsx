@@ -32,6 +32,23 @@ export default function QuickPost() {
   const [email, setEmail] = useState("");
   const [debouncedEmail, setDebouncedEmail] = useState("");
 
+  const [salaryMinDisplay, setSalaryMinDisplay] = useState("");
+  const [salaryMaxDisplay, setSalaryMaxDisplay] = useState("");
+
+  const formatRupiah = (value: string) => {
+    const numberString = value.replace(/\D/g, "");
+    if (!numberString) return "";
+    return parseInt(numberString, 10).toLocaleString("id-ID");
+  };
+
+  const handleSalaryMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSalaryMinDisplay(formatRupiah(e.target.value));
+  };
+
+  const handleSalaryMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSalaryMaxDisplay(formatRupiah(e.target.value));
+  };
+
   const supabase = createClient();
 
   useEffect(() => {
@@ -289,25 +306,29 @@ export default function QuickPost() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground/90 block flex justify-between items-center">
-                    Gaji Minimal (Rp) <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                    Gaji Minimal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none gap-2">
                       <Wallet className="h-5 w-5 text-muted-foreground/60" />
+                      <span className="text-muted-foreground font-semibold">Rp</span>
                     </div>
-                    <input name="salaryMin" type="number" placeholder="Cth: 5000000" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
+                    <input type="hidden" name="salaryMin" value={salaryMinDisplay.replace(/\D/g, "")} />
+                    <input type="text" value={salaryMinDisplay} onChange={handleSalaryMinChange} placeholder="5.000.000" className="w-full h-14 pl-[5.5rem] pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground/90 block flex justify-between items-center">
-                    Gaji Maksimal (Rp) <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                    Gaji Maksimal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none gap-2">
                       <Wallet className="h-5 w-5 text-muted-foreground/60" />
+                      <span className="text-muted-foreground font-semibold">Rp</span>
                     </div>
-                    <input name="salaryMax" type="number" placeholder="Cth: 8000000" className="w-full h-14 pl-12 pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
+                    <input type="hidden" name="salaryMax" value={salaryMaxDisplay.replace(/\D/g, "")} />
+                    <input type="text" value={salaryMaxDisplay} onChange={handleSalaryMaxChange} placeholder="8.000.000" className="w-full h-14 pl-[5.5rem] pr-4 bg-secondary/30 border border-border/60 hover:border-border rounded-xl text-base text-foreground focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium placeholder:font-normal placeholder:text-muted-foreground/50" />
                   </div>
                 </div>
               </div>

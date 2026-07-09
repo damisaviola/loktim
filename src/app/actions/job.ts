@@ -7,6 +7,11 @@ import JobSubmittedEmail from "@/emails/JobSubmittedEmail";
 import JobApprovedEmail from "@/emails/JobApprovedEmail";
 import JobRejectedEmail from "@/emails/JobRejectedEmail";
 import { render } from "@react-email/render";
+import DOMPurify from "isomorphic-dompurify";
+import { headers } from "next/headers";
+
+// Rate limiting in-memory map
+const rateLimitMap = new Map<string, { count: number, resetAt: number }>();
 
 const createJobSchema = z.object({
   isNewCompany: z.boolean(),
@@ -67,6 +72,25 @@ export async function getCompaniesByEmailAction(email: string) {
 
 export async function createJobAction(formData: FormData) {
   try {
+    // Basic IP-based Rate Limiting (3 jobs per 10 minutes)
+    const headersList = await headers();
+    const ip = headersList.get("x-forwarded-for") || "unknown-ip";
+    const now = Date.now();
+    
+    if (ip !== "unknown-ip") {
+      const rateData = rateLimitMap.get(ip) || { count: 0, resetAt: now + 10 * 60 * 1000 };
+      if (now > rateData.resetAt) {
+        rateData.count = 1;
+        rateData.resetAt = now + 10 * 60 * 1000;
+      } else {
+        rateData.count++;
+      }
+      rateLimitMap.set(ip, rateData);
+
+      if (rateData.count > 3) {
+        return { success: false, error: "Terlalu banyak permintaan. Silakan coba lagi dalam 10 menit." };
+      }
+    }
     const rawData = {
       isNewCompany: formData.get("isNewCompany") === "true",
       companyId: formData.get("companyId") as string | null,
@@ -132,24 +156,26 @@ export async function createJobAction(formData: FormData) {
     const salaryMax = data.salaryMaxStr ? parseInt(data.salaryMaxStr, 10) : null;
     const deadline = data.deadlineStr ? new Date(data.deadlineStr) : null;
 
-    // Sanitize requirements
+    // Sanitize requirements and description to prevent XSS
+    const cleanDescription = DOMPurify.sanitize(data.description);
+    
     const requirements = data.requirementsRaw
       .replace(/<\/p>|<\/li>|<br\s*\/?>/gi, '\n')
       .split('\n')
-      .map(r => r.trim().replace(/<[^>]*>/g, ""))
+      .map(r => DOMPurify.sanitize(r.trim().replace(/<[^>]*>/g, "")))
       .filter(r => r.length > 0);
 
     const newJob = await prisma.job.create({
       data: {
         title: data.title,
         category: data.category,
-        description: data.description,
+        description: cleanDescription,
         requirements,
         type: data.type,
         education: data.education || "Semua",
         experience: data.experience || "Tanpa Pengalaman",
         gender: data.gender || "Pria/Wanita",
-        ageRange: data.ageRange && data.ageRange !== "Bebas" ? `${data.ageRange} Tahun` : "Bebas",
+        ageRange: data.ageRange && data.ageRange !== "Bebas" ? `Maks. ${data.ageRange.replace(/\D/g, "")} Tahun` : "Bebas",
         companyId: finalCompanyId,
         salaryMin,
         salaryMax,
@@ -229,7 +255,7 @@ export async function updateJobAction(jobId: string, formData: FormData) {
       education: rawData.education || "Semua",
       experience: rawData.experience || "Tanpa Pengalaman",
       gender: rawData.gender || "Pria/Wanita",
-      ageRange: rawData.ageRange && rawData.ageRange !== "Bebas" ? `${rawData.ageRange.replace(" Tahun", "")} Tahun` : "Bebas",
+      ageRange: rawData.ageRange && rawData.ageRange !== "Bebas" ? `Maks. ${rawData.ageRange.replace(/\D/g, "")} Tahun` : "Bebas",
       salaryMin,
       salaryMax,
       deadline,
@@ -476,3 +502,33 @@ export async function getAdminCategoriesAction() {
   }
 }
 
+export async function closeJobAction(jobId: string) {
+  try {
+    const job = await prisma.job.findUnique({
+      where: { id: jobId }
+    });
+
+    if (!job) {
+      return { success: false, error: "Lowongan tidak ditemukan" };
+    }
+
+    await prisma.job.update({
+      where: { id: jobId },
+      data: { status: "closed" }
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/jobs");
+    revalidatePath("/admin/jobs/active");
+    revalidatePath("/admin/jobs/pending");
+    revalidatePath("/dashboard");
+    revalidatePath("/");
+    revalidatePath(`/manage/${jobId}`);
+    revalidatePath(`/job/${jobId}`);
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to close job:", error);
+    return { success: false, error: error.message || "Failed to close job" };
+  }
+}

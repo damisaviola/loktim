@@ -39,13 +39,13 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
 
   const isPremium = job.isPremium;
   const isExpired = job.deadline ? new Date(job.deadline) < new Date() : false;
-  
+
   const cardClasses = isPremium
-    ? `bg-primary/5 border border-primary/20 shadow-sm hover:shadow-primary/15`
-    : `bg-white border border-slate-200 hover:border-primary/20 hover:shadow-primary/10`;
+    ? `bg-primary/5 border border-primary/10 hover:shadow-md`
+    : `bg-white border border-slate-100 hover:border-slate-200 hover:shadow-md`;
 
   return (
-    <div className={`${cardClasses} rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 group relative flex flex-col sm:flex-row gap-3 sm:gap-5 ${className || ''} overflow-hidden`}>
+    <div className={`${cardClasses} rounded-2xl p-6 sm:p-7 transition-all duration-300 hover:-translate-y-0.5 group relative flex flex-col sm:flex-row gap-5 sm:gap-6 ${className || ''} overflow-hidden`}>
 
       {isPremium && (
         <div className="absolute top-0 right-0 z-10">
@@ -74,14 +74,14 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
         <div className="sm:hidden flex-1 min-w-0 pr-12">
           <div className="flex justify-between items-start gap-2">
             <Link href={`/job/${job.id}`} onClick={handleClick} className="min-w-0 flex-1 relative z-10">
-              <h3 className="text-base font-bold text-primary group-hover:underline truncate leading-snug">
+              <h3 className="text-base font-extrabold text-slate-900 group-hover:text-primary transition-colors truncate leading-snug">
                 {job.title}
               </h3>
             </Link>
           </div>
-          <div className="flex items-center gap-1.5 text-sm font-bold text-foreground mt-0.5">
+          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500 mt-1">
             <Building2 className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
-            <Link 
+            <Link
               href={`/perusahaan/${job.companyId || job.company?.id || ''}`}
               className="truncate hover:underline"
               onClick={(e) => e.stopPropagation()}
@@ -99,14 +99,14 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
         <div className="hidden sm:block pr-12">
           <div className="flex justify-between items-start gap-2">
             <Link href={`/job/${job.id}`} onClick={handleClick} className="min-w-0 flex-1">
-              <h3 className="text-lg font-bold text-primary group-hover:underline truncate leading-snug">
+              <h3 className="text-lg font-extrabold text-slate-900 group-hover:text-primary transition-colors truncate leading-snug">
                 {job.title}
               </h3>
             </Link>
           </div>
-          <div className="flex items-center gap-1.5 text-sm font-bold text-foreground mt-1.5 mb-2.5">
+          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500 mt-1.5 mb-3">
             <Building2 className="w-4 h-4 shrink-0 text-muted-foreground" />
-            <Link 
+            <Link
               href={`/perusahaan/${job.companyId || job.company?.id || ''}`}
               className="hover:underline cursor-pointer"
               onClick={(e) => e.stopPropagation()}
@@ -117,7 +117,7 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-0">
+        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-slate-500 mt-2 sm:mt-0 font-medium">
           {job.company?.location && (
             <div className="flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 shrink-0" />
@@ -163,12 +163,12 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
           <span className="text-muted-foreground/50">•</span>
           <div className="flex items-center gap-1">
             <Briefcase className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-[#057642] font-semibold">{job.type}</span>
+            <span className="text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md">{job.type}</span>
           </div>
           {salary && (
             <>
               <span className="text-muted-foreground/50 hidden sm:inline">•</span>
-              <div className="flex items-center gap-1 text-[#057642] font-semibold bg-[#e6f4ea] px-2 py-0.5 rounded-md text-xs sm:text-sm">
+              <div className="flex items-center gap-1.5 text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md text-xs sm:text-sm">
                 <Banknote className="w-3.5 h-3.5 shrink-0 hidden sm:block" />
                 <span>{salary}</span>
               </div>
@@ -221,9 +221,9 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
             <span className="text-xs text-muted-foreground" suppressHydrationWarning>{formatTimeAgo(job.postedAt)}</span>
             <span className="text-xs text-muted-foreground hidden sm:inline mx-1">•</span>
             {isExpired ? (
-              <span className="text-xs text-red-600 dark:text-red-400 font-bold hidden sm:inline">Telah Berakhir</span>
+              <span className="text-xs text-red-500 font-semibold hidden sm:inline">Telah Berakhir</span>
             ) : (
-              <span className="text-xs text-[#057642] font-semibold hidden sm:inline">Jadilah pelamar pertama</span>
+              <span className="text-xs text-primary font-medium hidden sm:inline">Aktif</span>
             )}
           </div>
           <div className="flex items-center gap-4 mt-2 sm:mt-0 w-full sm:w-auto justify-end">

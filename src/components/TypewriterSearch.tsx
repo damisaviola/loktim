@@ -55,7 +55,7 @@ export function TypewriterSearch({ searchQuery, onSearchChange, onSearchSubmit }
 
   return (
     <div className="relative flex-1">
-      <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70" />
+      <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
       <input
         type="text"
         value={searchQuery}
@@ -68,12 +68,12 @@ export function TypewriterSearch({ searchQuery, onSearchChange, onSearchSubmit }
         }}
         placeholder={placeholderText ? `${placeholderText}|` : "|"}
         aria-label="Cari lowongan pekerjaan"
-        className="w-full h-12 sm:h-14 pl-12 pr-10 bg-transparent border-none focus:ring-0 focus:outline-none text-sm sm:text-base text-white font-medium placeholder:text-white/60 transition-all"
+        className="w-full h-12 sm:h-14 pl-12 pr-10 bg-transparent border-none focus:ring-0 focus:outline-none text-sm sm:text-base text-slate-900 font-medium placeholder:text-slate-400 transition-all"
       />
       {searchQuery && (
         <button
           onClick={() => onSearchChange('')}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-white/80 bg-white/20 hover:bg-white/30 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors"
           aria-label="Hapus pencarian"
         >
           <X className="w-4 h-4" />

@@ -33,6 +33,25 @@ export default function EditJobFormModal({ open, onOpenChange, job }: EditJobFor
   const [applicationLink, setApplicationLink] = useState(job.contacts?.applicationLink || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const formatRupiah = (value: string | number | null | undefined) => {
+    if (!value) return "";
+    const str = value.toString();
+    const numberString = str.replace(/\D/g, "");
+    if (!numberString) return "";
+    return parseInt(numberString, 10).toLocaleString("id-ID");
+  };
+
+  const [salaryMinDisplay, setSalaryMinDisplay] = useState(formatRupiah(job.salaryMin));
+  const [salaryMaxDisplay, setSalaryMaxDisplay] = useState(formatRupiah(job.salaryMax));
+
+  const handleSalaryMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSalaryMinDisplay(formatRupiah(e.target.value));
+  };
+
+  const handleSalaryMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSalaryMaxDisplay(formatRupiah(e.target.value));
+  };
+
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(job.imageUrl || null);
   const supabase = createClient();
@@ -193,25 +212,29 @@ export default function EditJobFormModal({ open, onOpenChange, job }: EditJobFor
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground/80 block flex justify-between items-center">
-                    Gaji Minimal (Rp) <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                    Gaji Minimal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none gap-1.5">
                       <Wallet className="h-4 w-4 text-muted-foreground/60" />
+                      <span className="text-muted-foreground font-semibold text-sm">Rp</span>
                     </div>
-                    <input name="salaryMin" type="number" defaultValue={job.salaryMin || ""} placeholder="Cth: 5000000" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                    <input type="hidden" name="salaryMin" value={salaryMinDisplay.replace(/\D/g, "")} />
+                    <input type="text" value={salaryMinDisplay} onChange={handleSalaryMinChange} placeholder="5.000.000" className="w-full h-11 pl-[4.5rem] pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
                   </div>
                 </div>
                 
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground/80 block flex justify-between items-center">
-                    Gaji Maksimal (Rp) <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
+                    Gaji Maksimal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none gap-1.5">
                       <Wallet className="h-4 w-4 text-muted-foreground/60" />
+                      <span className="text-muted-foreground font-semibold text-sm">Rp</span>
                     </div>
-                    <input name="salaryMax" type="number" defaultValue={job.salaryMax || ""} placeholder="Cth: 8000000" className="w-full h-11 pl-10 pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
+                    <input type="hidden" name="salaryMax" value={salaryMaxDisplay.replace(/\D/g, "")} />
+                    <input type="text" value={salaryMaxDisplay} onChange={handleSalaryMaxChange} placeholder="8.000.000" className="w-full h-11 pl-[4.5rem] pr-3.5 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60" />
                   </div>
                 </div>
               </div>

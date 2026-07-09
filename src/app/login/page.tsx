@@ -11,7 +11,8 @@ import {
   Loader2, 
   CheckCircle2,
   ShieldCheck,
-  ChevronLeft
+  ChevronLeft,
+  Briefcase
 } from 'lucide-react';
 import { loginAction } from '@/app/actions/auth';
 import Link from 'next/link';
@@ -31,7 +32,6 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
-
     setStatus('loading');
     
     const formData = new FormData();
@@ -56,58 +56,46 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950 selection:bg-indigo-500/30 font-sans">
+    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-white font-sans selection:bg-primary/30">
       
-      {/* Background Effects */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-violet-600/10 blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-600/10 blur-[100px] rounded-full pointer-events-none" />
+      {/* LEFT SIDE - FORM */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 relative min-h-screen">
         
-        {/* Subtle Grid Pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style={{
-            backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
-          }}
-        />
-      </div>
-
-      {/* Back to Home Button */}
-      <Link 
-        href="/" 
-        className="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-300 backdrop-blur-md text-sm font-medium group"
-      >
-        <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-        Kembali ke Beranda
-      </Link>
-
-      {/* Form Container */}
-      <div className="relative z-10 w-full max-w-[420px] p-6 animate-in fade-in zoom-in-95 duration-500">
-        
-        {/* Logo & Header */}
-        <div className="flex flex-col items-center mb-8 text-center">
-          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-xl shadow-indigo-500/20 mb-6 relative">
-            <div className="absolute inset-0 rounded-2xl border border-white/20"></div>
-            <ShieldCheck className="w-8 h-8 text-white drop-shadow-md" />
+        {/* Back to Home Button - Absolute on top left */}
+        <Link 
+          href="/" 
+          className="absolute top-8 left-8 flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors text-sm font-medium group"
+        >
+          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+            <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-            Secure Portal
-          </h1>
-          <p className="text-slate-400 text-sm font-medium">
-            Sistem Manajemen LokerTimika
-          </p>
-        </div>
+          Kembali
+        </Link>
 
-        {/* The Glassmorphism Card */}
-        <div className="relative rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 p-8 shadow-2xl overflow-hidden">
+        <div className="w-full max-w-[420px] mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
           
-          {/* Subtle top highlight */}
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-400/50 to-transparent"></div>
+          {/* Mobile Logo (Visible only on small screens) */}
+          <div className="lg:hidden flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+              <Briefcase className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold text-slate-900 tracking-tight">LokerTimika</span>
+          </div>
+
+          <div className="mb-10">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">
+              Masuk ke Portal
+            </h1>
+            <p className="text-slate-500 font-medium">
+              Silakan masukkan kredensial admin Anda untuk mengelola lowongan.
+            </p>
+          </div>
 
           {errorMsg && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium flex items-center justify-center animate-in slide-in-from-top-2">
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium flex items-center gap-3 animate-in slide-in-from-top-2">
+              <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-4 h-4 text-red-600" />
+              </div>
               {errorMsg}
             </div>
           )}
@@ -115,33 +103,35 @@ export default function AdminLoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             
             {/* Username Field */}
-            <div className="space-y-2.5">
-              <label className="text-[13px] font-semibold text-slate-300 uppercase tracking-wider">
+            <div className="space-y-2">
+              <label className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">
                 Username
               </label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors duration-300">
-                  <User className="w-4.5 h-4.5" />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors duration-300">
+                  <User className="w-5 h-5" />
                 </div>
                 <input 
                   type="text" 
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="admin" 
-                  className="w-full h-12 pl-11 pr-4 rounded-xl bg-slate-900/50 border border-white/10 focus:bg-slate-900/80 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 text-sm text-white placeholder:text-slate-600 transition-all duration-300 shadow-inner"
+                  placeholder="Masukkan username admin" 
+                  className="w-full h-14 pl-12 pr-4 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-[15px] text-slate-900 placeholder:text-slate-400 transition-all duration-300"
                 />
               </div>
             </div>
 
             {/* Password Field */}
-            <div className="space-y-2.5">
-              <label className="text-[13px] font-semibold text-slate-300 uppercase tracking-wider">
-                Kata Sandi
-              </label>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">
+                  Kata Sandi
+                </label>
+              </div>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors duration-300">
-                  <Lock className="w-4.5 h-4.5" />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors duration-300">
+                  <Lock className="w-5 h-5" />
                 </div>
                 <input 
                   type={showPassword ? "text" : "password"} 
@@ -149,14 +139,14 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••" 
-                  className="w-full h-12 pl-11 pr-11 rounded-xl bg-slate-900/50 border border-white/10 focus:bg-slate-900/80 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 text-sm text-white placeholder:text-slate-600 transition-all duration-300 shadow-inner"
+                  className="w-full h-14 pl-12 pr-12 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-[15px] text-slate-900 placeholder:text-slate-400 transition-all duration-300"
                 />
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer focus:outline-none p-1.5 rounded-lg hover:bg-white/5 transition-colors duration-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer focus:outline-none p-2 rounded-lg hover:bg-slate-100 transition-colors duration-200"
                 >
-                  {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
@@ -165,14 +155,14 @@ export default function AdminLoginPage() {
             <button 
               type="submit"
               disabled={status !== 'idle'}
-              className="relative w-full h-12 mt-6 rounded-xl font-bold text-[15px] text-white overflow-hidden group transition-all duration-300 disabled:opacity-80 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40"
+              className="relative w-full h-14 mt-8 rounded-xl font-bold text-[15px] text-white overflow-hidden group transition-all duration-300 disabled:opacity-80 disabled:cursor-not-allowed shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-violet-600 group-hover:scale-[1.02] transition-transform duration-300"></div>
+              <div className="absolute inset-0 bg-primary group-hover:brightness-110 transition-all duration-300"></div>
               <div className="relative flex items-center justify-center gap-2 h-full">
                 {status === 'loading' ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Otentikasi...</span>
+                    <span>Memverifikasi...</span>
                   </>
                 ) : status === 'success' ? (
                   <>
@@ -181,25 +171,78 @@ export default function AdminLoginPage() {
                   </>
                 ) : (
                   <>
-                    <span>Masuk ke Sistem</span>
-                    <ArrowRight className="w-4.5 h-4.5 opacity-90 group-hover:translate-x-1 transition-transform duration-300" />
+                    <span>Masuk Sekarang</span>
+                    <ArrowRight className="w-5 h-5 opacity-90 group-hover:translate-x-1 transition-transform duration-300" />
                   </>
                 )}
               </div>
             </button>
           </form>
           
+          {/* Footer info */}
+          <div className="mt-12 text-center">
+            <p className="text-sm font-medium text-slate-500">
+              © {new Date().getFullYear()} LokerTimika. Hak Cipta Dilindungi.
+            </p>
+          </div>
         </div>
-        
-        {/* Footer info */}
-        <div className="mt-8 text-center">
-          <p className="text-xs font-medium text-slate-500">
-            Akses dibatasi hanya untuk administrator sistem.<br/>
-            Segala aktivitas dicatat dan dipantau.
-          </p>
+      </div>
+
+      {/* RIGHT SIDE - BRANDING / VISUAL (Hidden on Mobile) */}
+      <div className="hidden lg:flex w-1/2 bg-primary relative items-center justify-center p-12 overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-10">
+          <div className="absolute top-[-10%] right-[-10%] w-96 h-96 rounded-full bg-white blur-3xl"></div>
+          <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 rounded-full bg-black blur-3xl"></div>
         </div>
 
+        {/* Abstract Pattern overlay */}
+        <div className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }}
+        ></div>
+
+        {/* Floating Glass Card (Visual Centerpiece) */}
+        <div className="relative z-10 w-full max-w-lg">
+          <div className="flex items-center gap-3 mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-xl">
+              <ShieldCheck className="w-8 h-8 text-white" />
+            </div>
+            <span className="text-3xl font-bold text-white tracking-tight">Admin<span className="text-white/70">Panel</span></span>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+            <h2 className="text-3xl font-bold text-white mb-4 leading-snug">
+              Pusat Kendali<br/>LokerTimika
+            </h2>
+            <p className="text-white/80 text-lg leading-relaxed mb-8">
+              Kelola lowongan pekerjaan, tinjau perusahaan, dan pastikan ekosistem rekrutmen di Mimika berjalan dengan aman, transparan, dan profesional.
+            </p>
+            
+            {/* Feature Pills */}
+            <div className="flex flex-wrap gap-3">
+              <div className="px-4 py-2 rounded-full bg-white/20 text-white text-sm font-medium border border-white/10 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                Moderasi Cepat
+              </div>
+              <div className="px-4 py-2 rounded-full bg-white/20 text-white text-sm font-medium border border-white/10 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                Akses Terenkripsi
+              </div>
+              <div className="px-4 py-2 rounded-full bg-white/20 text-white text-sm font-medium border border-white/10 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                Sistem Otomatis
+              </div>
+            </div>
+          </div>
+          
+          {/* Simple decoration */}
+          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-gradient-to-br from-white/20 to-white/0 rounded-full blur-2xl animate-pulse"></div>
+        </div>
       </div>
+      
     </div>
   );
 }
