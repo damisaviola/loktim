@@ -103,150 +103,170 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
   const isExpired = job.deadline ? new Date(job.deadline) < new Date() : false;
 
   return (
-    <div className="container mx-auto px-4 lg:px-0 max-w-[1128px] mt-4 mb-24 sm:mb-10">
+    <div className="container mx-auto px-4 lg:px-0 max-w-[1200px] mt-4 mb-24 sm:mb-10 py-6">
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content - Job Details */}
-        <div className="lg:col-span-2">
-          <div className="bg-card rounded-lg border border-border overflow-hidden">
-
+        <div className="lg:col-span-2 space-y-6">
+          
+          {/* Header Bento */}
+          <div className="bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-[24px]">
             {/* Header Banner */}
-            <div className={`h-24 sm:h-32 relative bg-gradient-to-r ${bgGradient}`}>
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white to-transparent"></div>
-              <div className="absolute -bottom-8 sm:-bottom-10 left-4 sm:left-6 w-16 h-16 sm:w-20 sm:h-20 bg-white border-2 border-white rounded-md overflow-hidden shadow-sm flex items-center justify-center z-10">
-                {(job.imageUrl || job.company?.logoUrl) ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={job.imageUrl || job.company?.logoUrl} alt={job.company?.name || "Company Logo"} className="w-full h-full object-contain p-1" />
-                ) : (
-                  <Building2 className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
-                )}
-              </div>
+            <div className={`h-24 sm:h-32 relative bg-primary rounded-t-[24px] overflow-hidden`}>
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-400 to-transparent"></div>
             </div>
 
-            <div className="pt-12 sm:pt-14 px-4 sm:px-6 pb-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold">{job.title}</h1>
-                  <div className="mt-2 text-sm flex flex-wrap gap-2 sm:gap-3 items-center">
-                    <span className="font-bold flex items-center gap-1.5 hover:underline cursor-pointer text-primary">
-                      <Building2 className="w-4 h-4 shrink-0" />
-                      {job.company?.name}
-                    </span>
-                    <span className="text-muted-foreground hidden sm:inline text-xs mt-0.5"> • </span>
-                    <span className="text-muted-foreground">Diposting: {new Date(job.postedAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                    {job.deadline && (
-                      <>
-                        <span className="text-muted-foreground hidden sm:inline text-xs mt-0.5"> • </span>
-                        <span className={`font-medium ${isExpired ? 'text-red-500' : 'text-orange-500'}`}>
-                          Batas Lamaran: {new Date(job.deadline).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
-                        </span>
-                      </>
-                    )}
-                  </div>
+            <div className="px-6 sm:px-8 pb-8 relative">
+              <div className="absolute -top-12 left-6 sm:left-8 w-20 h-20 sm:w-24 sm:h-24 bg-white border-4 border-white rounded-2xl overflow-hidden shadow-sm flex items-center justify-center z-10">
+                {(job.imageUrl || job.company?.logoUrl) ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={job.imageUrl || job.company?.logoUrl} alt={job.company?.name || "Company Logo"} className="w-full h-full object-contain p-2" />
+                ) : (
+                  <Building2 className="w-10 h-10 sm:w-12 sm:h-12 text-slate-300" />
+                )}
+              </div>
 
-                  <div className="flex flex-wrap items-center gap-2 mt-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4 shrink-0" />
-                      <span>{job.company?.location}</span>
-                    </div>
-                    {job.education && (
-                      <>
-                        <span className="text-muted-foreground/60">•</span>
-                        <div className="flex items-center gap-1.5">
-                          <GraduationCap className="w-4 h-4 shrink-0" />
-                          <span>{job.education === 'Semua' ? 'Semua Pendidikan' : `Min. ${job.education}`}</span>
-                        </div>
-                      </>
-                    )}
-                    {job.gender && (
-                      <>
-                        <span className="text-muted-foreground/60">•</span>
-                        <div className="flex items-center gap-1.5">
-                          <Users className="w-4 h-4 shrink-0" />
-                          <span>{job.gender}</span>
-                        </div>
-                      </>
-                    )}
-                    {job.ageRange && (
-                      <>
-                        <span className="text-muted-foreground/60">•</span>
-                        <div className="flex items-center gap-1.5">
-                          <CalendarRange className="w-4 h-4 shrink-0" />
-                          <span>{job.ageRange}</span>
-                        </div>
-                      </>
-                    )}
-                    <span className="text-muted-foreground/60">•</span>
-                    <div className="flex items-center gap-1.5">
-                      <Briefcase className="w-4 h-4 shrink-0" />
-                      <span>{job.type}</span>
-                    </div>
-                    <span className="text-muted-foreground/60">•</span>
-                    <div className="flex items-center gap-1.5 text-foreground font-medium">
-                      <Banknote className="w-4 h-4 shrink-0" />
-                      <span>{formatSalary(job.salaryMin, job.salaryMax)}</span>
+              <div className="pt-14 sm:pt-16">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight mb-2">{job.title}</h1>
+                    <div className="text-sm flex flex-wrap gap-2 sm:gap-3 items-center">
+                      <Link href={`/perusahaan/${job.companyId || job.company?.id || ''}`} className="font-bold flex items-center gap-1.5 hover:text-blue-600 cursor-pointer text-slate-600 transition-colors">
+                        <Building2 className="w-4 h-4 shrink-0" />
+                        {job.company?.name}
+                      </Link>
+                      <span className="text-slate-300 hidden sm:inline text-xs mt-0.5"> • </span>
+                      <span className="text-slate-500 font-medium">Diposting: {new Date(job.postedAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                      {job.deadline && (
+                        <>
+                          <span className="text-slate-300 hidden sm:inline text-xs mt-0.5"> • </span>
+                          <span className={`font-bold ${isExpired ? 'text-red-500' : 'text-orange-500'}`}>
+                            Batas: {new Date(job.deadline).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Desktop Action Buttons */}
-              <div className="mt-8 hidden sm:flex flex-row gap-3 w-full">
-                <ApplyModal job={job} isExpired={isExpired} />
+                {/* Micro Bento Info Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-8">
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60 flex items-center gap-3">
+                     <MapPin className="w-5 h-5 text-slate-400 shrink-0" />
+                     <div className="min-w-0">
+                       <span className="block text-[10px] font-bold uppercase text-slate-400">Lokasi</span>
+                       <span className="text-sm font-semibold text-slate-700 truncate block">{job.company?.location}</span>
+                     </div>
+                  </div>
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60 flex items-center gap-3">
+                     <Briefcase className="w-5 h-5 text-slate-400 shrink-0" />
+                     <div className="min-w-0">
+                       <span className="block text-[10px] font-bold uppercase text-slate-400">Tipe</span>
+                       <span className="text-sm font-semibold text-slate-700 truncate block">{job.type}</span>
+                     </div>
+                  </div>
+                  {job.education && (
+                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60 flex items-center gap-3">
+                      <GraduationCap className="w-5 h-5 text-slate-400 shrink-0" />
+                      <div className="min-w-0">
+                        <span className="block text-[10px] font-bold uppercase text-slate-400">Pendidikan</span>
+                        <span className="text-sm font-semibold text-slate-700 truncate block">{job.education === 'Semua' ? 'Semua' : job.education}</span>
+                      </div>
+                    </div>
+                  )}
+                  {job.salaryMin && (
+                    <div className="bg-emerald-50/50 rounded-xl p-3 border border-emerald-100/60 flex items-center gap-3">
+                      <Banknote className="w-5 h-5 text-emerald-500 shrink-0" />
+                      <div className="min-w-0">
+                        <span className="block text-[10px] font-bold uppercase text-emerald-600/70">Gaji</span>
+                        <span className="text-sm font-bold text-emerald-700 block whitespace-nowrap overflow-hidden text-ellipsis" title={job.salaryMax && job.salaryMax !== job.salaryMin ? `${formatSalary(job.salaryMin)} - ${formatSalary(job.salaryMax)}` : formatSalary(job.salaryMin)}>
+                          {job.salaryMax && job.salaryMax !== job.salaryMin
+                            ? `${formatSalary(job.salaryMin)} - ${formatSalary(job.salaryMax)}`
+                            : formatSalary(job.salaryMin)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {job.gender && (
+                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60 flex items-center gap-3">
+                      <Users className="w-5 h-5 text-slate-400 shrink-0" />
+                      <div className="min-w-0">
+                        <span className="block text-[10px] font-bold uppercase text-slate-400">Gender</span>
+                        <span className="text-sm font-semibold text-slate-700 truncate block">{job.gender}</span>
+                      </div>
+                    </div>
+                  )}
+                  {job.ageRange && (
+                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60 flex items-center gap-3">
+                      <CalendarRange className="w-5 h-5 text-slate-400 shrink-0" />
+                      <div className="min-w-0">
+                        <span className="block text-[10px] font-bold uppercase text-slate-400">Usia</span>
+                        <span className="text-sm font-semibold text-slate-700 truncate block">{job.ageRange}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-                <ShareButton title={job.title} className="rounded-full w-12 h-12 shrink-0 relative" />
-                <JobMoreOptions jobId={job.id} />
+                {/* Desktop Action Buttons */}
+                <div className="mt-8 hidden sm:flex flex-row gap-3 w-full">
+                  <ApplyModal job={job} isExpired={isExpired} />
+                  <ShareButton title={job.title} className="rounded-xl w-12 h-12 shrink-0 relative bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 shadow-sm" />
+                  <JobMoreOptions jobId={job.id} />
+                </div>
               </div>
             </div>
+          </div>
 
-            <hr className="border-border" />
+          {/* Description Bento */}
+          <div className="bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-[24px] p-6 sm:p-8">
+            <h2 className="text-xl font-bold mb-6 text-slate-900">Tentang Pekerjaan</h2>
+            <div
+              className="text-slate-600 leading-relaxed mb-8 prose prose-slate max-w-none prose-p:mb-4 prose-ul:mb-4 prose-li:my-1"
+              dangerouslySetInnerHTML={{ __html: job.description }}
+            />
 
-            <div className="p-4 sm:p-6">
-              <h2 className="text-lg sm:text-xl font-bold mb-4">Tentang Pekerjaan</h2>
-              <div
-                className="text-sm leading-relaxed mb-6 [&>p]:mb-4 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-4 [&>li]:mb-1"
-                dangerouslySetInnerHTML={{ __html: job.description }}
-              />
-
-              <h3 className="text-base font-bold mb-3">Persyaratan Khusus:</h3>
-              <ul className="list-disc pl-5 space-y-2 text-sm mb-2">
-                {job.requirements?.map((req: string, i: number) => (
-                  <li key={i}>{req}</li>
-                ))}
-              </ul>
-            </div>
+            {job.requirements && job.requirements.length > 0 && (
+              <>
+                <h3 className="text-base font-bold mb-4 text-slate-900 uppercase tracking-wide text-sm">Persyaratan Khusus:</h3>
+                <ul className="list-disc pl-5 space-y-2 text-slate-600 mb-2">
+                  {job.requirements.map((req: string, i: number) => (
+                    <li key={i}>{req}</li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
         </div>
 
         {/* Sidebar Left - Company info & Ads */}
-        <div className="lg:col-span-1 space-y-4">
-          <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
-            <h2 className="font-bold text-lg mb-4">Tentang Perusahaan</h2>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-white border border-border flex items-center justify-center shrink-0">
+        <div className="lg:col-span-1 space-y-6">
+          <div className="bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-[24px] p-6">
+            <h2 className="font-bold text-lg mb-5 text-slate-900">Tentang Perusahaan</h2>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-14 h-14 bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 rounded-2xl">
                 {(job.imageUrl || job.company?.logoUrl) ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={job.imageUrl || job.company?.logoUrl} alt={job.company?.name || "Company Logo"} className="w-full h-full object-contain p-1" />
+                  <img src={job.imageUrl || job.company?.logoUrl} alt={job.company?.name || "Company Logo"} className="w-full h-full object-contain p-2" />
                 ) : (
-                  <Building2 className="w-6 h-6 text-muted-foreground" />
+                  <Building2 className="w-6 h-6 text-slate-300" />
                 )}
               </div>
-              <div className="font-semibold hover:underline cursor-pointer text-primary leading-tight">
+              <div className="font-bold hover:text-blue-600 transition-colors cursor-pointer text-slate-900 leading-tight">
                 {job.company?.name}
               </div>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-slate-600 mb-6 leading-relaxed">
               {job.company?.about || `${job.company?.name} adalah perusahaan terkemuka yang berlokasi di ${job.company?.location}.`}
             </p>
             <Link href={`/perusahaan/${job.companyId || job.company?.id || ''}`} className="block w-full">
-              <Button variant="outline" className="w-full font-bold">
-                Lihat Semua Lowongan ({companyJobs.length + 1})
-              </Button>
+              <button className="w-full h-10 border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold rounded-xl transition-colors text-sm">
+                Lihat Lowongan Lainnya ({companyJobs.length + 1})
+              </button>
             </Link>
           </div>
 
-          <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
-            <h2 className="font-bold text-lg mb-4">Rekomendasi Lowongan</h2>
+          <div className="bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-[24px] p-6">
+            <h2 className="font-bold text-lg mb-5 text-slate-900">Rekomendasi</h2>
             <div className="flex flex-col gap-4">
               {jobs
                 .filter(j => j.id !== job.id)
@@ -261,36 +281,36 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                 .sort((a, b) => b._score - a._score)
                 .slice(0, 4)
                 .map(relatedJob => (
-                  <Link key={relatedJob.id} href={`/job/${relatedJob.id}`} className="group flex items-start gap-3 border-b border-border last:border-0 pb-3 last:pb-0">
-                    <div className="w-10 h-10 shrink-0 bg-white border border-border flex items-center justify-center overflow-hidden rounded-sm mt-0.5">
+                  <Link key={relatedJob.id} href={`/job/${relatedJob.id}`} className="group flex items-start gap-3 border-b border-slate-100 last:border-0 pb-4 last:pb-0">
+                    <div className="w-12 h-12 shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden rounded-xl mt-0.5 transition-transform group-hover:scale-105">
                       {relatedJob.company?.logoUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={relatedJob.company.logoUrl} alt={relatedJob.company.name} className="w-full h-full object-contain p-1" />
+                        <img src={relatedJob.company.logoUrl} alt={relatedJob.company.name} className="w-full h-full object-contain p-2" />
                       ) : (
-                        <Building2 className="w-5 h-5 text-muted-foreground" />
+                        <Building2 className="w-5 h-5 text-slate-300" />
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-primary group-hover:underline text-sm leading-tight mb-1 truncate">{relatedJob.title}</h3>
-                      <div className="text-xs text-foreground font-medium mb-1 truncate">{relatedJob.company?.name}</div>
-                      <div className="text-xs text-muted-foreground flex items-center gap-1 truncate">
+                    <div className="flex-1 min-w-0 pt-0.5">
+                      <h3 className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors text-sm leading-tight mb-1 truncate">{relatedJob.title}</h3>
+                      <div className="text-xs text-slate-600 font-medium mb-1 truncate">{relatedJob.company?.name}</div>
+                      <div className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1 truncate">
                         <MapPin className="w-3 h-3 shrink-0" /> {relatedJob.company?.location}
                       </div>
                     </div>
                   </Link>
                 ))}
             </div>
-            <Button variant="ghost" className="w-full text-sm font-bold mt-4 text-muted-foreground">Lihat Semua</Button>
+            <button className="w-full text-sm font-bold mt-2 text-slate-500 hover:text-slate-900 transition-colors">Lihat Semua</button>
           </div>
         </div>
 
       </div>
 
       {/* Mobile Sticky Bottom Action Bar */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 flex flex-row gap-2 z-50 shadow-[0_-8px_15px_-3px_rgba(0,0,0,0.05)] dark:shadow-none">
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 flex flex-row gap-2 z-50 shadow-[0_-8px_24px_rgba(0,0,0,0.06)]">
         <ApplyModal job={job} isMobile={true} isExpired={isExpired} />
 
-        <ShareButton title={job.title} className="rounded-full w-12 h-12 shrink-0 relative bg-card" />
+        <ShareButton title={job.title} className="rounded-xl w-12 h-12 shrink-0 relative bg-slate-50 border border-slate-200 text-slate-600" />
         <JobMoreOptions jobId={job.id} />
       </div>
 

@@ -2,72 +2,40 @@ import { Skeleton } from "./ui/Skeleton";
 
 export function JobCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={`bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row gap-3 sm:gap-5 overflow-hidden relative ${className || ''}`}>
+    <div className={`bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-[24px] p-5 sm:p-6 flex flex-col gap-4 sm:gap-5 ${className || ''}`}>
       
-      {/* Mobile Top Row (Logo + Title) & Desktop Logo */}
-      <div className="flex gap-3.5 sm:block items-start shrink-0">
-        <div className="shrink-0">
-          <Skeleton className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl" />
-        </div>
-        
-        {/* Mobile Title & Company */}
-        <div className="sm:hidden flex-1 min-w-0 pr-12">
-          <Skeleton className="h-5 w-[80%] mb-2" />
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <Skeleton className="w-3.5 h-3.5 rounded-full shrink-0" />
-            <Skeleton className="h-4 w-[60%]" />
+      {/* Top Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-4 flex-1 min-w-0">
+          <Skeleton className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shrink-0" />
+
+          <div className="flex-1 min-w-0 pt-1">
+            <Skeleton className="h-4 w-32 mb-2" />
+            <Skeleton className="h-5 sm:h-6 w-[80%] max-w-[250px]" />
           </div>
         </div>
+
+        {/* Bookmark Button */}
+        <Skeleton className="w-10 h-10 rounded-xl shrink-0" />
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 min-w-0 w-full flex flex-col relative z-10">
-        
-        {/* Desktop Title & Company */}
-        <div className="hidden sm:block pr-12">
-          <Skeleton className="h-6 w-[70%] max-w-[400px] mb-2" />
-          <div className="flex items-center gap-1.5 mt-1.5 mb-2.5">
-            <Skeleton className="w-4 h-4 rounded-full shrink-0" />
-            <Skeleton className="h-4 w-[40%] max-w-[200px]" />
-          </div>
+      {/* Bento Stats Grid */}
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+        <Skeleton className="h-9 w-full sm:w-28 rounded-xl" />
+        <Skeleton className="h-9 w-full sm:w-24 rounded-xl" />
+        <Skeleton className="h-9 w-full sm:w-32 rounded-xl col-span-2 sm:col-span-1" />
+        <Skeleton className="h-9 w-full sm:w-28 rounded-xl hidden sm:block" />
+      </div>
+
+      {/* Tags and Footer */}
+      <div className="mt-auto pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <Skeleton className="h-6 w-12 rounded-md" />
+          <Skeleton className="h-6 w-12 rounded-md" />
+          <Skeleton className="h-4 w-16 ml-1" />
         </div>
 
-        {/* Tags */}
-        <div className="flex flex-wrap items-center gap-1.5 mt-1 sm:mt-0">
-          <div className="flex items-center gap-1">
-            <Skeleton className="w-3.5 h-3.5 rounded-full shrink-0" />
-            <Skeleton className="h-4 w-20 sm:w-24" />
-          </div>
-          <span className="text-muted-foreground/30">•</span>
-          <div className="flex items-center gap-1">
-            <Skeleton className="w-3.5 h-3.5 rounded-full shrink-0" />
-            <Skeleton className="h-4 w-24 sm:w-32" />
-          </div>
-          <span className="text-muted-foreground/30">•</span>
-          <div className="flex items-center gap-1">
-            <Skeleton className="w-3.5 h-3.5 rounded-full shrink-0" />
-            <Skeleton className="h-4 w-16 sm:w-20" />
-          </div>
-        </div>
-
-        {/* Localized Badges */}
-        <div className="flex flex-wrap items-center gap-2 mt-3 mb-4">
-          <Skeleton className="h-5 w-32 rounded-full" />
-          <Skeleton className="h-5 w-24 rounded-full" />
-        </div>
-
-        {/* Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t border-border/50">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-3 w-24" />
-            <span className="text-muted-foreground/30 hidden sm:inline mx-1">•</span>
-            <Skeleton className="h-3 w-32 hidden sm:inline" />
-          </div>
-          <div className="flex items-center gap-4 mt-2 sm:mt-0 w-full sm:w-auto justify-end">
-            <Skeleton className="h-4 w-16 hidden sm:block" />
-            <Skeleton className="h-4 w-20 sm:w-24" />
-          </div>
-        </div>
+        <Skeleton className="h-10 w-full sm:w-24 rounded-xl shrink-0 mt-2 sm:mt-0" />
       </div>
     </div>
   );

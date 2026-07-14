@@ -102,47 +102,79 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
   }, [initialJobs]);
 
   return (
-    <div className="container mx-auto px-4 lg:px-0 max-w-[1128px]">
+    <div className="container mx-auto px-4 lg:px-0 max-w-[1200px] py-6">
 
-      {/* Compact Search Header for Jobs Page */}
-      <div className="mt-4 w-full mb-10 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="w-full md:w-auto">
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
-              Cari Lowongan Kerja
+      {/* Bento Header */}
+      <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="bg-primary text-white rounded-[24px] p-6 sm:p-8 flex flex-col justify-center shadow-sm relative overflow-hidden">
+          <div className="relative z-10">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-2">
+              Cari Karier
             </h1>
-            <p className="text-base text-slate-500 font-medium mt-2">
-              Temukan pekerjaan impian Anda di kawasan Mimika
+            <p className="text-blue-100 font-medium mb-6">
+              Temukan pekerjaan impian di Mimika
             </p>
+            <div className="flex gap-5 items-center">
+              <div className="flex flex-col">
+                <span className="text-2xl font-black text-white">450+</span>
+                <span className="text-[11px] font-semibold text-blue-200 uppercase tracking-wider">Lowongan</span>
+              </div>
+              <div className="w-px h-8 bg-white/20"></div>
+              <div className="flex flex-col">
+                <span className="text-2xl font-black text-white">82</span>
+                <span className="text-[11px] font-semibold text-blue-200 uppercase tracking-wider">Perusahaan</span>
+              </div>
+            </div>
+          </div>
+          {/* Decorative elements */}
+          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-blue-400/20 blur-3xl rounded-full"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-2xl rounded-full mix-blend-overlay"></div>
+        </div>
+
+        <div className="bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-[24px] p-5 sm:p-8 lg:col-span-2 flex flex-col justify-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-50/50 to-transparent pointer-events-none"></div>
+          <div className="flex flex-col sm:flex-row gap-3 w-full relative z-10">
+            <div className="flex-1 bg-slate-50 border border-slate-100 rounded-xl px-2 shadow-inner">
+              <TypewriterSearch
+                searchQuery={inputValue}
+                onSearchChange={handleSearchChange}
+                onSearchSubmit={handleSearchSubmit}
+              />
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                type="button"
+                className="h-12 w-12 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center transition-colors shadow-sm lg:hidden"
+                onClick={() => setIsFilterOpen(true)}
+              >
+                <Settings2 className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={handleSearchSubmit}
+                className="flex-1 sm:flex-none h-12 px-6 rounded-xl bg-primary hover:bg-primary/90 text-white shadow-[0_4px_12px_rgba(2,108,160,0.2)] flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 font-bold"
+              >
+                <Search className="w-4 h-4" />
+                <span className="sm:hidden">Cari</span>
+              </button>
+            </div>
           </div>
 
-          <div className="w-full md:flex-1 max-w-xl">
-            <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center bg-slate-50 p-1.5 rounded-2xl sm:rounded-full border border-slate-200">
-              <div className="flex-1 px-2">
-                <TypewriterSearch
-                  searchQuery={inputValue}
-                  onSearchChange={handleSearchChange}
-                  onSearchSubmit={handleSearchSubmit}
-                />
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <button
-                  type="button"
-                  className="h-12 w-12 sm:h-12 sm:w-12 rounded-xl sm:rounded-full shrink-0 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shadow-sm"
-                  onClick={() => setIsFilterOpen(true)}
-                  title="Filter Lanjutan"
+          <div className="mt-4 hidden sm:flex items-center gap-3 relative z-10">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Populer:</span>
+            <div className="flex gap-2">
+              {['Freeport', 'Admin', 'Operator', 'IT Support'].map(kw => (
+                <button 
+                  key={kw} 
+                  onClick={() => {
+                    handleSearchChange(kw);
+                    setTimeout(() => handleSearchSubmit(), 100);
+                  }} 
+                  className="px-3 py-1.5 bg-slate-50/80 border border-slate-200/80 rounded-lg text-xs font-bold text-slate-600 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm"
                 >
-                  <Settings2 className="w-5 h-5" />
+                  {kw}
                 </button>
-                <button
-                  type="button"
-                  onClick={handleSearchSubmit}
-                  className="flex-1 sm:flex-none h-12 sm:h-12 px-8 rounded-xl sm:rounded-full bg-primary hover:bg-primary/90 text-white shadow-sm flex items-center justify-center gap-2 transition-all hover-lift cursor-pointer font-bold"
-                >
-                  <Search className="w-4 h-4" />
-                  <span className="sm:hidden">Cari</span>
-                </button>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -150,36 +182,33 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
 
       {/* Rekomendasi Section (Horizontal Scroll) */}
       {!searchQuery && activeCategory === 'Semua' && activeType === 'Semua' && (
-        <div className="mb-10 w-full overflow-hidden">
-          <div className="flex justify-between items-end mb-4 px-1">
+        <div className="mb-6 w-full">
+          <div className="flex justify-between items-end mb-3 px-1">
             <div>
-              <h2 className="font-bold text-lg sm:text-xl">Rekomendasi untuk Anda</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">Berdasarkan profil dan riwayat pencarian</p>
+              <h2 className="font-bold text-lg text-slate-900">Rekomendasi</h2>
             </div>
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1.5">
               <button
                 onClick={() => scrollCarousel('left')}
-                className="w-10 h-10 rounded-full border border-border/60 flex items-center justify-center bg-card hover:bg-secondary shadow-sm transition-colors text-muted-foreground hover:text-foreground"
-                aria-label="Scroll left"
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center bg-white hover:bg-slate-50 transition-colors text-slate-500"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => scrollCarousel('right')}
-                className="w-10 h-10 rounded-full border border-border/60 flex items-center justify-center bg-card hover:bg-secondary shadow-sm transition-colors text-muted-foreground hover:text-foreground"
-                aria-label="Scroll right"
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center bg-white hover:bg-slate-50 transition-colors text-slate-500"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
           <div
             ref={carouselRef}
-            className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 px-1 -mx-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            className="flex items-stretch gap-4 overflow-x-auto pb-4 pt-1 px-1 -mx-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {latestJobs.map(job => (
-              <div key={`latest-${job.id}`} className="w-[85vw] sm:w-[350px] shrink-0 flex">
+              <div key={`latest-${job.id}`} className="w-[85vw] sm:w-[340px] shrink-0 flex">
                 <JobCard
                   job={job}
                   onClick={setSelectedJob}
@@ -191,19 +220,61 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+      {/* Main Grid Layout */}
+      <div className="flex flex-col lg:flex-row gap-6">
+
+        {/* Left Sidebar - Filters (Desktop) */}
+        <div className="hidden lg:flex flex-col w-[260px] shrink-0 gap-4">
+          <div className="bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-[24px] p-5 sticky top-24">
+            <h3 className="font-bold text-base text-slate-900 mb-4">Kategori</h3>
+            <div className="flex flex-col gap-1.5">
+              {jobCategories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                    activeCategory === cat
+                      ? 'bg-primary text-white'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+            
+            <hr className="my-6 border-slate-100" />
+            
+            <h3 className="font-bold text-base text-slate-900 mb-4">Tipe Pekerjaan</h3>
+            <div className="flex flex-col gap-2.5">
+              {jobTypes.map((type) => (
+                <label key={type} className="flex items-center gap-3 text-sm text-slate-600 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="jobType"
+                    checked={activeType === type}
+                    onChange={() => setActiveType(type as any)}
+                    className="w-4 h-4 text-blue-600 accent-blue-600"
+                  />
+                  {type}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Category Filter - Mobile */}
-        <div className="w-full overflow-x-auto pb-4 pt-2 px-2 -mx-2 lg:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="flex gap-3 min-w-max">
+        <div className="w-full overflow-x-auto pb-4 pt-1 px-1 -mx-1 lg:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex gap-2.5 min-w-max">
             {jobCategories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-6 py-2.5 rounded-full whitespace-nowrap text-sm font-semibold transition-all duration-300 ${activeCategory === cat
-                  ? 'bg-slate-900 text-white shadow-md -translate-y-0.5'
-                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 hover:border-slate-300'
-                  }`}
+                className={`px-5 py-2 rounded-xl whitespace-nowrap text-sm font-semibold transition-all ${
+                  activeCategory === cat
+                    ? 'bg-primary text-white'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                }`}
               >
                 {cat}
               </button>
@@ -211,23 +282,18 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
           </div>
         </div>
 
-        {/* Main Content - Feed */}
-        <div className={`w-full ${selectedJob ? 'lg:w-[45%]' : 'lg:w-3/4'} flex-1 transition-all duration-300`}>
-          <div className="mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 px-1">
-            <div>
-              <h2 className="font-bold text-lg sm:text-xl">
-                {searchQuery || activeCategory !== 'Semua' || activeType !== 'Semua' ? 'Hasil Pencarian' : 'Lowongan Terbaru'}
-              </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
-                {searchQuery || activeCategory !== 'Semua' || activeType !== 'Semua'
-                  ? 'Lowongan yang sesuai dengan kriteria Anda'
-                  : 'Pekerjaan yang baru saja ditambahkan'}
-              </p>
-            </div>
-            <span className="text-xs sm:text-sm font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full shrink-0">{filteredJobs.length} Lowongan</span>
+        {/* Main Feed */}
+        <div className={`flex-1 transition-all duration-300 min-w-0`}>
+          <div className="mb-4 flex flex-col sm:flex-row sm:items-end justify-between items-start gap-2 px-1">
+            <h2 className="font-bold text-lg text-slate-900">
+              {searchQuery || activeCategory !== 'Semua' || activeType !== 'Semua' ? 'Hasil Pencarian' : 'Semua Lowongan'}
+            </h2>
+            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg shrink-0">
+              {filteredJobs.length} Lowongan
+            </span>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <JobCardSkeleton key={i} />
@@ -237,17 +303,17 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                 <JobCard key={job.id} job={job} onClick={setSelectedJob} />
               ))
             ) : (
-              <div className="py-16 px-6 flex flex-col items-center justify-center text-center bg-card/50 rounded-2xl border border-border/60 border-dashed my-4">
-                <div className="w-24 h-24 bg-blue-50 dark:bg-blue-950/30 rounded-full flex items-center justify-center mb-5 text-blue-500">
-                  <SearchX className="w-12 h-12" />
+              <div className="py-16 px-6 flex flex-col items-center justify-center text-center bg-white rounded-[24px] border border-slate-200 border-dashed">
+                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4">
+                  <SearchX className="w-8 h-8 text-slate-400" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">Pekerjaan tidak ditemukan</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6 leading-relaxed">
-                  Maaf, kami tidak dapat menemukan lowongan yang sesuai dengan kata kunci atau filter pencarian Anda. Coba gunakan kata kunci lain atau hapus beberapa filter.
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Tidak ditemukan</h3>
+                <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
+                  Coba sesuaikan filter atau kata kunci pencarian Anda.
                 </p>
                 <Button
                   variant="outline"
-                  className="font-semibold rounded-full px-6 border-border hover:bg-secondary transition-colors"
+                  className="font-semibold rounded-xl"
                   onClick={() => {
                     setInputValue('');
                     setSearchQuery('');
@@ -258,75 +324,209 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                     setActiveDate('Semua');
                   }}
                 >
-                  Hapus Semua Filter
+                  Reset Filter
                 </Button>
               </div>
             )}
           </div>
 
           {!isLoading && visibleCount < filteredJobs.length && (
-            <div className="mt-4 text-center">
-              <Button
+            <div className="mt-6 text-center">
+              <button
                 onClick={() => setVisibleCount(filteredJobs.length)}
-                variant="outline"
-                className="w-full sm:w-auto px-8 rounded-full border-primary text-primary hover:bg-primary/5 font-bold"
+                className="w-full sm:w-auto px-6 py-3 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold transition-colors text-sm shadow-sm bg-white"
               >
                 Tampilkan lebih banyak
-              </Button>
+              </button>
             </div>
           )}
         </div>
 
-        {/* Right Sidebar - Desktop Categories or Job Details */}
-        <div className={`hidden lg:flex flex-col ${selectedJob ? 'lg:w-[55%]' : 'w-1/4'} shrink-0 transition-all duration-300`}>
-          {selectedJob ? (
-            <div className="sticky top-24 bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col h-[calc(100vh-8rem)] animate-in fade-in slide-in-from-right-4 duration-500">
-              <div className="flex justify-between items-center p-6 pb-4 bg-white z-10">
-                <h2 className="text-lg font-bold">Detail Pekerjaan</h2>
-                <button onClick={() => setSelectedJob(null)} className="p-1 rounded-full hover:bg-slate-100 transition-colors">
-                  <X className="w-6 h-6 text-muted-foreground" />
+        {/* Right Sidebar - Job Details (Desktop Bento) */}
+        {selectedJob && (
+          <div className="hidden lg:flex flex-col w-[380px] shrink-0 transition-all duration-300">
+            <div className="sticky top-24 bg-white rounded-[24px] border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col h-[calc(100vh-7rem)] animate-in fade-in slide-in-from-right-4">
+              
+              {/* Header */}
+              <div className="flex justify-between items-center p-5 border-b border-slate-100 bg-white/80 backdrop-blur z-10">
+                <h2 className="font-bold text-slate-900">Detail</h2>
+                <button onClick={() => setSelectedJob(null)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="overflow-y-auto flex-1 p-6 lg:p-8 bg-white">
-                <div className="flex items-start gap-5 mb-8">
-                  <div className="relative w-16 h-16 bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden rounded-2xl shrink-0 mt-1">
+              {/* Scrollable Content */}
+              <div className="overflow-y-auto flex-1 p-6">
+                
+                {/* Title Section */}
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="relative w-14 h-14 bg-white border border-slate-100 flex items-center justify-center rounded-2xl shrink-0 shadow-sm">
                     {selectedJob.company?.logoUrl ? (
-                      <Image src={selectedJob.company.logoUrl as string} alt={selectedJob.company.name} fill sizes="64px" className="object-contain p-1" />
+                      <Image src={selectedJob.company.logoUrl as string} alt={selectedJob.company.name} fill sizes="56px" className="object-contain p-2" />
                     ) : (
-                      <Building2 className="w-8 h-8 text-muted-foreground" />
+                      <Building2 className="w-6 h-6 text-slate-300" />
                     )}
                   </div>
                   <div>
-                    <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-900 leading-tight">{selectedJob.title}</h1>
-                    <div className="flex items-center gap-2 text-slate-600 mt-2.5">
-                      <Building2 className="w-4 h-4 shrink-0" />
-                      <span className="font-semibold text-sm lg:text-base">{selectedJob.company?.name}</span>
+                    <h1 className="text-xl font-bold text-slate-900 leading-tight mb-1">{selectedJob.title}</h1>
+                    <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
+                      <Building2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>{selectedJob.company?.name}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4 text-sm bg-slate-50/50 p-6 rounded-2xl border border-slate-100 mb-8">
-                  <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                    <span className="text-muted-foreground">Lokasi</span>
-                    <span className="font-semibold text-right">{selectedJob.company?.location}</span>
+                {/* Micro Bento Info Grid */}
+                <div className="grid grid-cols-2 gap-2 mb-6">
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <span className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Lokasi</span>
+                    <span className="text-sm font-semibold text-slate-700">{selectedJob.company?.location}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                    <span className="text-muted-foreground">Tipe</span>
-                    <span className="font-semibold text-[#057642] text-right">{selectedJob.type}</span>
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <span className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Tipe</span>
+                    <span className="text-sm font-semibold text-slate-700">{selectedJob.type}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                    <span className="text-muted-foreground">Pengalaman</span>
-                    <span className="font-semibold text-right">{selectedJob.experience}</span>
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <span className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Pengalaman</span>
+                    <span className="text-sm font-semibold text-slate-700">{selectedJob.experience}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-muted-foreground">Pendidikan</span>
-                    <span className="font-semibold text-right">{selectedJob.education}</span>
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <span className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Pendidikan</span>
+                    <span className="text-sm font-semibold text-slate-700">{selectedJob.education}</span>
                   </div>
                   {selectedJob.salaryMin && (
-                    <div className="flex justify-between items-center py-2 border-t border-slate-100">
-                      <span className="text-muted-foreground">Gaji</span>
-                      <span className="font-semibold text-[#057642] text-right">
+                    <div className="bg-emerald-50/50 rounded-xl p-3 border border-emerald-100/60 col-span-2">
+                      <span className="block text-[10px] font-bold uppercase text-emerald-600/70 mb-1">Gaji</span>
+                      <span className="text-sm font-bold text-emerald-700">
+                        {selectedJob.salaryMax && selectedJob.salaryMax !== selectedJob.salaryMin
+                          ? `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')} - Rp ${selectedJob.salaryMax.toLocaleString('id-ID')}`
+                          : `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')}`}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-3 text-sm uppercase tracking-wider">Deskripsi Pekerjaan</h3>
+                  {selectedJob.description ? (
+                    <div
+                      className="text-slate-600 text-sm leading-relaxed prose prose-sm prose-slate max-w-none prose-p:mb-3 prose-ul:mb-3 prose-li:my-0.5"
+                      dangerouslySetInnerHTML={{ __html: selectedJob.description }}
+                    />
+                  ) : (
+                    <div className="text-slate-500 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
+                      Deskripsi tidak tersedia.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Footer */}
+              <div className="p-5 bg-white border-t border-slate-100 z-10">
+                <Link href={`/job/${selectedJob.id}`} className="block w-full">
+                  <button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors shadow-sm">
+                    Lamar Pekerjaan
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Filter Modal */}
+      {isFilterOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-primary/40 backdrop-blur-sm">
+          <div className="bg-white w-full sm:max-w-md max-h-[85vh] rounded-t-[24px] sm:rounded-[24px] p-5 flex flex-col relative animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300 shadow-2xl">
+            <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-100">
+              <h2 className="font-bold text-lg">Filter</h2>
+              <button onClick={() => setIsFilterOpen(false)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="overflow-y-auto flex-1 space-y-6 pb-20">
+              <div>
+                <h3 className="font-bold text-sm text-slate-900 mb-3 uppercase tracking-wide">Tipe Pekerjaan</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {jobTypes.map((type) => (
+                    <label key={type} className={`flex items-center justify-center p-3 rounded-xl border cursor-pointer transition-colors text-sm font-semibold ${activeType === type ? 'bg-primary border-slate-900 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+                      <input
+                        type="radio"
+                        name="jobTypeMobile"
+                        checked={activeType === type}
+                        onChange={() => setActiveType(type as any)}
+                        className="hidden"
+                      />
+                      {type}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              {/* Additional filters can be added here in similar bento style */}
+            </div>
+
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-100 sm:rounded-b-[24px]">
+              <button className="w-full font-bold h-12 rounded-xl bg-primary text-white" onClick={() => setIsFilterOpen(false)}>
+                Terapkan ({filteredJobs.length})
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Job Detail Side Drawer (Mobile Only) */}
+      {selectedJob && (
+        <div className="lg:hidden">
+          <div className="fixed inset-0 z-[110] bg-primary/40 backdrop-blur-sm transition-opacity animate-in fade-in duration-300" onClick={() => setSelectedJob(null)} />
+          <div className="fixed inset-y-0 right-0 z-[120] w-full max-w-md bg-white shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b border-slate-100">
+              <h2 className="font-bold">Detail</h2>
+              <button onClick={() => setSelectedJob(null)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {/* Same content as desktop drawer */}
+            <div className="overflow-y-auto flex-1 p-5">
+              <div className="flex items-start gap-4 mb-6">
+                  <div className="relative w-14 h-14 bg-white border border-slate-100 flex items-center justify-center rounded-2xl shrink-0 shadow-sm">
+                    {selectedJob.company?.logoUrl ? (
+                      <Image src={selectedJob.company.logoUrl as string} alt={selectedJob.company.name} fill sizes="56px" className="object-contain p-2" />
+                    ) : (
+                      <Building2 className="w-6 h-6 text-slate-300" />
+                    )}
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-bold text-slate-900 leading-tight mb-1">{selectedJob.title}</h1>
+                    <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
+                      <Building2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>{selectedJob.company?.name}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 mb-6">
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <span className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Lokasi</span>
+                    <span className="text-sm font-semibold text-slate-700">{selectedJob.company?.location}</span>
+                  </div>
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <span className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Tipe</span>
+                    <span className="text-sm font-semibold text-slate-700">{selectedJob.type}</span>
+                  </div>
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <span className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Pengalaman</span>
+                    <span className="text-sm font-semibold text-slate-700">{selectedJob.experience}</span>
+                  </div>
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100/60">
+                    <span className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Pendidikan</span>
+                    <span className="text-sm font-semibold text-slate-700">{selectedJob.education}</span>
+                  </div>
+                  {selectedJob.salaryMin && (
+                    <div className="bg-emerald-50/50 rounded-xl p-3 border border-emerald-100/60 col-span-2">
+                      <span className="block text-[10px] font-bold uppercase text-emerald-600/70 mb-1">Gaji</span>
+                      <span className="text-sm font-bold text-emerald-700">
                         {selectedJob.salaryMax && selectedJob.salaryMax !== selectedJob.salaryMin
                           ? `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')} - Rp ${selectedJob.salaryMax.toLocaleString('id-ID')}`
                           : `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')}`}
@@ -336,230 +536,24 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-slate-900 mb-4 text-lg">Deskripsi Pekerjaan</h3>
+                  <h3 className="font-bold text-slate-900 mb-3 text-sm uppercase tracking-wider">Deskripsi</h3>
                   {selectedJob.description ? (
                     <div
-                      className="text-foreground/80 text-sm leading-relaxed [&>p]:mb-4 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-4 [&>li]:mb-1.5"
+                      className="text-slate-600 text-sm leading-relaxed prose prose-sm prose-slate max-w-none"
                       dangerouslySetInnerHTML={{ __html: selectedJob.description }}
                     />
                   ) : (
-                    <div className="text-foreground/80 text-sm leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <div className="text-slate-500 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
                       Deskripsi tidak tersedia.
                     </div>
                   )}
                 </div>
-              </div>
-
-              <div className="p-6 bg-white z-10 border-t border-slate-50">
-                <Link href={`/job/${selectedJob.id}`} className="block w-full">
-                  <Button size="lg" className="w-full font-bold h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white hover:-translate-y-0.5 transition-all duration-300">
-                    Lihat Selengkapnya & Lamar
-                  </Button>
-                </Link>
-              </div>
             </div>
-          ) : (
-            <div className="sticky top-24 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-              <h3 className="font-bold text-lg mb-4 text-foreground">Kategori Pekerjaan</h3>
-              <div className="flex flex-col gap-2">
-                {jobCategories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`w-full text-left px-5 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-300 flex items-center justify-between ${activeCategory === cat
-                      ? 'bg-slate-900 text-white shadow-md translate-x-2'
-                      : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-100 hover:border-slate-200'
-                      }`}
-                  >
-                    {cat}
-                    {activeCategory === cat && <span className="w-2 h-2 rounded-full bg-white shrink-0"></span>}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Filter Modal */}
-      {isFilterOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60">
-          <div className="bg-card w-full sm:max-w-md max-h-[85vh] rounded-t-2xl sm:rounded-2xl p-4 flex flex-col relative animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300 overflow-hidden">
-
-            <div className="flex justify-between items-center mb-4 pb-4 border-b border-border">
-              <h2 className="text-lg font-bold">Filter Lanjutan</h2>
-              <button onClick={() => setIsFilterOpen(false)} className="p-1 rounded-full hover:bg-secondary">
-                <X className="w-6 h-6 text-muted-foreground" />
-              </button>
-            </div>
-
-            <div className="overflow-y-auto flex-1 space-y-6 pb-20">
-              <div>
-                <h3 className="font-bold text-base mb-3">Tipe Pekerjaan</h3>
-                <div className="flex flex-col gap-3">
-                  {jobTypes.map((type) => (
-                    <label key={type} className="flex items-center gap-3 text-sm cursor-pointer">
-                      <input
-                        type="radio"
-                        name="jobTypeMobile"
-                        checked={activeType === type}
-                        onChange={() => setActiveType(type as any)}
-                        className="w-5 h-5 text-primary accent-primary"
-                      />
-                      {type}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="border-t border-border pt-4">
-                <h3 className="font-bold text-base mb-3">Pengalaman Kerja</h3>
-                <div className="flex flex-col gap-3">
-                  {expLevels.map((level) => (
-                    <label key={level} className="flex items-center gap-3 text-sm cursor-pointer">
-                      <input
-                        type="radio"
-                        name="expLevelMobile"
-                        checked={activeExp === level}
-                        onChange={() => setActiveExp(level as any)}
-                        className="w-5 h-5 text-primary accent-primary"
-                      />
-                      {level}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="border-t border-border pt-4">
-                <h3 className="font-bold text-base mb-3">Tingkat Pendidikan</h3>
-                <div className="flex flex-col gap-3">
-                  {eduLevels.map((level) => (
-                    <label key={level} className="flex items-center gap-3 text-sm cursor-pointer">
-                      <input
-                        type="radio"
-                        name="eduLevelMobile"
-                        checked={activeEdu === level}
-                        onChange={() => setActiveEdu(level as any)}
-                        className="w-5 h-5 text-primary accent-primary"
-                      />
-                      {level}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="border-t border-border pt-4">
-                <h3 className="font-bold text-base mb-3">Waktu Tayang</h3>
-                <div className="flex flex-col gap-3">
-                  {dateFilters.map((filter) => (
-                    <label key={filter} className="flex items-center gap-3 text-sm cursor-pointer">
-                      <input
-                        type="radio"
-                        name="dateFilterMobile"
-                        checked={activeDate === filter}
-                        onChange={() => setActiveDate(filter)}
-                        className="w-5 h-5 text-primary accent-primary"
-                      />
-                      {filter}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-card border-t border-border sm:rounded-b-2xl">
-              <Button size="lg" className="w-full font-bold h-12 rounded-full" onClick={() => setIsFilterOpen(false)}>
-                Terapkan Filter ({filteredJobs.length} Lowongan)
-              </Button>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* Job Detail Side Drawer (Mobile Only) */}
-      {selectedJob && (
-        <div className="lg:hidden">
-          <div
-            className="fixed inset-0 z-[110] bg-black/60 transition-opacity animate-in fade-in duration-300"
-            onClick={() => setSelectedJob(null)}
-          />
-
-          <div className="fixed inset-y-0 right-0 z-[120] w-full max-w-md bg-white shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col border-l border-slate-200 overflow-hidden">
-            <div className="flex justify-between items-center p-5 pb-4 border-b border-border">
-              <h2 className="text-lg font-bold">Detail Pekerjaan</h2>
-              <button onClick={() => setSelectedJob(null)} className="p-1 rounded-full hover:bg-secondary">
-                <X className="w-6 h-6 text-muted-foreground" />
-              </button>
-            </div>
-
-            <div className="overflow-y-auto flex-1 p-5">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="relative w-16 h-16 bg-white border border-border/50 flex items-center justify-center overflow-hidden rounded-lg shadow-sm shrink-0">
-                  {selectedJob.company?.logoUrl ? (
-                    <Image src={selectedJob.company.logoUrl as string} alt={selectedJob.company.name} fill sizes="64px" className="object-contain p-1" />
-                  ) : (
-                    <Building2 className="w-8 h-8 text-muted-foreground" />
-                  )}
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-primary leading-tight">{selectedJob.title}</h1>
-                  <div className="flex items-center gap-2 text-foreground mt-1.5">
-                    <Building2 className="w-4 h-4 text-muted-foreground shrink-0" />
-                    <span className="font-medium text-sm">{selectedJob.company?.name}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4 text-sm bg-secondary/20 p-4 rounded-xl border border-border/40">
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-muted-foreground">Lokasi</span>
-                  <span className="font-semibold text-right">{selectedJob.company?.location}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-muted-foreground">Tipe</span>
-                  <span className="font-semibold text-[#057642] text-right">{selectedJob.type}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-muted-foreground">Pengalaman</span>
-                  <span className="font-semibold text-right">{selectedJob.experience}</span>
-                </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-muted-foreground">Pendidikan</span>
-                  <span className="font-semibold text-right">{selectedJob.education}</span>
-                </div>
-                {selectedJob.salaryMin && (
-                  <div className="flex justify-between items-center py-2 border-t border-border/50">
-                    <span className="text-muted-foreground">Gaji</span>
-                    <span className="font-semibold text-[#057642] text-right">
-                      {selectedJob.salaryMax && selectedJob.salaryMax !== selectedJob.salaryMin
-                        ? `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')} - Rp ${selectedJob.salaryMax.toLocaleString('id-ID')}`
-                        : `Rp ${selectedJob.salaryMin.toLocaleString('id-ID')}`}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-8">
-                <h3 className="font-bold mb-3 text-lg">Deskripsi Pekerjaan</h3>
-                {selectedJob.description ? (
-                  <div
-                    className="text-foreground/80 text-sm leading-relaxed [&>p]:mb-3 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-3 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-3 [&>li]:mb-1"
-                    dangerouslySetInnerHTML={{ __html: selectedJob.description }}
-                  />
-                ) : (
-                  <div className="text-foreground/80 text-sm leading-relaxed">
-                    Deskripsi tidak tersedia.
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="p-5 border-t border-border bg-card">
+            <div className="p-4 bg-white border-t border-slate-100">
               <Link href={`/job/${selectedJob.id}`} className="block w-full">
-                <Button size="lg" className="w-full font-bold h-12 rounded-full shadow-md bg-blue-600 hover:bg-blue-700 text-white">
-                  Lihat Selengkapnya & Lamar
-                </Button>
+                <button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors">
+                  Lamar Pekerjaan
+                </button>
               </Link>
             </div>
           </div>

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Job } from "@/types";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { Badge } from "./ui/Badge";
-import { Building2, Bookmark, GraduationCap, Award, MapPin, Users, CalendarRange, Briefcase, Banknote, Sparkles } from "lucide-react";
+import { Building2, Bookmark, GraduationCap, Award, MapPin, Users, CalendarRange, Briefcase, Banknote, Sparkles, ChevronRight, Clock } from "lucide-react";
 
 export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job: Job) => void; className?: string }) {
   const { toggleBookmark, isBookmarked, isLoaded } = useBookmarks();
@@ -16,234 +16,162 @@ export function JobCard({ job, onClick, className }: { job: Job; onClick?: (job:
       onClick(job);
     }
   };
+
   const formatTimeAgo = (dateStr: string) => {
     const date = new Date(dateStr);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit yang lalu`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam yang lalu`;
-    return `${Math.floor(diffInSeconds / 86400)} hari yang lalu`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}mnt`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}j`;
+    return `${Math.floor(diffInSeconds / 86400)}h`;
   };
 
   const formatSalary = (min?: number, max?: number) => {
     if (!min) return null;
     const formatNumber = (num: number) => {
-      return `Rp ${num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+      return `Rp ${num.toLocaleString('id-ID')}`;
     };
     if (max && min !== max) return `${formatNumber(min)} - ${formatNumber(max)}`;
     return formatNumber(min);
   };
 
   const salary = formatSalary(job.salaryMin, job.salaryMax);
-
   const isPremium = job.isPremium;
   const isExpired = job.deadline ? new Date(job.deadline) < new Date() : false;
+  const isNew = job.postedAt && (new Date().getTime() - new Date(job.postedAt).getTime()) / (1000 * 60 * 60 * 24) <= 3;
+  const isHot = job.salaryMin && job.salaryMin >= 5000000;
 
   const cardClasses = isPremium
-    ? `bg-primary/5 border border-primary/10 hover:shadow-md`
-    : `bg-white border border-slate-100 hover:border-slate-200 hover:shadow-md`;
+    ? `bg-white border-2 border-primary/20 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:border-primary/40`
+    : `bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.04)] hover:border-slate-300`;
 
   return (
-    <div className={`${cardClasses} rounded-2xl p-6 sm:p-7 transition-all duration-300 hover:-translate-y-0.5 group relative flex flex-col sm:flex-row gap-5 sm:gap-6 ${className || ''} overflow-hidden`}>
+    <div className={`${cardClasses} rounded-[24px] p-5 sm:p-6 transition-all duration-300 group flex flex-col gap-4 sm:gap-5 ${className || ''}`}>
+      
+      {/* Top Header: Logo, Title, Bookmark */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-4 flex-1 min-w-0">
+          <Link href={`/job/${job.id}`} onClick={handleClick} className="shrink-0 relative z-10 block">
+            <div className={`relative w-14 h-14 sm:w-16 sm:h-16 bg-white border border-slate-100 flex items-center justify-center overflow-hidden rounded-2xl group-hover:scale-105 transition-transform duration-300 shadow-sm`}>
+              {(job.imageUrl || job.company?.logoUrl) ? (
+                <Image src={(job.imageUrl || job.company?.logoUrl) as string} alt={job.company?.name || "Logo"} fill sizes="64px" className="object-contain p-2.5" />
+              ) : (
+                <Building2 className="w-6 h-6 text-slate-300" />
+              )}
+            </div>
+          </Link>
 
-      {isPremium && (
-        <div className="absolute top-0 right-0 z-10">
-          <div
-            className="bg-gradient-to-br from-blue-500 to-primary text-white p-2 rounded-bl-xl shadow-sm border-l border-b border-blue-400/30 flex items-center justify-center"
-            title="Lowongan Promosi"
-          >
-            <Sparkles className="w-4 h-4 fill-white/20" />
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Top Row (Logo + Title) & Desktop Logo */}
-      <div className="flex gap-3.5 sm:block items-start shrink-0">
-        <Link href={`/job/${job.id}`} onClick={handleClick} className="shrink-0 relative z-10">
-          <div className={`relative w-12 h-12 sm:w-16 sm:h-16 bg-white border ${isPremium ? 'border-primary/20 shadow-primary/20' : 'border-slate-100'} flex items-center justify-center overflow-hidden rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300`}>
-            {(job.imageUrl || job.company?.logoUrl) ? (
-              <Image src={(job.imageUrl || job.company?.logoUrl) as string} alt={job.company?.name || "Logo"} fill sizes="(max-width: 640px) 48px, 64px" className="object-contain p-1" />
-            ) : (
-              <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
-            )}
-          </div>
-        </Link>
-
-        {/* Mobile Title & Company */}
-        <div className="sm:hidden flex-1 min-w-0 pr-12">
-          <div className="flex justify-between items-start gap-2">
-            <Link href={`/job/${job.id}`} onClick={handleClick} className="min-w-0 flex-1 relative z-10">
-              <h3 className="text-base font-extrabold text-slate-900 group-hover:text-primary transition-colors truncate leading-snug">
+          <div className="flex-1 min-w-0 pt-0.5">
+            <Link href={`/job/${job.id}`} onClick={handleClick} className="min-w-0 block relative z-10 mb-1.5">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight pr-8">
                 {job.title}
               </h3>
             </Link>
-          </div>
-          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500 mt-1">
-            <Building2 className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
-            <Link
-              href={`/perusahaan/${job.companyId || job.company?.id || ''}`}
-              className="truncate hover:underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {job.company?.name}
-            </Link>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Link
+                href={`/perusahaan/${job.companyId || job.company?.id || ''}`}
+                className="text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors truncate max-w-[90%] block"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {job.company?.name}
+              </Link>
+              {isPremium && (
+                <div className="bg-primary text-white px-1.5 py-0.5 rounded-md flex items-center gap-1 text-[10px] font-bold shrink-0">
+                  <Sparkles className="w-3 h-3" /> Promosi
+                </div>
+              )}
+              {!isPremium && isHot && (
+                <div className="bg-orange-500 text-white px-1.5 py-0.5 rounded-md flex items-center gap-1 text-[10px] font-bold shrink-0">
+                  🔥 Hots
+                </div>
+              )}
+              {isNew && (
+                <div className="bg-emerald-500 text-white px-1.5 py-0.5 rounded-md flex items-center gap-1 text-[10px] font-bold shrink-0">
+                  ✨ Baru
+                </div>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Bookmark Button */}
+        {isLoaded && (
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(job.id); }}
+            className={`shrink-0 p-2.5 rounded-xl transition-colors border ${isBookmarked(job.id) ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600'}`}
+            title={isBookmarked(job.id) ? "Hapus dari tersimpan" : "Simpan loker ini"}
+          >
+            <Bookmark className={`w-4 h-4 ${isBookmarked(job.id) ? 'fill-current' : ''}`} />
+          </button>
+        )}
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 min-w-0 w-full flex flex-col relative z-10">
-
-        {/* Desktop Title & Company */}
-        <div className="hidden sm:block pr-12">
-          <div className="flex justify-between items-start gap-2">
-            <Link href={`/job/${job.id}`} onClick={handleClick} className="min-w-0 flex-1">
-              <h3 className="text-lg font-extrabold text-slate-900 group-hover:text-primary transition-colors truncate leading-snug">
-                {job.title}
-              </h3>
-            </Link>
+      {/* Bento Stats Grid */}
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+        {job.company?.location && (
+          <div className="bg-slate-50/80 rounded-xl p-2.5 flex items-center gap-2.5 border border-slate-100">
+            <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+            <span className="text-xs font-semibold text-slate-700 truncate">{job.company.location}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500 mt-1.5 mb-3">
-            <Building2 className="w-4 h-4 shrink-0 text-muted-foreground" />
-            <Link
-              href={`/perusahaan/${job.companyId || job.company?.id || ''}`}
-              className="hover:underline cursor-pointer"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {job.company?.name}
-            </Link>
+        )}
+        <div className="bg-slate-50/80 rounded-xl p-2.5 flex items-center gap-2.5 border border-slate-100">
+          <Briefcase className="w-4 h-4 text-slate-400 shrink-0" />
+          <span className="text-xs font-semibold text-slate-700 truncate">{job.type}</span>
+        </div>
+        {salary && (
+          <div className="bg-slate-50/80 rounded-xl p-2.5 flex items-center gap-2.5 border border-slate-100 col-span-2 sm:col-span-1">
+            <Banknote className="w-4 h-4 text-slate-400 shrink-0" />
+            <span className="text-xs font-semibold text-slate-700 truncate">{salary}</span>
+          </div>
+        )}
+        {job.experience && job.experience !== 'Semua' && (
+          <div className="bg-slate-50/80 rounded-xl p-2.5 flex items-center gap-2.5 border border-slate-100">
+            <Award className="w-4 h-4 text-slate-400 shrink-0" />
+            <span className="text-xs font-semibold text-slate-700 truncate">{job.experience}</span>
+          </div>
+        )}
+        {job.education && job.education !== 'Semua' && (
+          <div className="bg-slate-50/80 rounded-xl p-2.5 flex items-center gap-2.5 border border-slate-100">
+            <GraduationCap className="w-4 h-4 text-slate-400 shrink-0" />
+            <span className="text-xs font-semibold text-slate-700 truncate">{job.education}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Tags and Footer */}
+      <div className="mt-auto pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {isExpired ? (
+             <div className="bg-slate-100 text-slate-500 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">
+               Ditutup
+             </div>
+          ) : (
+            <>
+              {job.contacts?.whatsapp && (
+                <div className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">
+                  WA
+                </div>
+              )}
+              {job.contacts?.email && (
+                <div className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">
+                  Email
+                </div>
+              )}
+            </>
+          )}
+          
+          <div className="flex items-center gap-1.5 text-slate-400 text-xs ml-1 font-medium">
+            <Clock className="w-3.5 h-3.5" />
+            <span suppressHydrationWarning>{formatTimeAgo(job.postedAt)}</span>
           </div>
         </div>
 
-        {/* Tags */}
-        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-slate-500 mt-2 sm:mt-0 font-medium">
-          {job.company?.location && (
-            <div className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 shrink-0" />
-              <span>{job.company.location}</span>
-            </div>
-          )}
-          {job.education && (
-            <>
-              <span className="text-muted-foreground/50">•</span>
-              <div className="flex items-center gap-1">
-                <GraduationCap className="w-3.5 h-3.5 shrink-0" />
-                <span>{job.education === 'Semua' ? 'Semua Pendidikan' : `Min. ${job.education}`}</span>
-              </div>
-            </>
-          )}
-          {job.experience && job.experience !== 'Semua' && (
-            <>
-              <span className="text-muted-foreground/50">•</span>
-              <div className="flex items-center gap-1">
-                <Award className="w-3.5 h-3.5 shrink-0" />
-                <span>{job.experience}</span>
-              </div>
-            </>
-          )}
-          {job.gender && (
-            <>
-              <span className="text-muted-foreground/50">•</span>
-              <div className="flex items-center gap-1">
-                <Users className="w-3.5 h-3.5 shrink-0" />
-                <span>{job.gender}</span>
-              </div>
-            </>
-          )}
-          {job.ageRange && (
-            <>
-              <span className="text-muted-foreground/50">•</span>
-              <div className="flex items-center gap-1">
-                <CalendarRange className="w-3.5 h-3.5 shrink-0" />
-                <span>{job.ageRange}</span>
-              </div>
-            </>
-          )}
-          <span className="text-muted-foreground/50">•</span>
-          <div className="flex items-center gap-1">
-            <Briefcase className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md">{job.type}</span>
-          </div>
-          {salary && (
-            <>
-              <span className="text-muted-foreground/50 hidden sm:inline">•</span>
-              <div className="flex items-center gap-1.5 text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md text-xs sm:text-sm">
-                <Banknote className="w-3.5 h-3.5 shrink-0 hidden sm:block" />
-                <span>{salary}</span>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Localized Badges for authentic, non-AI look */}
-        <div className="flex flex-wrap items-center gap-2 mt-3 mb-4">
-          {isExpired && (
-            <span className="inline-flex items-center gap-2 text-xs font-bold text-red-700 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 px-3 py-1 rounded-full shadow-sm">
-              <span className="relative flex w-2.5 h-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full w-2.5 h-2.5 bg-red-600 dark:bg-red-500"></span>
-              </span>
-              Lowongan Ditutup
-            </span>
-          )}
-          {!isExpired && job.contacts?.whatsapp && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#15803d] bg-[#f0fdf4] border border-[#bbf7d0] px-2.5 py-0.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse"></span>
-              Kontak Langsung (WA)
-            </span>
-          )}
-          {!isExpired && job.contacts?.email && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] px-2.5 py-0.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]"></span>
-              Kirim Email HRD
-            </span>
-          )}
-          {job.title.toLowerCase().includes('mechanic') && (
-            <span className="text-[11px] font-bold text-[#b45309] bg-[#fef3c7] border border-[#fde68a] px-2.5 py-0.5 rounded-full">
-              Tambang (Freeport Roster)
-            </span>
-          )}
-          {job.title.toLowerCase().includes('barista') && (
-            <span className="text-[11px] font-bold text-[#78350f] bg-[#fff7ed] border border-[#ffedd5] px-2.5 py-0.5 rounded-full">
-              Kuliner / Cafe
-            </span>
-          )}
-          {job.title.toLowerCase().includes('gudang') && (
-            <span className="text-[11px] font-bold text-[#374151] bg-[#f3f4f6] border border-[#e5e7eb] px-2.5 py-0.5 rounded-full">
-              Ritel & Logistik
-            </span>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t border-border/50">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-muted-foreground" suppressHydrationWarning>{formatTimeAgo(job.postedAt)}</span>
-            <span className="text-xs text-muted-foreground hidden sm:inline mx-1">•</span>
-            {isExpired ? (
-              <span className="text-xs text-red-500 font-semibold hidden sm:inline">Telah Berakhir</span>
-            ) : (
-              <span className="text-xs text-primary font-medium hidden sm:inline">Aktif</span>
-            )}
-          </div>
-          <div className="flex items-center gap-4 mt-2 sm:mt-0 w-full sm:w-auto justify-end">
-            {isLoaded && (
-              <button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(job.id); }}
-                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-                title={isBookmarked(job.id) ? "Hapus dari tersimpan" : "Simpan loker ini"}
-              >
-                <Bookmark className={`w-4 h-4 ${isBookmarked(job.id) ? 'fill-blue-500 text-blue-500' : ''}`} />
-                <span className="hidden sm:inline">{isBookmarked(job.id) ? 'Tersimpan' : 'Simpan'}</span>
-              </button>
-            )}
-            <Link href={`/job/${job.id}`}>
-              <button className="text-sm font-bold text-primary hover:text-primary/80 transition-colors text-center cursor-pointer group-hover:translate-x-1 duration-300 flex items-center gap-1">
-                Lihat Detail
-              </button>
-            </Link>
-          </div>
-        </div>
+        <Link href={`/job/${job.id}`} className="w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
+          <button className="w-full sm:w-auto h-10 px-5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer">
+            Lamar <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </Link>
       </div>
     </div>
   );
