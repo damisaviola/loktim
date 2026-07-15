@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
+import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 import NextTopLoader from "nextjs-toploader";
 
@@ -36,7 +36,7 @@ export default function RootLayout({
     <html lang="id" className={`h-full antialiased ${plusJakartaSans.variable}`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary" suppressHydrationWarning>
         <NextTopLoader color="#0066cc" showSpinner={false} />
-        <Navbar />
+        <SiteHeader />
         <MainLayoutWrapper>
           {children}
         </MainLayoutWrapper>

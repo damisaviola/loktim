@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Briefcase, Menu, X, Bookmark, Search } from 'lucide-react';
+import { Briefcase, Menu, X, Bookmark, Search, FileText, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export function Navbar() {
@@ -17,6 +17,8 @@ export function Navbar() {
   const navLinks = [
     { href: "/jobs", label: "Cari Lowongan", icon: <Search className="w-5 h-5" />, active: pathname === "/jobs" || pathname?.startsWith("/job/") },
     { href: "/tersimpan", label: "Tersimpan", icon: <Bookmark className="w-5 h-5" />, active: pathname === "/tersimpan" },
+    { href: "/ketentuan-pasang-loker", label: "Ketentuan Layanan", icon: <FileText className="w-5 h-5" />, active: pathname === "/ketentuan-pasang-loker" },
+    { href: "/contact", label: "Bantuan & Kontak", icon: <Phone className="w-5 h-5" />, active: pathname === "/contact" },
   ];
 
   return (

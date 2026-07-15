@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 import { JobMoreOptions } from '@/components/JobMoreOptions';
 import { ApplyModal } from '@/components/ApplyModal';
+import { CompanyMobileModal } from '@/components/CompanyMobileModal';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -135,6 +136,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                         <Building2 className="w-4 h-4 shrink-0" />
                         {job.company?.name}
                       </Link>
+                      <CompanyMobileModal job={job} companyJobsCount={companyJobs.length} />
                       <span className="text-slate-300 hidden sm:inline text-xs mt-0.5"> • </span>
                       <span className="text-slate-500 font-medium">Diposting: {new Date(job.postedAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                       {job.deadline && (
@@ -240,7 +242,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
         {/* Sidebar Left - Company info & Ads */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-[24px] p-6">
+          <div className="hidden lg:block bg-white border border-slate-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.02)] rounded-[24px] p-6">
             <h2 className="font-bold text-lg mb-5 text-slate-900">Tentang Perusahaan</h2>
             <div className="flex items-center gap-4 mb-4">
               <div className="w-14 h-14 bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 rounded-2xl">
@@ -300,7 +302,9 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                   </Link>
                 ))}
             </div>
-            <button className="w-full text-sm font-bold mt-2 text-slate-500 hover:text-slate-900 transition-colors">Lihat Semua</button>
+            <Link href="/jobs" className="block w-full text-center text-sm font-bold mt-6 text-slate-500 hover:text-slate-900 transition-colors">
+              Lihat Semua
+            </Link>
           </div>
         </div>
 
