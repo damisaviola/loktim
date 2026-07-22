@@ -16,10 +16,10 @@ export function LandingNavbar() {
 
   const navLinks = [
     { href: "/", label: "Beranda", icon: <Home className="w-5 h-5" />, active: pathname === "/" },
-    { href: "/jobs", label: "Cari Lowongan", icon: <Search className="w-5 h-5" />, active: pathname === "/jobs" || pathname?.startsWith("/job/") },
-    { href: "/tersimpan", label: "Lowongan Tersimpan", icon: <Bookmark className="w-5 h-5" />, active: pathname === "/tersimpan" },
-    { href: "/ketentuan-pasang-loker", label: "Ketentuan Layanan", icon: <FileText className="w-5 h-5" />, active: pathname === "/ketentuan-pasang-loker" },
-    { href: "/contact", label: "Bantuan & Kontak", icon: <Phone className="w-5 h-5" />, active: pathname === "/contact" },
+    { href: "/jobs", label: "Lowongan", icon: <Search className="w-5 h-5" />, active: pathname === "/jobs" || pathname?.startsWith("/job/") },
+    { href: "/tersimpan", label: "Tersimpan", icon: <Bookmark className="w-5 h-5" />, active: pathname === "/tersimpan" },
+    { href: "/ketentuan-pasang-loker", label: "Ketentuan", icon: <FileText className="w-5 h-5" />, active: pathname === "/ketentuan-pasang-loker" },
+    { href: "/contact", label: "Kontak", icon: <Phone className="w-5 h-5" />, active: pathname === "/contact" },
   ];
 
   return (
