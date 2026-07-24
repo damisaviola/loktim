@@ -3,6 +3,12 @@
 import prisma from "@/lib/prisma";
 import { getUserSession } from "./auth";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import DOMPurify from "isomorphic-dompurify";
+
+const categorySchema = z.object({
+  name: z.string().min(1, "Nama kategori wajib diisi"),
+});
 
 export async function getCategoriesAction() {
   try {
@@ -21,8 +27,15 @@ export async function createCategoryAction(name: string) {
     const user = await getUserSession();
     if (!user) throw new Error("Unauthorized");
 
+    const validatedData = categorySchema.safeParse({ name });
+    if (!validatedData.success) {
+      return { success: false, error: validatedData.error.issues[0].message };
+    }
+
+    const safeName = DOMPurify.sanitize(validatedData.data.name.trim());
+
     const category = await prisma.category.create({
-      data: { name }
+      data: { name: safeName }
     });
     
     revalidatePath("/admin/categories");
@@ -38,17 +51,24 @@ export async function updateCategoryAction(id: string, oldName: string, newName:
     const user = await getUserSession();
     if (!user) throw new Error("Unauthorized");
 
+    const validatedData = categorySchema.safeParse({ name: newName });
+    if (!validatedData.success) {
+      return { success: false, error: validatedData.error.issues[0].message };
+    }
+
+    const safeNewName = DOMPurify.sanitize(validatedData.data.name.trim());
+
     // Update the Category table
     const category = await prisma.category.update({
       where: { id },
-      data: { name: newName }
+      data: { name: safeNewName }
     });
 
     // Sync all existing jobs that had the old category string
-    if (oldName !== newName) {
+    if (oldName !== safeNewName) {
       await prisma.job.updateMany({
         where: { category: oldName },
-        data: { category: newName }
+        data: { category: safeNewName }
       });
     }
 

@@ -6,20 +6,34 @@ import { getUserSession } from './auth'
 import { jobs as dummyJobs } from '@/lib/dummy-data'
 import { sendEmail } from '@/lib/email'
 import JobReportedEmail from '@/emails/JobReportedEmail'
+import { z } from 'zod'
+import DOMPurify from 'isomorphic-dompurify'
 
+const reportSchema = z.object({
+  jobId: z.string().min(1, 'ID Lowongan tidak valid'),
+  reason: z.string().min(3, 'Alasan pelaporan minimal 3 karakter'),
+  details: z.string().optional().nullable(),
+});
 export async function reportJobAction(jobId: string, reason: string, details?: string) {
   try {
-    if (!jobId || !reason) {
-      return { success: false, error: 'Data laporan tidak lengkap' }
+    const rawData = { jobId, reason, details };
+    const validatedData = reportSchema.safeParse(rawData);
+
+    if (!validatedData.success) {
+      const errorMessage = validatedData.error.issues.map(err => err.message).join(", ");
+      return { success: false, error: errorMessage };
     }
+
+    const safeReason = DOMPurify.sanitize(validatedData.data.reason.trim());
+    const safeDetails = validatedData.data.details ? DOMPurify.sanitize(validatedData.data.details.trim()) : null;
 
     // Cek apakah job ada di database (bukan dummy job)
     const jobExists = await prisma.job.findUnique({
-      where: { id: jobId }
+      where: { id: validatedData.data.jobId }
     })
 
     if (!jobExists) {
-      const isDummy = dummyJobs.some(j => j.id === jobId)
+      const isDummy = dummyJobs.some(j => j.id === validatedData.data.jobId)
       if (isDummy) {
         // Jika ini adalah data dummy, pura-pura sukses saja 
         // karena tidak bisa masuk database (akan error foreign key)
@@ -30,9 +44,9 @@ export async function reportJobAction(jobId: string, reason: string, details?: s
 
     await prisma.jobReport.create({
       data: {
-        jobId,
-        reason,
-        details: details || null,
+        jobId: validatedData.data.jobId,
+        reason: safeReason,
+        details: safeDetails,
         status: 'pending'
       }
     })

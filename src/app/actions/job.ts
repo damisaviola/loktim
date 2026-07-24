@@ -45,6 +45,25 @@ const createJobSchema = z.object({
   path: ["companyId"]
 });
 
+const updateJobSchema = z.object({
+  email: z.string().email("Format email tidak valid"),
+  imageUrl: z.string().url("Format URL gambar tidak valid").optional().nullable().or(z.literal("")),
+  title: z.string().min(3, "Posisi pekerjaan minimal 3 karakter"),
+  category: z.string().min(1, "Kategori wajib dipilih"),
+  description: z.string().min(1, "Deskripsi wajib diisi"),
+  requirementsRaw: z.string().min(1, "Persyaratan wajib diisi"),
+  type: z.string().min(1, "Tipe kontrak wajib dipilih"),
+  education: z.string().default("Semua").nullable(),
+  experience: z.string().default("Tanpa Pengalaman").nullable(),
+  gender: z.string().default("Pria/Wanita").nullable(),
+  ageRange: z.string().default("Bebas").nullable(),
+  whatsapp: z.string().optional().nullable().or(z.literal("")),
+  salaryMinStr: z.string().optional().nullable().or(z.literal("")),
+  salaryMaxStr: z.string().optional().nullable().or(z.literal("")),
+  deadlineStr: z.string().optional().nullable().or(z.literal("")),
+  applicationLink: z.string().url("Format URL tidak valid").optional().nullable().or(z.literal("")),
+});
+
 export async function getCompaniesAction() {
   try {
     const companies = await prisma.company.findMany({
@@ -235,40 +254,51 @@ export async function updateJobAction(jobId: string, formData: FormData) {
       applicationLink: formData.get("applicationLink") as string | null,
     };
 
-    const salaryMin = rawData.salaryMinStr ? parseInt(rawData.salaryMinStr, 10) : null;
-    const salaryMax = rawData.salaryMaxStr ? parseInt(rawData.salaryMaxStr, 10) : null;
-    const deadline = rawData.deadlineStr ? new Date(rawData.deadlineStr) : null;
+    const validatedData = updateJobSchema.safeParse(rawData);
 
-    // Sanitize requirements
-    const requirements = rawData.requirementsRaw
+    if (!validatedData.success) {
+      const errorMessage = validatedData.error.issues.map(err => err.message).join(", ");
+      return { success: false, error: errorMessage };
+    }
+
+    const data = validatedData.data;
+
+    const salaryMin = data.salaryMinStr ? parseInt(data.salaryMinStr, 10) : null;
+    const salaryMax = data.salaryMaxStr ? parseInt(data.salaryMaxStr, 10) : null;
+    const deadline = data.deadlineStr ? new Date(data.deadlineStr) : null;
+
+    // Sanitize description and requirements
+    const cleanDescription = DOMPurify.sanitize(data.description);
+    
+    const requirements = data.requirementsRaw
       .replace(/<\/p>|<\/li>|<br\s*\/?>/gi, '\n')
       .split('\n')
-      .map(r => r.trim().replace(/<[^>]*>/g, ""))
+      .map(r => DOMPurify.sanitize(r.trim().replace(/<[^>]*>/g, "")))
       .filter(r => r.length > 0);
 
     const updateData: any = {
-      title: rawData.title,
-      category: rawData.category,
-      description: rawData.description,
+      title: data.title,
+      category: data.category,
+      description: cleanDescription,
       requirements,
-      type: rawData.type,
-      education: rawData.education || "Semua",
-      experience: rawData.experience || "Tanpa Pengalaman",
-      gender: rawData.gender || "Pria/Wanita",
-      ageRange: rawData.ageRange && rawData.ageRange !== "Bebas" ? `Maks. ${rawData.ageRange.replace(/\D/g, "")} Tahun` : "Bebas",
+      type: data.type,
+      education: data.education || "Semua",
+      experience: data.experience || "Tanpa Pengalaman",
+      gender: data.gender || "Pria/Wanita",
+      ageRange: data.ageRange && data.ageRange !== "Bebas" ? `Maks. ${data.ageRange.replace(/\D/g, "")} Tahun` : "Bebas",
       salaryMin,
       salaryMax,
       deadline,
-      contactUrl: rawData.applicationLink || (rawData.whatsapp ? `https://wa.me/${rawData.whatsapp.replace(/\D/g, '')}` : `mailto:${rawData.email}`),
+      contactUrl: data.applicationLink || (data.whatsapp ? `https://wa.me/${data.whatsapp.replace(/\D/g, '')}` : `mailto:${data.email}`),
       contacts: {
-        email: rawData.email,
-        whatsapp: rawData.whatsapp || "",
-        applicationLink: rawData.applicationLink || "",
+        email: data.email,
+        whatsapp: data.whatsapp || "",
+        applicationLink: data.applicationLink || "",
       },
     };
 
-    if (rawData.imageUrl) {
-      updateData.imageUrl = rawData.imageUrl;
+    if (data.imageUrl) {
+      updateData.imageUrl = data.imageUrl;
     }
 
     await prisma.job.update({
