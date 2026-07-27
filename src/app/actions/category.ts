@@ -7,7 +7,7 @@ import { z } from "zod";
 import DOMPurify from "isomorphic-dompurify";
 
 const categorySchema = z.object({
-  name: z.string().min(1, "Nama kategori wajib diisi"),
+  name: z.string().trim().min(2, "Nama kategori minimal 2 karakter").max(50, "Nama kategori maksimal 50 karakter"),
 });
 
 export async function getCategoriesAction() {

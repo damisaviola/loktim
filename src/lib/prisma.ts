@@ -17,4 +17,24 @@ const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
 
 export default prisma
 
+export function getExtendedClient(userId?: string) {
+  if (!userId) return prisma;
+  
+  const claims = JSON.stringify({ sub: userId });
+  
+  return prisma.$extends({
+    query: {
+      $allModels: {
+        async $allOperations({ args, query }) {
+          const [, result] = await prisma.$transaction([
+            prisma.$executeRaw`SELECT set_config('request.jwt.claims', ${claims}::text, TRUE)`,
+            query(args),
+          ]);
+          return result;
+        },
+      },
+    },
+  });
+}
+
 if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma

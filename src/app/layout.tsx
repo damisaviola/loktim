@@ -26,6 +26,7 @@ export const metadata: Metadata = {
 };
 
 import { MainLayoutWrapper } from "@/components/MainLayoutWrapper";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -36,6 +37,7 @@ export default function RootLayout({
     <html lang="id" className={`h-full antialiased ${plusJakartaSans.variable}`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary" suppressHydrationWarning>
         <NextTopLoader color="#0066cc" showSpinner={false} />
+        <Toaster position="top-center" richColors closeButton expand={false} />
         <SiteHeader />
         <MainLayoutWrapper>
           {children}

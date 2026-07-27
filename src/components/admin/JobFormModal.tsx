@@ -15,6 +15,7 @@ import { getCompaniesByEmailAction, createJobAction } from "@/app/actions/job";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/utils/supabase/client";
 import Image from 'next/image';
+import { toast } from "sonner";
 
 interface JobFormModalProps {
   open: boolean;
@@ -104,11 +105,11 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
     const cleanReq = requirements.replace(/<[^>]*>/g, "").trim();
 
     if (!cleanDesc) {
-      alert("Deskripsi Lengkap wajib diisi!");
+      toast.warning("Deskripsi Lengkap wajib diisi!");
       return;
     }
     if (!cleanReq) {
-      alert("Persyaratan (Requirements) wajib diisi!");
+      toast.warning("Persyaratan (Requirements) wajib diisi!");
       return;
     }
 
@@ -137,7 +138,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
 
         if (uploadError) {
           console.error("Upload error:", uploadError);
-          alert("Gagal mengunggah gambar. Pastikan bucket 'images' tersedia di Supabase.");
+          toast.error("Gagal mengunggah gambar. Pastikan bucket 'images' tersedia di Supabase.");
         } else if (uploadData) {
           const { data: { publicUrl } } = supabase.storage
             .from("images")
@@ -156,7 +157,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
       setIsSubmitting(false);
 
       if (result.success) {
-        alert("Berhasil! Lowongan baru telah tersimpan.");
+        toast.success("Berhasil! Lowongan baru telah tersimpan.");
         setIsNewCompany(true);
         setSelectedCompanyId("");
         setDescription("");
@@ -169,12 +170,12 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
         setCompanyList([]);
         onOpenChange(false);
       } else {
-        alert("Gagal menyimpan lowongan: " + result.error);
+        toast.error("Gagal menyimpan lowongan: " + result.error);
       }
     } catch (error) {
       console.error(error);
       setIsSubmitting(false);
-      alert("Terjadi kesalahan sistem.");
+      toast.error("Terjadi kesalahan sistem.");
     }
   };
 

@@ -7,6 +7,7 @@ import { BarChart2, Users, Eye, TrendingUp, X, MoreHorizontal, CheckCircle2, Zap
 import { Input } from '@/components/ui/Input';
 import { useTableSortAndSearch } from '@/hooks/useTableSortAndSearch';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function DashboardClient({ hrdJobs }: { hrdJobs: any[] }) {
   const [showBoostModal, setShowBoostModal] = useState(false);
@@ -305,7 +306,7 @@ export default function DashboardClient({ hrdJobs }: { hrdJobs: any[] }) {
                   <Button 
                     className="w-full sm:w-auto h-12 px-8 font-bold text-base shadow-lg shadow-primary/20"
                     onClick={() => {
-                      alert(`Melanjutkan pembayaran untuk paket: ${packages.find(p => p.id === selectedPackage)?.name}`);
+                      toast.info(`Melanjutkan pembayaran untuk paket: ${packages.find(p => p.id === selectedPackage)?.name}`);
                       setShowBoostModal(false);
                     }}
                   >

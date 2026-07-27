@@ -26,9 +26,37 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
   }
 
+  const cleanDescription = job.description.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+  const snippet = cleanDescription.length > 160 ? cleanDescription.substring(0, 157) + '...' : cleanDescription;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://lokertimika.com';
+  const pageUrl = `${baseUrl}/job/${job.id}`;
+  const companyName = job.company?.name || 'Perusahaan';
+
   return {
-    title: `${job.title} di ${job.company?.name}`,
-    description: job.description.substring(0, 160) + '...',
+    title: `Lowongan Kerja ${job.title} di ${companyName}`,
+    description: snippet,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title: `Lowongan Kerja ${job.title} - ${companyName}`,
+      description: snippet,
+      url: pageUrl,
+      type: 'article',
+      siteName: 'LokerTimika',
+      images: [
+        {
+          url: job.imageUrl || job.company?.logoUrl || '/icon.png',
+          alt: `${job.title} di ${companyName}`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Lowongan Kerja ${job.title} - ${companyName}`,
+      description: snippet,
+      images: [job.imageUrl || job.company?.logoUrl || '/icon.png'],
+    },
   };
 }
 
@@ -89,8 +117,56 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
   const isExpired = job.deadline ? new Date(job.deadline) < new Date() : false;
   const isPremium = job.isPremium;
 
+  const cleanDescriptionText = job.description.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+  const jobPostingSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    'title': job.title,
+    'description': cleanDescriptionText,
+    'identifier': {
+      '@type': 'PropertyValue',
+      'name': job.company?.name || 'LokerTimika',
+      'value': job.id,
+    },
+    'datePosted': job.postedAt ? new Date(job.postedAt).toISOString() : new Date().toISOString(),
+    ...(job.deadline ? { 'validThrough': new Date(job.deadline).toISOString() } : {}),
+    'employmentType': job.type === 'Penuh Waktu' || job.type === 'Full Time' ? 'FULL_TIME' : job.type === 'Paruh Waktu' ? 'PART_TIME' : job.type === 'Kontrak' ? 'CONTRACT' : 'OTHER',
+    'hiringOrganization': {
+      '@type': 'Organization',
+      'name': job.company?.name || 'Perusahaan',
+      'sameAs': job.contactUrl || undefined,
+      'logo': job.company?.logoUrl || job.imageUrl || undefined,
+    },
+    'jobLocation': {
+      '@type': 'Place',
+      'address': {
+        '@type': 'PostalAddress',
+        'addressLocality': job.location || 'Timika',
+        'addressRegion': 'Papua Tengah',
+        'addressCountry': 'ID',
+      },
+    },
+    ...(job.salaryMin ? {
+      'baseSalary': {
+        '@type': 'MonetaryAmount',
+        'currency': 'IDR',
+        'value': {
+          '@type': 'QuantitativeValue',
+          'minValue': job.salaryMin,
+          'maxValue': job.salaryMax || job.salaryMin,
+          'unitText': 'MONTH',
+        },
+      },
+    } : {}),
+  };
+
   return (
-    <div className="max-w-[1280px] mx-auto px-3 sm:px-6 py-3 sm:py-8 space-y-5 sm:space-y-6 mb-28 sm:mb-12">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingSchema) }}
+      />
+      <div className="max-w-[1280px] mx-auto px-3 sm:px-6 py-3 sm:py-8 space-y-5 sm:space-y-6 mb-28 sm:mb-12">
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
         
@@ -412,5 +488,6 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
       </div>
 
     </div>
+    </>
   );
 }

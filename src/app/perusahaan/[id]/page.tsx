@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { companies, jobs as dummyJobs } from '@/lib/dummy-data';
@@ -5,6 +6,39 @@ import { JobCard } from '@/components/JobCard';
 import { Building2, MapPin, Briefcase } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const companyId = resolvedParams.id;
+  let company: any = companies[companyId];
+  if (!company) {
+    company = await prisma.company.findUnique({ where: { id: companyId } });
+  }
+  if (!company) {
+    const jobWithCompany = dummyJobs.find(j => j.company?.id === companyId || j.companyId === companyId);
+    if (jobWithCompany) company = jobWithCompany.company;
+  }
+  if (!company) {
+    return { title: 'Perusahaan Tidak Ditemukan' };
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://lokertimika.com';
+  const pageUrl = `${baseUrl}/perusahaan/${companyId}`;
+  const description = `Profil dan lowongan kerja terbaru di ${company.name} Timika & Mimika, Papua Tengah. ${company.about || ''}`.substring(0, 160);
+
+  return {
+    title: `Lowongan Kerja ${company.name} Timika`,
+    description,
+    alternates: { canonical: pageUrl },
+    openGraph: {
+      title: `Lowongan Kerja ${company.name} Timika`,
+      description,
+      url: pageUrl,
+      siteName: 'LokerTimika',
+      images: [{ url: company.logoUrl || '/icon.png', alt: company.name }],
+    },
+  };
+}
 
 export default async function PerusahaanPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;

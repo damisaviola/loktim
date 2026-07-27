@@ -8,14 +8,21 @@ import { sendEmail } from '@/lib/email'
 import JobReportedEmail from '@/emails/JobReportedEmail'
 import { z } from 'zod'
 import DOMPurify from 'isomorphic-dompurify'
+import { getClientIp, checkRateLimit } from '@/lib/rate-limit'
 
 const reportSchema = z.object({
-  jobId: z.string().min(1, 'ID Lowongan tidak valid'),
-  reason: z.string().min(3, 'Alasan pelaporan minimal 3 karakter'),
-  details: z.string().optional().nullable(),
+  jobId: z.string().trim().min(1, 'ID Lowongan tidak valid'),
+  reason: z.string().trim().min(3, 'Alasan pelaporan minimal 3 karakter').max(200, 'Alasan pelaporan maksimal 200 karakter'),
+  details: z.string().trim().max(1000, 'Rincian laporan maksimal 1000 karakter').optional().nullable(),
 });
+
 export async function reportJobAction(jobId: string, reason: string, details?: string) {
   try {
+    const ip = await getClientIp();
+    const rateLimit = checkRateLimit('report_job', ip, 5, 10 * 60 * 1000); // 5 reports per 10 mins
+    if (!rateLimit.success) {
+      return { success: false, error: rateLimit.error };
+    }
     const rawData = { jobId, reason, details };
     const validatedData = reportSchema.safeParse(rawData);
 
@@ -35,8 +42,6 @@ export async function reportJobAction(jobId: string, reason: string, details?: s
     if (!jobExists) {
       const isDummy = dummyJobs.some(j => j.id === validatedData.data.jobId)
       if (isDummy) {
-        // Jika ini adalah data dummy, pura-pura sukses saja 
-        // karena tidak bisa masuk database (akan error foreign key)
         return { success: true }
       }
       return { success: false, error: 'Lowongan tidak ditemukan' }

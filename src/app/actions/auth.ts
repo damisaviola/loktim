@@ -6,11 +6,18 @@ import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { getClientIp, checkRateLimit } from '@/lib/rate-limit'
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET || 'super-secret-key-for-local-dev-change-in-prod'
 const key = new TextEncoder().encode(JWT_SECRET_KEY)
 
 export async function loginAction(formData: FormData) {
+  const ip = await getClientIp()
+  const rateLimit = checkRateLimit('admin_legacy_login', ip, 5, 15 * 60 * 1000) // 5 attempts per 15 mins
+  if (!rateLimit.success) {
+    return { success: false, error: rateLimit.error }
+  }
+
   const username = formData.get('username') as string
   const password = formData.get('password') as string
 
@@ -58,8 +65,17 @@ export async function loginAction(formData: FormData) {
 export async function logoutAction() {
   const cookieStore = await cookies()
   cookieStore.delete('admin_session')
+
+  try {
+    const { createClient } = await import('@/utils/supabase/server')
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+  } catch (e) {
+    // ignore
+  }
+
   revalidatePath('/', 'layout')
-  redirect('/login')
+  redirect('/admin/login')
 }
 
 export async function getUserSession() {

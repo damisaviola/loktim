@@ -14,6 +14,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/Dialog';
 
+import { toast } from 'sonner';
+
 export default function CloseJobButton({ jobId }: { jobId: string }) {
   const [isClosing, setIsClosing] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -22,9 +24,10 @@ export default function CloseJobButton({ jobId }: { jobId: string }) {
     setIsClosing(true);
     const result = await closeJobAction(jobId);
     if (result.success) {
+      toast.success('Lowongan berhasil ditutup');
       setIsOpen(false);
     } else {
-      alert(result.error);
+      toast.error(result.error || 'Gagal menutup lowongan');
     }
     setIsClosing(false);
   };

@@ -7,13 +7,14 @@ datasource db {
 }
 
 model Company {
-  id       String  @id @default(cuid())
-  name     String
-  location String
-  logoUrl  String?
-  email    String?
-  about    String?
-  jobs     Job[]
+  id         String  @id @default(cuid())
+  authUserId String? @unique
+  name       String
+  location   String
+  logoUrl    String?
+  email      String?
+  about      String?
+  jobs       Job[]
 }
 
 model Job {
@@ -46,11 +47,12 @@ model Job {
 }
 
 model Admin {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  authUserId String?  @unique
+  username   String   @unique
+  password   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model JobReport {
