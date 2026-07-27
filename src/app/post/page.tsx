@@ -5,15 +5,19 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { 
   Plus, Briefcase, MapPin, Building, CheckCircle2, 
-  Mail, Phone, Image as ImageIcon, Wallet,
-  GraduationCap, Award, Users, CalendarRange, LayoutList, Building2, UploadCloud, Info, Link as LinkIcon, User, CalendarClock, ArrowRight
+  Mail, Phone, Wallet, GraduationCap, Award, Users, LayoutList, Building2, UploadCloud, Info, Link as LinkIcon, User, CalendarClock, ArrowRight, Sparkles, X, Copy
 } from "lucide-react";
-import RichTextEditor from "@/components/ui/RichTextEditor";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import { createJobAction, getCompaniesByEmailAction } from "@/app/actions/job";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/utils/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/Dialog";
-import { Copy } from "lucide-react";
+
+const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), {
+  ssr: false,
+  loading: () => <div className="h-44 bg-slate-50 border border-slate-200 rounded-xl animate-pulse" />
+});
 
 export default function QuickPost() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -162,515 +166,560 @@ export default function QuickPost() {
   const copyToClipboard = () => {
     if (magicLink) {
       navigator.clipboard.writeText(magicLink);
-      alert("Link disalin!");
+      alert("Link berhasil disalin!");
     }
   };
 
   return (
-    <div className="container mx-auto px-0 sm:px-4 py-0 sm:py-10 max-w-[900px]">
-      <div className="bg-background sm:bg-transparent overflow-hidden flex flex-col min-h-[100dvh] sm:min-h-0 sm:gap-6">
-        
-        <Dialog open={success} onOpenChange={setSuccess}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader className="flex flex-col items-center text-center space-y-3">
-              <div className="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-sm">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-              <DialogTitle className="text-xl sm:text-2xl">Berhasil</DialogTitle>
-              <DialogDescription className="text-base text-slate-900/80 mt-2">
-                Lowongan berhasil dikirim dan sedang menunggu review admin.<br/><br/>
-                Simpan link berikut untuk melihat status lowongan Anda.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex items-center space-x-2 mt-4 bg-secondary/50 p-3 rounded-lg border border-border">
-              <div className="grid flex-1 gap-2">
-                <p className="text-sm font-medium text-muted-foreground truncate" title={magicLink}>
-                  {magicLink}
-                </p>
-              </div>
-              <Button size="icon" variant="ghost" className="shrink-0" onClick={copyToClipboard} title="Copy Link">
-                <Copy className="w-4 h-4" />
-              </Button>
+    <div className="max-w-[920px] mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-6 mb-24 sm:mb-12">
+      
+      {/* Dialog Success */}
+      <Dialog open={success} onOpenChange={setSuccess}>
+        <DialogContent className="sm:max-w-md rounded-3xl p-6">
+          <DialogHeader className="flex flex-col items-center text-center space-y-3">
+            <div className="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto shadow-2xs border border-emerald-100">
+              <CheckCircle2 className="w-7 h-7" />
             </div>
-            <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-6 sm:justify-center">
-              <Button type="button" variant="outline" className="w-full sm:w-auto font-bold" onClick={copyToClipboard}>
-                Copy Link
-              </Button>
-              <Link href={`/manage/${createdJobId}`} className="w-full sm:w-auto">
-                <Button type="button" className="w-full font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md">
-                  Buka Halaman Status
-                </Button>
-              </Link>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            <DialogTitle className="text-xl font-extrabold text-slate-900">Lowongan Berhasil Dikirim</DialogTitle>
+            <DialogDescription className="text-xs text-slate-600 leading-relaxed mt-1">
+              Lowongan Anda sedang dalam antrean review tim kami (maksimal 1x24 jam).<br/>
+              Simpan link di bawah ini untuk melihat status atau mengubah lowongan.
+            </DialogDescription>
+          </DialogHeader>
 
-        {/* HEADER BANNER */}
-        <div className="relative p-8 sm:p-12 sm:rounded-[24px] overflow-hidden bg-primary text-white shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-          <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="relative z-10 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-white text-xs font-bold tracking-wider uppercase shadow-sm rounded-lg mb-6">
-              <Plus className="w-3.5 h-3.5" /> Formulir Loker
-            </div>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4 leading-tight">Pasang Lowongan<br />Kerja Baru</h1>
-            <p className="text-base sm:text-lg text-slate-300 font-medium leading-relaxed max-w-lg">
-              Lengkapi informasi dengan detail agar dapat menarik dan menjangkau kandidat terbaik di Mimika.
+          <div className="flex items-center gap-2 mt-4 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+            <p className="text-xs font-mono text-slate-600 truncate flex-1" title={magicLink}>
+              {magicLink}
             </p>
+            <button 
+              type="button" 
+              onClick={copyToClipboard}
+              className="p-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:text-slate-900 transition-colors shadow-2xs"
+              title="Salin Link"
+            >
+              <Copy className="w-4 h-4" />
+            </button>
+          </div>
+
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-6">
+            <Button type="button" variant="outline" className="w-full sm:w-auto font-bold text-xs rounded-2xl h-11" onClick={copyToClipboard}>
+              Salin Link
+            </Button>
+            <Link href={`/manage/${createdJobId}`} className="w-full sm:w-auto">
+              <Button type="button" className="w-full font-bold text-xs rounded-2xl h-11 bg-primary text-white shadow-2xs">
+                Buka Status Lowongan
+              </Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Header Hero Banner */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-800 text-white rounded-3xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
+        <div className="relative z-10 space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-blue-200 text-xs font-semibold backdrop-blur-xs border border-white/10">
+            <Sparkles className="w-3.5 h-3.5 text-blue-300" />
+            <span>Gratis 100% Tanpa Biaya</span>
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+            Pasang Lowongan Kerja Baru
+          </h1>
+          <p className="text-slate-300 text-xs sm:text-sm font-medium max-w-lg pt-1">
+            Lengkapi formulir di bawah ini untuk menjangkau ribuan pencari kerja potensial di Mimika.
+          </p>
+        </div>
+        
+        {/* Ambient glows */}
+        <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-primary/25 blur-3xl rounded-full pointer-events-none"></div>
+      </div>
+
+      {/* Information Banner */}
+      <div className="bg-blue-50/70 border border-blue-100 rounded-3xl p-5 flex items-start gap-3.5 text-xs text-blue-900 font-medium">
+        <div className="w-8 h-8 rounded-xl bg-blue-100/80 text-blue-700 flex items-center justify-center shrink-0">
+          <Info className="w-4 h-4" />
+        </div>
+        <div className="space-y-1.5 flex-1">
+          <h4 className="font-bold text-blue-950 text-xs">Petunjuk Pemasangan Lowongan:</h4>
+          <ul className="space-y-1 text-slate-600 leading-relaxed list-disc pl-4">
+            <li>Lowongan bersifat <strong>100% Gratis</strong> dan akan direview oleh admin sebelum tayang publik.</li>
+            <li>Pastikan menyertakan email atau kontak WhatsApp yang aktif untuk menerima CV kandidat.</li>
+          </ul>
+          <Link href="/ketentuan-pasang-loker" target="_blank" className="inline-flex items-center gap-1 text-primary font-bold text-xs pt-1 hover:underline">
+            <span>Panduan & Ketentuan Selengkapnya</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Main Form */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+
+        {/* Section 1: Informasi Pekerjaan */}
+        <div className="bg-white border border-slate-200/80 shadow-xs rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100">
+            <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
+              <Briefcase className="w-5 h-5 text-slate-600" />
+            </div>
+            <div>
+              <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Detail Pekerjaan</h2>
+              <p className="text-xs text-slate-500 font-medium">Informasi utama mengenai posisi yang dibuka</p>
+            </div>
+          </div>
+
+          <div className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              
+              {/* Posisi Pekerjaan */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 block">
+                  Posisi Pekerjaan <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    required
+                    name="title"
+                    type="text"
+                    placeholder="Cth: Mekanik Alat Berat"
+                    className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                  />
+                </div>
+              </div>
+
+              {/* Kategori */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 block">
+                  Kategori <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    required
+                    name="category"
+                    defaultValue=""
+                    className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled hidden>Pilih Kategori</option>
+                    <option value="Teknik & Engineering">Teknik & Engineering</option>
+                    <option value="Operasional">Operasional</option>
+                    <option value="Admin & HR">Admin & HR</option>
+                    <option value="IT & Software">IT & Software</option>
+                    <option value="F&B">F&B / Restoran</option>
+                    <option value="Logistik">Logistik & Gudang</option>
+                    <option value="Pelayanan">Pelayanan / Hospitality</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Lokasi Penempatan */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">
+                Lokasi Penempatan (Kerja) <span className="text-rose-500">*</span>
+              </label>
+              <input
+                required
+                name="location"
+                type="text"
+                placeholder="Cth: Kuala Kencana, Timika"
+                className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+              />
+            </div>
+
+            {/* Kisaran Gaji */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                  <span>Gaji Minimal</span>
+                  <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+                </label>
+                <div className="relative flex items-center">
+                  <span className="absolute left-4 text-xs font-bold text-slate-400 pointer-events-none">Rp</span>
+                  <input type="hidden" name="salaryMin" value={salaryMinDisplay.replace(/\D/g, "")} />
+                  <input
+                    type="text"
+                    value={salaryMinDisplay}
+                    onChange={handleSalaryMinChange}
+                    placeholder="5.000.000"
+                    className="w-full h-12 pl-10 pr-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                  <span>Gaji Maksimal</span>
+                  <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+                </label>
+                <div className="relative flex items-center">
+                  <span className="absolute left-4 text-xs font-bold text-slate-400 pointer-events-none">Rp</span>
+                  <input type="hidden" name="salaryMax" value={salaryMaxDisplay.replace(/\D/g, "")} />
+                  <input
+                    type="text"
+                    value={salaryMaxDisplay}
+                    onChange={handleSalaryMaxChange}
+                    placeholder="8.000.000"
+                    className="w-full h-12 pl-10 pr-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Poster Upload */}
+            <div className="space-y-1.5 pt-1">
+              <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                <span>Poster / Banner Lowongan</span>
+                <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+              </label>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <label className="flex items-center justify-center h-12 px-5 border border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all cursor-pointer group shrink-0">
+                  <UploadCloud className="w-4 h-4 mr-2 text-slate-400 group-hover:text-primary transition-colors" />
+                  <span className="text-xs font-bold">Pilih File Gambar</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                </label>
+
+                {imagePreview ? (
+                  <div className="relative w-16 h-16 rounded-2xl border border-slate-200 overflow-hidden bg-slate-50 shrink-0">
+                    <Image src={imagePreview} alt="Preview" fill sizes="64px" unoptimized className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); setSelectedImage(null); setImagePreview(null); }}
+                      className="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full p-1 hover:bg-rose-600 transition-colors z-10"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-[11px] text-slate-400 font-medium">Format JPG, PNG, WEBP (Maksimal 5MB)</span>
+                )}
+              </div>
+            </div>
+
+            {/* Deskripsi Lengkap */}
+            <div className="space-y-1.5 pt-2">
+              <label className="text-xs font-bold text-slate-700 block">
+                Deskripsi Lengkap <span className="text-rose-500">*</span>
+              </label>
+              <div className="rounded-2xl overflow-hidden">
+                <RichTextEditor
+                  defaultValue={description}
+                  onChange={(val) => setDescription(val)}
+                  placeholder="Jelaskan peran, tanggung jawab, dan gambaran tugas harian..."
+                />
+              </div>
+            </div>
+
+            {/* Persyaratan */}
+            <div className="space-y-1.5 pt-2">
+              <label className="text-xs font-bold text-slate-700 block">
+                Persyaratan (Requirements) <span className="text-rose-500">*</span>
+              </label>
+              <div className="rounded-2xl overflow-hidden">
+                <RichTextEditor
+                  defaultValue={requirements}
+                  onChange={(val) => setRequirements(val)}
+                  placeholder={"1. Pendidikan minimal...\n2. Memiliki SIM A/C..."}
+                />
+              </div>
+            </div>
+
           </div>
         </div>
 
-        {/* MAIN FORM */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 p-4 sm:p-0">
-
-          {/* INFORMATION SECTION */}
-          <div className="px-4 sm:px-6 py-2 mb-2">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-slate-50 rounded-lg shrink-0">
-                <Info className="w-5 h-5 text-slate-700" />
-              </div>
-              <h3 className="font-bold text-foreground text-lg tracking-tight">Informasi Pemasangan Lowongan</h3>
+        {/* Section 2: Kualifikasi */}
+        <div className="bg-white border border-slate-200/80 shadow-xs rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100">
+            <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
+              <Award className="w-5 h-5 text-slate-600" />
             </div>
-            <div className="pl-11">
-              <ul className="text-sm sm:text-base text-muted-foreground space-y-3">
-                <li className="flex items-start gap-3">
-                  <span className="text-blue-500 font-bold mt-0.5">•</span>
-                  <span className="leading-relaxed">Pemasangan lowongan kerja di platform kami <strong className="text-foreground">100% Gratis</strong> tanpa dipungut biaya apapun.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-blue-500 font-bold mt-0.5">•</span>
-                  <span className="leading-relaxed">Setiap lowongan akan melalui proses <strong className="text-foreground">review oleh tim kami</strong> sebelum ditayangkan publik (maksimal 1x24 jam).</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-blue-500 font-bold mt-0.5">•</span>
-                  <span className="leading-relaxed">Pastikan mencantumkan <strong className="text-foreground">informasi kontak yang aktif</strong> (Email/WhatsApp) agar pelamar dapat menghubungi Anda dengan mudah.</span>
-                </li>
-              </ul>
-              <div className="mt-5">
-                <Link href="/ketentuan-pasang-loker" target="_blank" className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-700 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
-                  Baca Panduan & Ketentuan Selengkapnya <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
+            <div>
+              <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Kualifikasi Kandidat</h2>
+              <p className="text-xs text-slate-500 font-medium">Kriteria dan preferensi kandidat</p>
             </div>
           </div>
 
-          {/* Section 1: Informasi Pekerjaan */}
-          <div className="bg-white border border-slate-200/80 sm:rounded-[24px] p-6 sm:p-10 shadow-[0_2px_8px_rgba(0,0,0,0.02)] relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-primary rounded-l-[24px] hidden sm:block opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            
-            <div className="flex items-center gap-4 mb-8 pb-5 border-b border-slate-100">
-              <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-700 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm">
-                <Briefcase className="w-7 h-7" />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Detail Pekerjaan</h2>
-                <p className="text-sm text-slate-500 mt-1">Informasi utama mengenai posisi yang ditawarkan</p>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Tipe Kontrak */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">
+                Tipe Kontrak <span className="text-rose-500">*</span>
+              </label>
+              <select
+                required
+                name="type"
+                defaultValue="Full-time"
+                className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
+              >
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+                <option value="Magang">Magang</option>
+                <option value="Kontrak">Kontrak</option>
+                <option value="Freelance">Freelance</option>
+              </select>
             </div>
 
-            <div className="space-y-7">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 block">Posisi Pekerjaan <span className="text-red-500">*</span></label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Briefcase className="h-5 w-5 text-slate-400" />
-                    </div>
-                    <input required name="title" type="text" placeholder="Cth: Mekanik Alat Berat" className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                  </div>
-                </div>
+            {/* Pendidikan Minimal */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">Pendidikan Minimal</label>
+              <select
+                name="education"
+                defaultValue="Semua"
+                className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
+              >
+                <option value="Semua">Semua Jenjang</option>
+                <option value="SMA/SMK">SMA/SMK</option>
+                <option value="D3">Diploma (D3)</option>
+                <option value="S1">Sarjana (S1)</option>
+              </select>
+            </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 block">Kategori <span className="text-red-500">*</span></label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <LayoutList className="h-5 w-5 text-slate-400" />
-                    </div>
-                    <select required name="category" defaultValue="" className="w-full h-14 pl-12 pr-10 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer appearance-none font-medium">
-                      <option value="" disabled hidden>Pilih Kategori</option>
-                      <option value="Teknik & Engineering">Teknik & Engineering</option>
-                      <option value="Operasional">Operasional</option>
-                      <option value="Admin & HR">Admin & HR</option>
-                      <option value="IT & Software">IT & Software</option>
-                      <option value="F&B">F&B / Restoran</option>
-                      <option value="Logistik">Logistik & Gudang</option>
-                      <option value="Pelayanan">Pelayanan / Hospitality</option>
-                    </select>
-                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-muted-foreground">
-                      <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Pengalaman */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">Pengalaman Kerja</label>
+              <select
+                name="experience"
+                defaultValue="Tanpa Pengalaman"
+                className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
+              >
+                <option value="Tanpa Pengalaman">Fresh Graduate</option>
+                <option value="1-3 Tahun">1-3 Tahun</option>
+                <option value="3-5 Tahun">3-5 Tahun</option>
+                <option value="> 5 Tahun">Lebih dari 5 Tahun</option>
+              </select>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 block flex justify-between items-center">
-                    Gaji Minimal <span className="text-xs text-slate-400 font-normal">(Opsional)</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none gap-2">
-                      <Wallet className="h-5 w-5 text-slate-400" />
-                      <span className="text-muted-foreground font-semibold">Rp</span>
-                    </div>
-                    <input type="hidden" name="salaryMin" value={salaryMinDisplay.replace(/\D/g, "")} />
-                    <input type="text" value={salaryMinDisplay} onChange={handleSalaryMinChange} placeholder="5.000.000" className="w-full h-14 pl-[5.5rem] pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 block flex justify-between items-center">
-                    Gaji Maksimal <span className="text-xs text-slate-400 font-normal">(Opsional)</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none gap-2">
-                      <Wallet className="h-5 w-5 text-slate-400" />
-                      <span className="text-muted-foreground font-semibold">Rp</span>
-                    </div>
-                    <input type="hidden" name="salaryMax" value={salaryMaxDisplay.replace(/\D/g, "")} />
-                    <input type="text" value={salaryMaxDisplay} onChange={handleSalaryMaxChange} placeholder="8.000.000" className="w-full h-14 pl-[5.5rem] pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                  </div>
-                </div>
-              </div>
+            {/* Preferensi Gender */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">Preferensi Gender</label>
+              <select
+                name="gender"
+                defaultValue="Pria/Wanita"
+                className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
+              >
+                <option value="Pria/Wanita">Pria / Wanita (Bebas)</option>
+                <option value="Pria">Khusus Pria</option>
+                <option value="Wanita">Khusus Wanita</option>
+              </select>
+            </div>
 
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700 block">Poster / Banner Lowongan <span className="text-xs text-slate-400 font-normal ml-2">(Opsional)</span></label>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  <label className="flex items-center justify-center w-full sm:w-auto h-14 px-6 border-2 border-dashed border-slate-200 bg-slate-50 text-slate-600 rounded-xl cursor-pointer hover:bg-slate-100 hover:border-slate-300 transition-all group">
-                    <UploadCloud className="w-5 h-5 mr-2.5 group-hover:-translate-y-1 transition-transform" />
-                    <span className="text-sm font-bold tracking-wide">Pilih Gambar</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                  </label>
-                  
-                  {imagePreview ? (
-                    <div className="relative w-24 h-24 rounded-xl border border-border shadow-sm overflow-hidden bg-card">
-                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                      <button type="button" onClick={(e) => { e.preventDefault(); setSelectedImage(null); setImagePreview(null); }} className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 hover:bg-red-500 transition-colors">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-xs text-muted-foreground leading-relaxed max-w-xs flex items-start gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                      <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-                      <p>Format JPG, PNG, WEBP. Maksimal 5MB. Gambar akan dioptimasi otomatis ke ukuran WebP.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
+            {/* Usia Maksimal */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                <span>Batas Umur Maksimal</span>
+                <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+              </label>
+              <input
+                name="ageRange"
+                type="number"
+                min="15"
+                max="100"
+                placeholder="Cth: 35"
+                className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 block">Deskripsi Lengkap <span className="text-red-500">*</span></label>
-                <div className="rounded-xl overflow-hidden border border-border/60 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all">
-                  <RichTextEditor
-                    defaultValue={description}
-                    onChange={(val) => setDescription(val)}
-                    placeholder="Jelaskan peran, tanggung jawab, dan gambaran umum pekerjaan..."
-                  />
-                </div>
-              </div>
+            {/* Batas Lamaran */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                <span>Batas Akhir Lamaran</span>
+                <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+              </label>
+              <input
+                name="deadline"
+                type="date"
+                className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+              />
+            </div>
+          </div>
+        </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 block">Persyaratan (Requirements) <span className="text-red-500">*</span></label>
-                <div className="rounded-xl overflow-hidden border border-border/60 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all">
-                  <RichTextEditor
-                    defaultValue={requirements}
-                    onChange={(val) => setRequirements(val)}
-                    placeholder={"1. Pendidikan minimal...\n2. Pengalaman kerja..."}
-                  />
-                </div>
-              </div>
+        {/* Section 3: Perusahaan & Kontak */}
+        <div className="bg-white border border-slate-200/80 shadow-xs rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100">
+            <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
+              <Building2 className="w-5 h-5 text-slate-600" />
+            </div>
+            <div>
+              <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Perusahaan & Kontak</h2>
+              <p className="text-xs text-slate-500 font-medium">Identitas instansi dan saluran pengiriman lamaran</p>
             </div>
           </div>
 
-          {/* Section 2: Kualifikasi */}
-          <div className="bg-white border border-slate-200/80 sm:rounded-[24px] p-6 sm:p-10 shadow-[0_2px_8px_rgba(0,0,0,0.02)] relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-primary rounded-l-[24px] hidden sm:block opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            
-            <div className="flex items-center gap-4 mb-8 pb-5 border-b border-slate-100">
-              <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-700 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm">
-                <Award className="w-7 h-7" />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Kualifikasi Kandidat</h2>
-                <p className="text-sm text-slate-500 mt-1">Spesifikasi pencari kerja yang Anda cari</p>
-              </div>
+          <div className="space-y-5">
+            {/* Email Field */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">
+                Email Perekrut / HRD <span className="text-rose-500">*</span>
+              </label>
+              <input
+                required
+                name="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="hrd@perusahaan.com"
+                className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+              />
+              <p className="text-[11px] text-slate-400 font-medium pt-0.5">
+                {email.length === 0 ? "Ketik email Anda untuk mendeteksi profil perusahaan." : 
+                 companyList.length > 0 ? "✅ Perusahaan terdaftar ditemukan untuk email ini." :
+                 debouncedEmail.includes("@") ? "ℹ️ Email baru. Silakan isi data perusahaan baru di bawah." : ""}
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 block">Tipe Kontrak <span className="text-red-500">*</span></label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Briefcase className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <select required name="type" defaultValue="Full-time" className="w-full h-14 pl-12 pr-10 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer appearance-none font-medium">
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
-                    <option value="Magang">Magang</option>
-                    <option value="Kontrak">Kontrak</option>
-                    <option value="Freelance">Freelance</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-muted-foreground">
-                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                  </div>
-                </div>
+            {/* Switch Perusahaan */}
+            {companyList.length > 0 && (
+              <div className="bg-slate-100 p-1 rounded-2xl flex max-w-sm border border-slate-200/60">
+                <button
+                  type="button"
+                  onClick={() => { setIsNewCompany(false); setSelectedCompanyId(companyList[0]?.id || ""); }}
+                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all ${!isNewCompany ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-900"}`}
+                >
+                  Perusahaan Terdaftar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setIsNewCompany(true); setSelectedCompanyId(""); }}
+                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all ${isNewCompany ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-900"}`}
+                >
+                  + Tambah Baru
+                </button>
               </div>
+            )}
 
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 block">Pendidikan Minimal</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <GraduationCap className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <select name="education" defaultValue="Semua" className="w-full h-14 pl-12 pr-10 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer appearance-none font-medium">
-                    <option value="Semua">Semua Jenjang</option>
-                    <option value="SMA/SMK">SMA/SMK</option>
-                    <option value="D3">Diploma (D3)</option>
-                    <option value="S1">Sarjana (S1)</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-muted-foreground">
-                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 block">Pengalaman</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Award className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <select name="experience" defaultValue="Tanpa Pengalaman" className="w-full h-14 pl-12 pr-10 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer appearance-none font-medium">
-                    <option value="Tanpa Pengalaman">Fresh Graduate</option>
-                    <option value="1-3 Tahun">1-3 Tahun</option>
-                    <option value="3-5 Tahun">3-5 Tahun</option>
-                    <option value="> 5 Tahun">Lebih dari 5 Tahun</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-muted-foreground">
-                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 block">Preferensi Gender</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Users className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <select name="gender" defaultValue="Pria/Wanita" className="w-full h-14 pl-12 pr-10 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer appearance-none font-medium">
-                    <option value="Pria/Wanita">Pria / Wanita (Bebas)</option>
-                    <option value="Pria">Khusus Pria</option>
-                    <option value="Wanita">Khusus Wanita</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-muted-foreground">
-                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-2 sm:col-span-2 md:col-span-1">
-                <label className="text-sm font-bold text-slate-700 block flex justify-between">
-                  Batasan Umur Maksimal <span className="text-xs text-slate-400 font-normal">(Opsional)</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input name="ageRange" type="number" min="15" max="100" placeholder="Cth: 35" className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                </div>
-              </div>
-
-              <div className="space-y-2 sm:col-span-2 md:col-span-1">
-                <label className="text-sm font-bold text-slate-700 block flex justify-between">
-                  Batas Lamaran <span className="text-xs text-slate-400 font-normal">(Opsional)</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <CalendarClock className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input name="deadline" type="date" className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 3: Perusahaan & Kontak */}
-          <div className="bg-white border border-slate-200/80 sm:rounded-[24px] p-6 sm:p-10 shadow-[0_2px_8px_rgba(0,0,0,0.02)] relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-primary rounded-l-[24px] hidden sm:block opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            
-            <div className="flex items-center gap-4 mb-8 pb-5 border-b border-slate-100">
-              <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-700 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm">
-                <Building2 className="w-7 h-7" />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Perusahaan & Kontak</h2>
-                <p className="text-sm text-slate-500 mt-1">Identitas dan cara pelamar menghubungi Anda</p>
-              </div>
-            </div>
-
-            <div className="space-y-8">
-              {/* Field Email (Move to top) */}
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 block">Email Perusahaan / Perekrut <span className="text-red-500">*</span></label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input required name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hrd@perusahaan.com" className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1.5 ml-1">
-                  Email aktif untuk menerima CV/Lamaran. {email.length === 0 ? "Ketik email Anda untuk memuat daftar perusahaan yang terdaftar." : 
-                   companyList.length > 0 ? "✅ Perusahaan ditemukan untuk email ini." :
-                   debouncedEmail.includes("@") ? "ℹ️ Email ini belum memiliki perusahaan terdaftar. Silakan isi form perusahaan baru." : ""}
-                </p>
-              </div>
-
-              {/* Switch Perusahaan (only show if companyList > 0) */}
-              {companyList.length > 0 && (
-                <div className="bg-slate-50 p-1.5 rounded-xl flex max-w-md mx-auto sm:mx-0 border border-slate-200">
-                  <button
-                    type="button"
-                    onClick={() => { setIsNewCompany(false); setSelectedCompanyId(companyList[0]?.id || ""); }}
-                    className={`flex-1 flex justify-center items-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all ${!isNewCompany ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-900"}`}
+            {/* Container Profil Perusahaan */}
+            <div className="bg-slate-50/70 p-5 rounded-2xl border border-slate-200/80 space-y-4">
+              {!isNewCompany ? (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 block">Pilih Perusahaan Terdaftar</label>
+                  <select
+                    required={!isNewCompany}
+                    name="companyId"
+                    value={selectedCompanyId}
+                    onChange={(e) => setSelectedCompanyId(e.target.value)}
+                    className="w-full h-12 px-4 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
                   >
-                    <Building className="h-4 w-4" /> Perusahaan Terdaftar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setIsNewCompany(true); setSelectedCompanyId(""); }}
-                    className={`flex-1 flex justify-center items-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all ${isNewCompany ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-900"}`}
-                  >
-                    <Plus className="h-4 w-4" /> Perusahaan Baru
-                  </button>
+                    <option value="" disabled hidden>-- Pilih Perusahaan --</option>
+                    {companyList.map(comp => (
+                      <option key={comp.id} value={comp.id}>{comp.name}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">
+                        Nama Perusahaan <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        required={isNewCompany}
+                        name="newCompanyName"
+                        type="text"
+                        placeholder="Cth: PT. Timika Jaya"
+                        className="w-full h-12 px-4 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">
+                        Alamat Perusahaan <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        required={isNewCompany}
+                        name="newCompanyLocation"
+                        type="text"
+                        placeholder="Cth: Timika, Papua Tengah"
+                        className="w-full h-12 px-4 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                      <span>Deskripsi Perusahaan</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+                    </label>
+                    <textarea
+                      name="newCompanyDesc"
+                      rows={3}
+                      placeholder="Profil singkat atau bidang industri perusahaan..."
+                      className="w-full p-4 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all resize-none placeholder:text-slate-400"
+                    />
+                  </div>
                 </div>
               )}
-
-              {/* Form Perusahaan */}
-              <div className="bg-slate-50/50 p-5 rounded-[24px] border border-slate-200">
-                {!isNewCompany ? (
-                  <div className="space-y-2 animate-in fade-in zoom-in-95 duration-200">
-                    <label className="text-sm font-bold text-slate-700 block">Pilih Perusahaan <span className="text-red-500">*</span></label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Building className="h-5 w-5 text-slate-400" />
-                      </div>
-                      <select required={!isNewCompany} name="companyId" value={selectedCompanyId} onChange={(e) => setSelectedCompanyId(e.target.value)} className="w-full h-14 pl-12 pr-10 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all cursor-pointer appearance-none font-medium">
-                        <option value="" disabled hidden>-- Pilih Perusahaan Anda --</option>
-                        {companyList.map(comp => (
-                          <option key={comp.id} value={comp.id}>{comp.name}</option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-muted-foreground">
-                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700 block">Nama Perusahaan <span className="text-red-500">*</span></label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Building className="h-5 w-5 text-slate-400" />
-                          </div>
-                          <input required={isNewCompany} name="newCompanyName" type="text" placeholder="Cth: PT. Sukses Makmur" className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-slate-700 block">Lokasi Penempatan <span className="text-red-500">*</span></label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <MapPin className="h-5 w-5 text-slate-400" />
-                          </div>
-                          <input required={isNewCompany} name="newCompanyLocation" type="text" placeholder="Cth: Kuala Kencana, Timika" className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-slate-700 block flex justify-between">
-                        Deskripsi Perusahaan <span className="text-xs text-slate-400 font-normal">(Opsional)</span>
-                      </label>
-                      <textarea name="newCompanyDesc" rows={3} placeholder="Profil singkat atau bidang industri perusahaan..." className="w-full px-4 py-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all resize-none font-medium placeholder:font-normal placeholder:text-slate-400" />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Kontak Tambahan */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 block flex justify-between">
-                    Nomor WhatsApp <span className="text-xs text-slate-400 font-normal">(Opsional)</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Phone className="h-5 w-5 text-slate-400" />
-                    </div>
-                    <input name="whatsapp" type="tel" placeholder="081234567890" className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1.5 ml-1">
-                    Isi jika Anda ingin menerima lamaran atau pertanyaan via WhatsApp.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 block flex justify-between">
-                    Link Google Form / Eksternal <span className="text-xs text-slate-400 font-normal">(Opsional)</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <LinkIcon className="h-5 w-5 text-slate-400" />
-                    </div>
-                    <input name="applicationLink" type="url" placeholder="https://forms.gle/..." className="w-full h-14 pl-12 pr-4 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-base text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium placeholder:font-normal placeholder:text-slate-400" />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1.5 ml-1">
-                    Gunakan link khusus (misal Google Form) jika ada. Pelamar akan diarahkan ke link ini.
-                  </p>
-                </div>
-              </div>
-
             </div>
-          </div>
 
-          {/* PERSETUJUAN KETENTUAN */}
-          <div className="bg-slate-50 p-4 sm:p-5 border border-slate-200/80 rounded-2xl flex items-start gap-3 sm:mx-0 mx-4">
-            <input 
-              type="checkbox" 
-              id="terms" 
-              name="terms" 
-              required 
-              className="mt-1 w-5 h-5 shrink-0 rounded text-blue-600 focus:ring-blue-500 bg-background border-border/60 cursor-pointer transition-all"
-            />
-            <label htmlFor="terms" className="text-sm font-medium leading-relaxed text-foreground/90 cursor-pointer select-none">
-              Saya telah membaca dan menyetujui <Link href="/ketentuan-pasang-loker" target="_blank" className="text-slate-700 hover:underline font-bold">Panduan & Ketentuan Pasang Lowongan</Link>. Saya memahami bahwa form ini akan di-review dan jika melanggar dapat ditolak/dihapus.
-            </label>
-          </div>
+            {/* Kontak Tambahan */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                  <span>Nomor WhatsApp</span>
+                  <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+                </label>
+                <input
+                  name="whatsapp"
+                  type="tel"
+                  placeholder="081234567890"
+                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                />
+              </div>
 
-          {/* ACTION BUTTONS (Sticky Bottom) */}
-          <div className="sticky bottom-0 sm:bottom-6 z-50 bg-white/90 backdrop-blur-xl p-4 sm:p-5 border-t border-slate-200/80 sm:border sm:rounded-2xl mt-4 flex flex-col-reverse sm:flex-row sm:justify-end sm:items-center gap-3">
-            <span className="text-xs font-medium text-muted-foreground hidden md:inline-flex mr-auto items-center gap-1.5">
-              <Info className="w-4 h-4" /> Pastikan semua data sudah benar sebelum mengirim.
-            </span>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                  <span>Link Google Form / Aplikasi</span>
+                  <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+                </label>
+                <input
+                  name="applicationLink"
+                  type="url"
+                  placeholder="https://forms.gle/..."
+                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                />
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Terms Agreement */}
+        <div className="bg-slate-50 p-4 border border-slate-200/80 rounded-2xl flex items-start gap-3">
+          <input 
+            type="checkbox" 
+            id="terms" 
+            name="terms" 
+            required 
+            className="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer shrink-0"
+          />
+          <label htmlFor="terms" className="text-xs font-medium text-slate-600 leading-relaxed cursor-pointer select-none">
+            Saya telah membaca dan menyetujui <Link href="/ketentuan-pasang-loker" target="_blank" className="text-slate-900 font-bold underline hover:text-primary">Panduan & Ketentuan Pasang Lowongan</Link>. Informasi yang diisi adalah benar dan tidak mengandung penipuan.
+          </label>
+        </div>
+
+        {/* Sticky Bottom Action Bar */}
+        <div className="fixed bottom-0 left-0 right-0 sm:sticky sm:bottom-6 z-50 bg-white/90 backdrop-blur-md border-t border-slate-200/80 sm:border sm:rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg">
+          <span className="text-xs font-medium text-slate-400 hidden sm:inline">
+            Pastikan seluruh data sudah terisi dengan benar.
+          </span>
+          <div className="flex gap-2.5 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => window.history.back()}
-              className="px-6 py-3.5 sm:py-3 rounded-xl text-base sm:text-sm font-bold text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 transition-all w-full sm:w-auto"
+              className="px-5 h-11 rounded-2xl text-xs font-bold text-slate-600 bg-white hover:bg-slate-50 border border-slate-200/80 transition-all flex-1 sm:flex-none cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-8 py-3.5 sm:py-3 rounded-xl text-base sm:text-sm font-bold text-white bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-blue-600/40 hover:-translate-y-0.5 transition-all w-full sm:w-auto flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              className="px-7 h-11 rounded-2xl text-xs font-bold text-white bg-primary hover:bg-primary/90 shadow-2xs hover:shadow transition-all flex-1 sm:flex-none flex items-center justify-center gap-1.5 disabled:opacity-70 cursor-pointer"
             >
-              <CheckCircle2 className="h-5 w-5" />
-              {isSubmitting ? "Memproses..." : "Kirim Lowongan"}
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{isSubmitting ? "Memproses..." : "Kirim Lowongan Sekarang"}</span>
             </button>
           </div>
+        </div>
 
-        </form>
-      </div>
+      </form>
     </div>
   );
 }

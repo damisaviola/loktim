@@ -2,6 +2,7 @@
 
 import { useTableSortAndSearch } from "@/hooks/useTableSortAndSearch";
 import { CheckCircle2, Search, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
+import Image from "next/image";
 import JobActionButtons from "./JobActionButtons";
 import { Input } from "@/components/ui/Input";
 
@@ -87,11 +88,16 @@ export default function PendingJobsNativeTable({ pendingJobs }: { pendingJobs: a
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       {job.company?.logoUrl ? (
-                        <img 
-                          src={job.company.logoUrl} 
-                          alt={job.company.name} 
-                          className="h-8 w-8 rounded bg-gray-100 object-cover border border-gray-200" 
-                        />
+                        <div className="h-8 w-8 rounded bg-gray-100 border border-gray-200 overflow-hidden relative">
+                          <Image 
+                            src={job.company.logoUrl} 
+                            alt={job.company.name} 
+                            fill 
+                            sizes="32px" 
+                            loading="lazy" 
+                            className="object-cover" 
+                          />
+                        </div>
                       ) : (
                         <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
                           {job.company?.name?.charAt(0) || "?"}

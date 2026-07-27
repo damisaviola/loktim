@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useTransition, useEffect } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -14,7 +14,7 @@ import RichTextEditor from "@/components/ui/RichTextEditor";
 import { getCompaniesByEmailAction, createJobAction } from "@/app/actions/job";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/utils/supabase/client";
-import { useEffect } from "react";
+import Image from 'next/image';
 
 interface JobFormModalProps {
   open: boolean;
@@ -283,8 +283,8 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   
                   {imagePreview ? (
                     <div className="relative w-20 h-20 rounded-lg border border-border shadow-sm overflow-hidden bg-card shrink-0">
-                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                      <button type="button" onClick={(e) => { e.preventDefault(); setSelectedImage(null); setImagePreview(null); }} className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 hover:bg-red-500 transition-colors">
+                      <Image src={imagePreview} alt="Preview" fill sizes="80px" unoptimized className="object-cover" />
+                      <button type="button" onClick={(e) => { e.preventDefault(); setSelectedImage(null); setImagePreview(null); }} className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 hover:bg-red-500 transition-colors z-10">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                       </button>
                     </div>

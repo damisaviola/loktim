@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Building2, Info } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -34,10 +35,16 @@ export function CompanyMobileModal({ job, companyJobsCount }: CompanyMobileModal
 
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-4 mb-2">
-            <div className="w-16 h-16 bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 rounded-2xl">
+            <div className="w-16 h-16 bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 rounded-2xl relative overflow-hidden">
               {(job.imageUrl || job.company?.logoUrl) ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={job.imageUrl || job.company?.logoUrl} alt={job.company?.name || "Company Logo"} className="w-full h-full object-contain p-2" />
+                <Image 
+                  src={(job.imageUrl || job.company?.logoUrl) as string} 
+                  alt={job.company?.name || "Company Logo"} 
+                  fill 
+                  sizes="64px" 
+                  loading="lazy" 
+                  className="object-contain p-2" 
+                />
               ) : (
                 <Building2 className="w-7 h-7 text-slate-300" />
               )}

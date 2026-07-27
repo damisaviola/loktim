@@ -32,6 +32,7 @@ model Job {
   isPremium    Boolean  @default(false)
   status       String?  @default("pending")
   postedAt     DateTime @default(now())
+  location     String?
   description  String
   requirements String[]
   contactUrl   String

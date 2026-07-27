@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { useTableSortAndSearch } from "@/hooks/useTableSortAndSearch";
+import Image from "next/image";
 
 export default function CompaniesPage() {
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
@@ -70,138 +71,146 @@ export default function CompaniesPage() {
         </div>
       </div>
 
-      {/* Table Section */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-        
-        {/* Table Toolbar & Search */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-200 p-4 sm:p-6 bg-gray-50/30">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700">Total:</span>
-            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-              {companiesList.length} Perusahaan
-            </span>
-          </div>
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+      {/* Controls & Search Toolbar */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Perusahaan:</span>
+          <span className="inline-flex items-center justify-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-extrabold text-primary border border-primary/20">
+            {companiesList.length} Perusahaan
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-72">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               placeholder="Cari perusahaan atau lokasi..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="pl-9 h-9 bg-white border-gray-200 shadow-sm text-sm focus-visible:ring-primary/20"
+              className="pl-10 h-10 bg-slate-50/80 border-slate-200/80 rounded-xl text-xs font-semibold focus-visible:ring-primary/20"
             />
           </div>
-        </div>
 
-        {/* Data Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600">
-            <thead className="bg-gray-50/50 text-gray-500 border-b border-gray-200">
-              <tr>
-                <th 
-                  scope="col" 
-                  className="px-6 py-3 font-medium cursor-pointer select-none group hover:text-gray-900 transition-colors"
-                  onClick={() => handleSort('name')}
-                >
-                  Perusahaan <SortIcon columnKey="name" />
-                </th>
-                <th 
-                  scope="col" 
-                  className="px-6 py-3 font-medium cursor-pointer select-none group hover:text-gray-900 transition-colors"
-                  onClick={() => handleSort('location')}
-                >
-                  Lokasi <SortIcon columnKey="location" />
-                </th>
-                <th 
-                  scope="col" 
-                  className="px-6 py-3 font-medium text-center cursor-pointer select-none group hover:text-gray-900 transition-colors"
-                  onClick={() => handleSort('jobCount')}
-                >
-                  <div className="flex items-center justify-center">
-                    Total Lowongan <SortIcon columnKey="jobCount" />
-                  </div>
-                </th>
-                <th scope="col" className="px-6 py-3 font-medium text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                    Memuat data perusahaan...
-                  </td>
-                </tr>
-              ) : processedData.length > 0 ? (
-                processedData.map((company) => (
-                  <tr key={company.id} className="hover:bg-gray-50 transition-colors group">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-4">
-                        {company.logoUrl ? (
-                          <img 
-                            src={company.logoUrl} 
-                            alt={company.name} 
-                            className="h-10 w-10 rounded-lg bg-white object-cover border border-gray-200 shadow-sm" 
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold shadow-sm">
-                            {company.name.charAt(0)}
-                          </div>
-                        )}
-                        <div>
-                          <div className="font-semibold text-gray-900">{company.name}</div>
-                          <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
-                            <Building className="h-3 w-3" />
-                            ID: {company.id.toUpperCase()}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5 text-gray-600">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        {company.location}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 border border-blue-100">
-                        <Briefcase className="h-3.5 w-3.5" />
-                        {company.jobCount} Lowongan
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex justify-end gap-3">
-                        <button 
-                          onClick={() => setSelectedCompany(company)}
-                          className="text-primary hover:text-primary/80 hover:bg-primary/5 p-1.5 rounded-md transition-colors" 
-                          title="Lihat Profil"
-                        >
-                          <Eye className="h-5 w-5" />
-                        </button>
-                        <button className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 p-1.5 rounded-md transition-colors" title="Edit Data">
-                          <Edit className="h-5 w-5" />
-                        </button>
-                        <button className="text-red-500 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-md transition-colors" title="Hapus">
-                          <Trash2 className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                    <div className="flex flex-col items-center justify-center">
-                      <Search className="h-8 w-8 text-gray-300 mb-3" />
-                      <p className="font-medium text-gray-900">Pencarian tidak ditemukan</p>
-                      <p className="text-sm mt-1">Tidak ada perusahaan yang cocok dengan kriteria pencarian Anda.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <button
+            onClick={() => handleSort('jobCount')}
+            className="h-10 px-3 bg-slate-50 border border-slate-200/80 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-700 transition-colors flex items-center gap-1.5 shrink-0"
+            title="Urutkan berdasarkan total lowongan"
+          >
+            <Briefcase className="w-3.5 h-3.5 text-slate-500" />
+            <span className="hidden sm:inline">Urutkan Lowongan</span>
+            <SortIcon columnKey="jobCount" />
+          </button>
         </div>
-        
       </div>
+
+      {/* Cards Grid */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white border border-slate-200/80 rounded-3xl p-5 space-y-4 animate-pulse">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-slate-100 rounded-2xl"></div>
+                <div className="space-y-2 flex-1">
+                  <div className="h-4 bg-slate-100 rounded w-3/4"></div>
+                  <div className="h-3 bg-slate-100 rounded w-1/2"></div>
+                </div>
+              </div>
+              <div className="h-12 bg-slate-100 rounded-xl"></div>
+              <div className="h-9 bg-slate-100 rounded-xl"></div>
+            </div>
+          ))}
+        </div>
+      ) : processedData.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {processedData.map((company) => (
+            <div 
+              key={company.id} 
+              className="bg-white border border-slate-200/80 hover:border-slate-300 shadow-2xs hover:shadow-md rounded-3xl p-5 transition-all duration-300 flex flex-col justify-between gap-4 group relative overflow-hidden"
+            >
+              <div className="space-y-3.5">
+                {/* Header Card: Logo & Info */}
+                <div className="flex items-start gap-3.5">
+                  <div className="w-14 h-14 bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 rounded-2xl overflow-hidden shadow-2xs group-hover:scale-105 transition-transform relative">
+                    {company.logoUrl ? (
+                      <Image 
+                        src={company.logoUrl} 
+                        alt={company.name} 
+                        fill 
+                        sizes="56px" 
+                        loading="lazy" 
+                        className="object-contain p-2" 
+                      />
+                    ) : (
+                      <Building className="w-6 h-6 text-slate-400" />
+                    )}
+                  </div>
+                  
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-base text-slate-900 leading-snug group-hover:text-primary transition-colors truncate">
+                      {company.name}
+                    </h3>
+                    <div className="flex items-center gap-1 text-xs font-medium text-slate-500 mt-1 truncate">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span className="truncate">{company.location}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* About / Description snippet */}
+                <p className="text-xs text-slate-600 leading-relaxed line-clamp-2 min-h-[36px]">
+                  {company.about || `${company.name} berlokasi di ${company.location}.`}
+                </p>
+              </div>
+
+              {/* Footer Row: Badge & Action Buttons */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                <div className="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700 border border-blue-100">
+                  <Briefcase className="h-3.5 w-3.5 text-blue-600" />
+                  <span>{company.jobCount} Lowongan</span>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <button 
+                    onClick={() => setSelectedCompany(company)}
+                    className="p-2 text-primary hover:text-primary/80 hover:bg-primary/5 rounded-xl transition-colors cursor-pointer" 
+                    title="Lihat Profil Detail"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
+                  <button 
+                    className="p-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded-xl transition-colors cursor-pointer" 
+                    title="Edit Data"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button 
+                    className="p-2 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" 
+                    title="Hapus"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="py-16 px-6 flex flex-col items-center justify-center text-center bg-white rounded-3xl border border-slate-200/80 border-dashed">
+          <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mb-3 text-slate-400">
+            <Search className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-slate-900 mb-1">Perusahaan Tidak Ditemukan</h3>
+          <p className="text-xs text-slate-500 max-w-sm mb-4">
+            Tidak ada data perusahaan yang cocok dengan kata kunci pencarian Anda.
+          </p>
+          <button
+            onClick={() => setInputValue('')}
+            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-700 transition-colors"
+          >
+            Bersihkan Pencarian
+          </button>
+        </div>
+      )}
 
       {/* Modal Detail Perusahaan */}
       {selectedCompany && (
@@ -222,9 +231,16 @@ export default function CompaniesPage() {
             <div className="overflow-y-auto p-6 space-y-6 text-left">
               {/* Company Info */}
               <div className="flex items-start gap-4 pb-6 border-b border-gray-100">
-                <div className="w-20 h-20 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
+                <div className="w-20 h-20 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden shadow-sm relative">
                   {selectedCompany.logoUrl ? (
-                    <img src={selectedCompany.logoUrl} alt={selectedCompany.name} className="w-full h-full object-contain p-2" />
+                    <Image 
+                      src={selectedCompany.logoUrl} 
+                      alt={selectedCompany.name} 
+                      fill 
+                      sizes="80px" 
+                      loading="lazy" 
+                      className="object-contain p-2" 
+                    />
                   ) : (
                     <Building className="w-10 h-10 text-gray-400" />
                   )}

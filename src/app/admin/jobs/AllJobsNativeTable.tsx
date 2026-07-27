@@ -6,6 +6,7 @@ import { Briefcase, Search, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-r
 import JobActionButtons from "../JobActionButtons";
 import { Input } from "@/components/ui/Input";
 import { Suspense } from "react";
+import Image from "next/image";
 
 function AllJobsTableContent({ jobs }: { jobs: any[] }) {
   const searchParams = useSearchParams();
@@ -132,11 +133,16 @@ function AllJobsTableContent({ jobs }: { jobs: any[] }) {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       {job.company?.logoUrl ? (
-                        <img 
-                          src={job.company.logoUrl} 
-                          alt={job.company.name} 
-                          className="h-8 w-8 rounded bg-gray-100 object-cover border border-gray-200" 
-                        />
+                        <div className="h-8 w-8 rounded bg-gray-100 border border-gray-200 overflow-hidden relative">
+                          <Image 
+                            src={job.company.logoUrl} 
+                            alt={job.company.name} 
+                            fill 
+                            sizes="32px" 
+                            loading="lazy" 
+                            className="object-cover" 
+                          />
+                        </div>
                       ) : (
                         <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
                           {job.company?.name?.charAt(0) || "?"}

@@ -3,7 +3,10 @@
 import { CheckCircle2, Eye, Edit, Trash2, XCircle, X, Building2, MapPin, Banknote, Briefcase, GraduationCap, Users, CalendarRange } from "lucide-react";
 import { useTransition, useState } from "react";
 import { approveJobAction, rejectJobAction, deleteJobAction } from "@/app/actions/job";
-import EditJobFormModal from "@/components/admin/EditJobFormModal";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const EditJobFormModal = dynamic(() => import("@/components/admin/EditJobFormModal"), { ssr: false });
 
 export default function JobActionButtons({ 
   job 
@@ -101,9 +104,16 @@ export default function JobActionButtons({
             {/* Modal Body */}
             <div className="overflow-y-auto p-6 space-y-6 text-left">
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
+                <div className="w-16 h-16 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden relative">
                   {job.company?.logoUrl ? (
-                    <img src={job.company.logoUrl} alt={job.company.name} className="w-full h-full object-contain p-1" />
+                    <Image 
+                      src={job.company.logoUrl} 
+                      alt={job.company.name} 
+                      fill 
+                      sizes="64px" 
+                      loading="lazy" 
+                      className="object-contain p-1" 
+                    />
                   ) : (
                     <Building2 className="w-8 h-8 text-gray-400" />
                   )}
@@ -117,7 +127,7 @@ export default function JobActionButtons({
               <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg border border-gray-100">
                 <div className="flex items-center gap-2 text-gray-700">
                   <MapPin className="w-4 h-4 text-gray-500" />
-                  <span>{job.company?.location}</span>
+                  <span>{job.location || job.company?.location}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-700">
                   <Briefcase className="w-4 h-4 text-gray-500" />
@@ -154,7 +164,7 @@ export default function JobActionButtons({
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Deskripsi Pekerjaan</h3>
                 <div 
-                  className="text-gray-700 text-sm leading-relaxed [&>p]:mb-3 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-3 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-3 [&>li]:mb-1"
+                  className="text-gray-700 text-sm leading-relaxed break-words whitespace-pre-wrap prose prose-sm max-w-none prose-p:mb-3 prose-ul:mb-3 prose-li:my-1"
                   dangerouslySetInnerHTML={{ __html: job.description }}
                 />
               </div>
@@ -162,9 +172,9 @@ export default function JobActionButtons({
               {job.requirements && job.requirements.length > 0 && (
                 <div>
                   <h3 className="font-bold text-gray-900 mb-2">Persyaratan</h3>
-                  <ul className="list-disc pl-5 text-gray-700 text-sm space-y-1">
+                  <ul className="list-disc pl-5 text-gray-700 text-sm space-y-1 break-words">
                     {job.requirements.map((req: string, idx: number) => (
-                      <li key={idx}>{req}</li>
+                      <li key={idx} className="break-words whitespace-pre-wrap">{req}</li>
                     ))}
                   </ul>
                 </div>

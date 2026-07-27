@@ -50,9 +50,16 @@ export default async function PerusahaanPage({ params }: { params: Promise<{ id:
     <div className="container mx-auto px-4 lg:px-0 max-w-[800px] mt-8 mb-24">
       <div className="bg-card rounded-2xl border border-border overflow-hidden mb-8 shadow-sm">
         <div className="h-32 bg-gradient-to-r from-blue-600 to-primary relative">
-          <div className="absolute -bottom-10 left-6 w-20 h-20 bg-white border-4 border-white rounded-xl overflow-hidden shadow-md flex items-center justify-center">
+          <div className="absolute -bottom-10 left-6 w-20 h-20 bg-white border-4 border-white rounded-xl overflow-hidden shadow-md flex items-center justify-center relative">
             {company.logoUrl ? (
-              <img src={company.logoUrl} alt={company.name} className="w-full h-full object-contain p-2" />
+              <Image 
+                src={company.logoUrl} 
+                alt={company.name} 
+                fill 
+                sizes="80px" 
+                priority 
+                className="object-contain p-2" 
+              />
             ) : (
               <Building2 className="w-10 h-10 text-muted-foreground" />
             )}

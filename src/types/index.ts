@@ -15,6 +15,7 @@ export interface Job {
   title: string;
   companyId: string;
   company?: Company;
+  location?: string | null;
   type: JobType;
   category?: string;
   education?: EducationLevel;
