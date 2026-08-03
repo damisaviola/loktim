@@ -210,7 +210,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                 <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Detail Pekerjaan</h4>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground/80">Posisi Pekerjaan <span className="text-red-500">*</span></label>
                   <input 
@@ -243,7 +243,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground/80 block flex justify-between items-center">
                     Gaji Minimal <span className="text-xs text-muted-foreground font-normal">(Opsional)</span>

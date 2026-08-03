@@ -72,7 +72,7 @@ export async function loginCompany(formData: FormData) {
   }
 
   revalidatePath('/', 'layout')
-  redirect('/perusahaan')
+  redirect('/dashboard')
 }
 
 export async function logout() {

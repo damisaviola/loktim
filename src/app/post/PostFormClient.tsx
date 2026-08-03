@@ -100,12 +100,12 @@ export default function PostFormClient() {
         // Validate RichTextEditor separately since they are not native inputs
         const cleanDesc = description.replace(/<[^>]*>/g, "").trim();
         const cleanReq = requirements.replace(/<[^>]*>/g, "").trim();
-        if (!cleanDesc) {
-          toast.warning("Deskripsi Lengkap wajib diisi!");
+        if (!cleanDesc || cleanDesc.length < 50) {
+          toast.warning("Deskripsi Lengkap terlalu pendek (minimal 50 karakter)!");
           return;
         }
-        if (!cleanReq) {
-          toast.warning("Persyaratan (Requirements) wajib diisi!");
+        if (!cleanReq || cleanReq.length < 20) {
+          toast.warning("Persyaratan terlalu pendek (minimal 20 karakter)!");
           return;
         }
       }
@@ -114,6 +114,8 @@ export default function PostFormClient() {
       if (isValid) {
         setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
         window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        toast.error("Terdapat isian yang kosong atau tidak valid. Silakan periksa kembali form Anda.");
       }
     }
   };
@@ -126,15 +128,27 @@ export default function PostFormClient() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Jika belum di step terakhir, jadikan tombol Enter sebagai fungsi Next
+    if (currentStep < totalSteps) {
+      handleNext();
+      return;
+    }
+
     const cleanDesc = description.replace(/<[^>]*>/g, "").trim();
     const cleanReq = requirements.replace(/<[^>]*>/g, "").trim();
 
-    if (!cleanDesc) {
-      toast.warning("Deskripsi Lengkap wajib diisi!");
+    if (!cleanDesc || cleanDesc.length < 50) {
+      toast.warning("Deskripsi Lengkap terlalu pendek (minimal 50 karakter)!");
       return;
     }
-    if (!cleanReq) {
-      toast.warning("Persyaratan (Requirements) wajib diisi!");
+    if (!cleanReq || cleanReq.length < 20) {
+      toast.warning("Persyaratan terlalu pendek (minimal 20 karakter)!");
+      return;
+    }
+
+    // Pastikan validasi bawaan HTML (required) juga terpenuhi di step terakhir
+    if (formRef.current && !formRef.current.reportValidity()) {
+      toast.error("Terdapat isian yang kosong atau tidak valid. Silakan periksa kembali form Anda.");
       return;
     }
 
@@ -268,7 +282,7 @@ export default function PostFormClient() {
       </div>
 
       {/* Timeline / Wizard Stepper */}
-      <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs flex items-center justify-between sm:justify-start gap-4 sm:gap-8 overflow-x-auto no-scrollbar">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/40 shadow-sm flex items-center justify-between w-full">
         {[
           { step: 1, title: "Perusahaan", icon: Building2 },
           { step: 2, title: "Pekerjaan", icon: Briefcase },
@@ -278,17 +292,17 @@ export default function PostFormClient() {
           const isCompleted = currentStep > item.step;
           
           return (
-            <div key={item.step} className="flex items-center gap-3 shrink-0">
-              <div className={`flex items-center gap-2.5 ${isActive ? 'opacity-100' : isCompleted ? 'opacity-70' : 'opacity-40'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-colors ${isActive ? 'bg-primary text-white shadow-md' : isCompleted ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
+            <div key={item.step} className={`flex items-center ${index < 2 ? 'flex-1' : ''}`}>
+              <div className={`flex items-center gap-2 sm:gap-2.5 ${isActive ? 'opacity-100' : isCompleted ? 'opacity-70' : 'opacity-40'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${isActive ? 'bg-primary text-white shadow-md' : isCompleted ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
                   {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : item.step}
                 </div>
-                <span className={`text-xs font-bold ${isActive ? 'text-slate-900' : 'text-slate-500'}`}>
+                <span className={`text-xs font-bold transition-all ${isActive ? 'block text-slate-900' : 'hidden sm:block text-slate-500'}`}>
                   {item.title}
                 </span>
               </div>
               {index < 2 && (
-                <div className="w-6 sm:w-12 h-[2px] rounded-full bg-slate-100 ml-3 sm:ml-4">
+                <div className="flex-1 h-[2px] rounded-full bg-slate-100 mx-2 sm:mx-4">
                   <div className={`h-full bg-primary rounded-full transition-all duration-500 ${isCompleted ? 'w-full' : 'w-0'}`}></div>
                 </div>
               )}
@@ -317,21 +331,21 @@ export default function PostFormClient() {
 
         {/* STEP 1: Perusahaan & Kontak */}
         <div className={currentStep === 1 ? "block" : "hidden"}>
-          <div className="bg-white border border-slate-200/80 shadow-xs rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="bg-white border border-slate-200/40 shadow-sm rounded-3xl p-6 sm:p-10 space-y-8">
             <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100">
-              <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="w-12 h-12 rounded-2xl bg-slate-50/50 border border-slate-100 text-primary flex items-center justify-center shrink-0">
                 <Building2 className="w-5 h-5 text-slate-600" />
               </div>
               <div>
-                <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Perusahaan & Kontak</h2>
+                <h2 className="text-lg font-bold text-slate-900 tracking-tight">Perusahaan & Kontak</h2>
                 <p className="text-xs text-slate-500 font-medium">Identitas instansi dan saluran pengiriman lamaran</p>
               </div>
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-6 pt-2">
               {/* Email Field */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
+                <label className="text-sm font-semibold text-slate-800 block">
                   Email Perekrut / HRD <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -341,7 +355,7 @@ export default function PostFormClient() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="hrd@perusahaan.com"
-                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                  className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
                 />
                 <p className="text-[11px] text-slate-400 font-medium pt-0.5">
                   {email.length === 0 ? "Ketik email Anda untuk mendeteksi profil perusahaan." : 
@@ -351,9 +365,9 @@ export default function PostFormClient() {
               </div>
 
               {/* Kontak Tambahan */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                  <label className="text-sm font-semibold text-slate-800 justify-between flex items-center">
                     <span>Nomor WhatsApp</span>
                     <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
                   </label>
@@ -361,12 +375,12 @@ export default function PostFormClient() {
                     name="whatsapp"
                     type="tel"
                     placeholder="081234567890"
-                    className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                    className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                  <label className="text-sm font-semibold text-slate-800 justify-between flex items-center">
                     <span>Link Google Form / Aplikasi</span>
                     <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
                   </label>
@@ -374,18 +388,17 @@ export default function PostFormClient() {
                     name="applicationLink"
                     type="url"
                     placeholder="https://forms.gle/..."
-                    className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                    className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
                   />
                 </div>
               </div>
 
-              <div className="pt-2 pb-2">
-                <div className="h-px bg-slate-100 w-full"></div>
-              </div>
+            </div>
 
+            <div className="space-y-6 pt-2">
               {/* Switch Perusahaan */}
               {companyList.length > 0 && (
-                <div className="bg-slate-100 p-1 rounded-2xl flex max-w-sm border border-slate-200/60">
+                <div className="bg-slate-200/60 p-1 rounded-2xl flex max-w-sm border border-slate-200">
                   <button
                     type="button"
                     onClick={() => { setIsNewCompany(false); setSelectedCompanyId(companyList[0]?.id || ""); }}
@@ -404,67 +417,66 @@ export default function PostFormClient() {
               )}
 
               {/* Container Profil Perusahaan */}
-              <div className="bg-slate-50/70 p-5 rounded-2xl border border-slate-200/80 space-y-4">
-                {!isNewCompany ? (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700 block">Pilih Perusahaan Terdaftar</label>
-                    <select
-                      required={currentStep === 1 && !isNewCompany}
-                      name="companyId"
-                      value={selectedCompanyId}
-                      onChange={(e) => setSelectedCompanyId(e.target.value)}
-                      className="w-full h-12 px-4 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
-                    >
-                      <option value="" disabled hidden>-- Pilih Perusahaan --</option>
-                      {companyList.map(comp => (
-                        <option key={comp.id} value={comp.id}>{comp.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-700 block">
-                          Nama Perusahaan <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          required={currentStep === 1 && isNewCompany}
-                          name="newCompanyName"
-                          type="text"
-                          placeholder="Cth: PT. Timika Jaya"
-                          className="w-full h-12 px-4 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-700 block">
-                          Alamat Perusahaan <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                          required={currentStep === 1 && isNewCompany}
-                          name="newCompanyLocation"
-                          type="text"
-                          placeholder="Cth: Timika, Papua Tengah"
-                          className="w-full h-12 px-4 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
-                        />
-                      </div>
-                    </div>
-
+              {!isNewCompany ? (
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-slate-800 block">Pilih Perusahaan Terdaftar</label>
+                  <select
+                    required={currentStep === 1 && !isNewCompany}
+                    name="companyId"
+                    value={selectedCompanyId}
+                    onChange={(e) => setSelectedCompanyId(e.target.value)}
+                    className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
+                  >
+                    <option value="" disabled hidden>-- Pilih Perusahaan --</option>
+                    {companyList.map(comp => (
+                      <option key={comp.id} value={comp.id}>{comp.name}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
-                        <span>Deskripsi Perusahaan</span>
-                        <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+                      <label className="text-sm font-semibold text-slate-800 block">
+                        Nama Perusahaan <span className="text-rose-500">*</span>
                       </label>
-                      <textarea
-                        name="newCompanyDesc"
-                        rows={3}
-                        placeholder="Profil singkat atau bidang industri perusahaan..."
-                        className="w-full p-4 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all resize-none placeholder:text-slate-400"
+                      <input
+                        required={currentStep === 1 && isNewCompany}
+                        name="newCompanyName"
+                        type="text"
+                        placeholder="Cth: PT. Timika Jaya"
+                        className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-semibold text-slate-800 block">
+                        Alamat Perusahaan <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        required={currentStep === 1 && isNewCompany}
+                        name="newCompanyLocation"
+                        type="text"
+                        placeholder="Cth: Timika, Papua Tengah"
+                        className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
                       />
                     </div>
                   </div>
-                )}
-              </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-slate-800 justify-between flex items-center">
+                      <span>Deskripsi Perusahaan</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
+                    </label>
+                    <textarea
+                      name="newCompanyDesc"
+                      rows={3}
+                      minLength={30}
+                      placeholder="Profil singkat atau bidang industri perusahaan (min 30 karakter)..."
+                      className="w-full p-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all resize-none placeholder:text-slate-400"
+                    />
+                  </div>
+                </div>
+              )}
 
             </div>
           </div>
@@ -472,23 +484,23 @@ export default function PostFormClient() {
 
         {/* STEP 2: Informasi Pekerjaan */}
         <div className={currentStep === 2 ? "block animate-in fade-in slide-in-from-right-4 duration-300" : "hidden"}>
-          <div className="bg-white border border-slate-200/80 shadow-xs rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="bg-white border border-slate-200/40 shadow-sm rounded-3xl p-6 sm:p-10 space-y-8">
             <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100">
-              <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="w-12 h-12 rounded-2xl bg-slate-50/50 border border-slate-100 text-primary flex items-center justify-center shrink-0">
                 <Briefcase className="w-5 h-5 text-slate-600" />
               </div>
               <div>
-                <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Detail Pekerjaan</h2>
+                <h2 className="text-lg font-bold text-slate-900 tracking-tight">Detail Pekerjaan</h2>
                 <p className="text-xs text-slate-500 font-medium">Informasi utama mengenai posisi yang dibuka</p>
               </div>
             </div>
 
-            <div className="space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-6 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 
                 {/* Posisi Pekerjaan */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 block">
+                  <label className="text-sm font-semibold text-slate-800 block">
                     Posisi Pekerjaan <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
@@ -497,14 +509,14 @@ export default function PostFormClient() {
                       name="title"
                       type="text"
                       placeholder="Cth: Mekanik Alat Berat"
-                      className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                      className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
 
                 {/* Kategori */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 block">
+                  <label className="text-sm font-semibold text-slate-800 block">
                     Kategori <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
@@ -512,7 +524,7 @@ export default function PostFormClient() {
                       required={currentStep === 2}
                       name="category"
                       defaultValue=""
-                      className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all appearance-none cursor-pointer"
+                      className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all appearance-none cursor-pointer"
                     >
                       <option value="" disabled hidden>Pilih Kategori</option>
                       <option value="Teknik & Engineering">Teknik & Engineering</option>
@@ -529,7 +541,7 @@ export default function PostFormClient() {
 
               {/* Lokasi Penempatan */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
+                <label className="text-sm font-semibold text-slate-800 block">
                   Lokasi Penempatan (Kerja) <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -537,14 +549,14 @@ export default function PostFormClient() {
                   name="location"
                   type="text"
                   placeholder="Cth: Kuala Kencana, Timika"
-                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                  className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
                 />
               </div>
 
               {/* Kisaran Gaji */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                  <label className="text-sm font-semibold text-slate-800 justify-between flex items-center">
                     <span>Gaji Minimal</span>
                     <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
                   </label>
@@ -556,13 +568,13 @@ export default function PostFormClient() {
                       value={salaryMinDisplay}
                       onChange={handleSalaryMinChange}
                       placeholder="5.000.000"
-                      className="w-full h-12 pl-10 pr-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                      className="w-full h-12 pl-10 pr-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                  <label className="text-sm font-semibold text-slate-800 justify-between flex items-center">
                     <span>Gaji Maksimal</span>
                     <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
                   </label>
@@ -574,28 +586,31 @@ export default function PostFormClient() {
                       value={salaryMaxDisplay}
                       onChange={handleSalaryMaxChange}
                       placeholder="8.000.000"
-                      className="w-full h-12 pl-10 pr-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                      className="w-full h-12 pl-10 pr-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
               </div>
 
+            </div>
+
+            <div className="space-y-6 pt-2">
               {/* Poster Upload */}
-              <div className="space-y-1.5 pt-1">
-                <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-slate-800 flex items-center justify-between">
                   <span>Poster / Banner Lowongan</span>
                   <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
                 </label>
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                  <label className="flex items-center justify-center h-12 px-5 border border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all cursor-pointer group shrink-0">
+                  <label className="flex items-center justify-center h-12 px-5 border border-dashed border-slate-300 rounded-2xl bg-white hover:bg-slate-50 text-slate-600 transition-all cursor-pointer group shrink-0">
                     <UploadCloud className="w-4 h-4 mr-2 text-slate-400 group-hover:text-primary transition-colors" />
                     <span className="text-xs font-bold">Pilih File Gambar</span>
                     <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
                   </label>
 
                   {imagePreview ? (
-                    <div className="relative w-16 h-16 rounded-2xl border border-slate-200 overflow-hidden bg-slate-50 shrink-0">
+                    <div className="relative w-16 h-16 rounded-2xl border border-slate-200 overflow-hidden bg-white shrink-0">
                       <Image src={imagePreview} alt="Preview" fill sizes="64px" unoptimized className="object-cover" />
                       <button
                         type="button"
@@ -612,8 +627,8 @@ export default function PostFormClient() {
               </div>
 
               {/* Deskripsi Lengkap */}
-              <div className="space-y-1.5 pt-2">
-                <label className="text-xs font-bold text-slate-700 block">
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-slate-800 block">
                   Deskripsi Lengkap <span className="text-rose-500">*</span>
                 </label>
                 <div className="rounded-2xl overflow-hidden">
@@ -626,8 +641,8 @@ export default function PostFormClient() {
               </div>
 
               {/* Persyaratan */}
-              <div className="space-y-1.5 pt-2">
-                <label className="text-xs font-bold text-slate-700 block">
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-slate-800 block">
                   Persyaratan (Requirements) <span className="text-rose-500">*</span>
                 </label>
                 <div className="rounded-2xl overflow-hidden">
@@ -645,28 +660,29 @@ export default function PostFormClient() {
 
         {/* STEP 3: Kualifikasi */}
         <div className={currentStep === 3 ? "block animate-in fade-in slide-in-from-right-4 duration-300" : "hidden"}>
-          <div className="bg-white border border-slate-200/80 shadow-xs rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="bg-white border border-slate-200/40 shadow-sm rounded-3xl p-6 sm:p-10 space-y-8">
             <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100">
-              <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="w-12 h-12 rounded-2xl bg-slate-50/50 border border-slate-100 text-primary flex items-center justify-center shrink-0">
                 <Award className="w-5 h-5 text-slate-600" />
               </div>
               <div>
-                <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Kualifikasi Kandidat & Finalisasi</h2>
+                <h2 className="text-lg font-bold text-slate-900 tracking-tight">Kualifikasi Kandidat & Finalisasi</h2>
                 <p className="text-xs text-slate-500 font-medium">Kriteria dan preferensi kandidat</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {/* Tipe Kontrak */}
+            <div className="space-y-6 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* Tipe Kontrak */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
+                <label className="text-sm font-semibold text-slate-800 block">
                   Tipe Kontrak <span className="text-rose-500">*</span>
                 </label>
                 <select
                   required={currentStep === 3}
                   name="type"
                   defaultValue="Full-time"
-                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
+                  className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
                 >
                   <option value="Full-time">Full-time</option>
                   <option value="Part-time">Part-time</option>
@@ -678,11 +694,11 @@ export default function PostFormClient() {
 
               {/* Pendidikan Minimal */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Pendidikan Minimal</label>
+                <label className="text-sm font-semibold text-slate-800 block">Pendidikan Minimal</label>
                 <select
                   name="education"
                   defaultValue="Semua"
-                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
+                  className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
                 >
                   <option value="Semua">Semua Jenjang</option>
                   <option value="SMA/SMK">SMA/SMK</option>
@@ -693,11 +709,11 @@ export default function PostFormClient() {
 
               {/* Pengalaman */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Pengalaman Kerja</label>
+                <label className="text-sm font-semibold text-slate-800 block">Pengalaman Kerja</label>
                 <select
                   name="experience"
                   defaultValue="Tanpa Pengalaman"
-                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
+                  className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
                 >
                   <option value="Tanpa Pengalaman">Fresh Graduate</option>
                   <option value="1-3 Tahun">1-3 Tahun</option>
@@ -708,11 +724,11 @@ export default function PostFormClient() {
 
               {/* Preferensi Gender */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Preferensi Gender</label>
+                <label className="text-sm font-semibold text-slate-800 block">Preferensi Gender</label>
                 <select
                   name="gender"
                   defaultValue="Pria/Wanita"
-                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer"
+                  className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
                 >
                   <option value="Pria/Wanita">Pria / Wanita (Bebas)</option>
                   <option value="Pria">Khusus Pria</option>
@@ -722,7 +738,7 @@ export default function PostFormClient() {
 
               {/* Usia Maksimal */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                <label className="text-sm font-semibold text-slate-800 justify-between flex items-center">
                   <span>Batas Umur Maksimal</span>
                   <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
                 </label>
@@ -732,26 +748,27 @@ export default function PostFormClient() {
                   min="15"
                   max="100"
                   placeholder="Cth: 35"
-                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                  className="w-full h-12 px-4 bg-slate-50/70 border border-slate-200/50 rounded-xl text-sm font-medium text-slate-900 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-slate-400"
                 />
               </div>
 
               {/* Batas Lamaran */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 justify-between flex items-center">
+                <label className="text-sm font-semibold text-slate-800 justify-between flex items-center">
                   <span>Batas Akhir Lamaran</span>
                   <span className="text-[10px] text-slate-400 font-normal">Opsional</span>
                 </label>
                 <input
                   name="deadline"
                   type="date"
-                  className="w-full h-12 px-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                  className="w-full h-12 px-4 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
                 />
+              </div>
               </div>
             </div>
 
             {/* Terms Agreement */}
-            <div className="bg-slate-50 p-4 border border-slate-200/80 rounded-2xl flex items-start gap-3 mt-8">
+            <div className="bg-slate-50 p-4 border border-slate-200/80 rounded-2xl flex items-start gap-3">
               <input 
                 type="checkbox" 
                 id="terms" 
@@ -776,7 +793,7 @@ export default function PostFormClient() {
               <button
                 type="button"
                 onClick={handlePrev}
-                className="px-5 h-11 rounded-2xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/80 transition-all flex-1 sm:flex-none flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                className="px-5 h-11 rounded-2xl text-sm font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-200/80 transition-all flex-1 sm:flex-none flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Kembali</span>

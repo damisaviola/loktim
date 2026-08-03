@@ -49,8 +49,9 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Protect perusahaan (company) routes
-  if (request.nextUrl.pathname.startsWith('/perusahaan') && !request.nextUrl.pathname.startsWith('/perusahaan/login')) {
+  // Note: /perusahaan and /perusahaan/[id] are public routes.
+  // Company dashboard is at /dashboard.
+  if (request.nextUrl.pathname.startsWith('/dashboard')) {
     if (!user) {
       url.pathname = '/perusahaan/login'
       return NextResponse.redirect(url)
