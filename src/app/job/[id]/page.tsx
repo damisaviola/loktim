@@ -14,10 +14,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const resolvedParams = await params;
   let job: any = jobs.find(j => j.id === resolvedParams.id);
   if (!job) {
-    job = await prisma.job.findUnique({
-      where: { id: resolvedParams.id },
-      include: { company: true }
-    });
+    try {
+      job = await prisma.job.findUnique({
+        where: { id: resolvedParams.id },
+        include: { company: true }
+      });
+    } catch (error) {
+      console.error("Database unavailable, falling back to dummy data:", error);
+    }
   }
 
   if (!job) {
@@ -68,15 +72,19 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
   let job: any = jobs.find(j => j.id === resolvedParams.id);
   if (!job) {
-    const dbJob = await prisma.job.findUnique({
-      where: { id: resolvedParams.id },
-      include: { company: true }
-    });
-    if (dbJob) {
-      job = {
-        ...dbJob,
-        postedAt: dbJob.postedAt.toISOString(),
-      };
+    try {
+      const dbJob = await prisma.job.findUnique({
+        where: { id: resolvedParams.id },
+        include: { company: true }
+      });
+      if (dbJob) {
+        job = {
+          ...dbJob,
+          postedAt: dbJob.postedAt.toISOString(),
+        };
+      }
+    } catch (error) {
+      console.error("Database unavailable for job detail, falling back to dummy data:", error);
     }
   }
 
@@ -86,11 +94,16 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
   let companyJobs: any[] = [];
   if (job.companyId) {
-    const dbCompanyJobs = await prisma.job.findMany({
-      where: { companyId: job.companyId, status: 'approved' },
-      include: { company: true },
-      orderBy: { postedAt: 'desc' }
-    });
+    let dbCompanyJobs: any[] = [];
+    try {
+      dbCompanyJobs = await prisma.job.findMany({
+        where: { companyId: job.companyId, status: 'approved' },
+        include: { company: true },
+        orderBy: { postedAt: 'desc' }
+      });
+    } catch (error) {
+      console.error("Database unavailable for company jobs, falling back to dummy data:", error);
+    }
     const dummyCompanyJobs = jobs.filter(j => j.companyId === job.companyId);
 
     const combined = [...dbCompanyJobs, ...dummyCompanyJobs].filter(j => j.id !== job.id);

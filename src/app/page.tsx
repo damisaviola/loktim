@@ -1,168 +1,195 @@
 import Link from "next/link";
 import { TrustBanner } from "@/components/TrustBanner";
-import { Search, Briefcase, Zap, ShieldCheck, Trophy, Sparkles, ArrowRight } from "lucide-react";
+import { Search, Zap, ShieldCheck, Trophy, ArrowRight, Sparkles, MapPin, Clock } from "lucide-react";
 
 export default function LandingPage() {
   return (
-    <main className="flex flex-col items-center min-h-screen bg-white text-slate-900 selection:bg-slate-200 selection:text-slate-900 overflow-hidden">
-      
-      {/* Enterprise Hero Section: Split Layout */}
-      <section className="w-full bg-white relative flex justify-center border-b border-slate-100">
-        {/* Subtle Background Pattern for Enterprise feel */}
-        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, black 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
-        
-        <div className="w-full max-w-[1200px] px-6 sm:px-8 lg:px-12 pt-20 pb-24 sm:pt-32 sm:pb-32 lg:pt-40 lg:pb-40 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-8">
-          
-          {/* Left Text Content */}
-          <div className="w-full lg:w-[55%] flex flex-col items-start text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 bg-white shadow-sm text-slate-600 text-xs sm:text-sm font-medium mb-8">
-              <Sparkles className="w-4 h-4 text-blue-600" />
-              <span>Platform Karir #1 di Mimika & Papua</span>
-            </div>
-            
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tighter text-slate-950 leading-[1.05]">
-              Temukan Karir <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500">
-                Impian Anda.
-              </span>
+    <main className="min-h-screen bg-background text-slate-900">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        {/* Soft background accents */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-white" />
+        <div className="absolute -top-40 -right-40 w-[560px] h-[560px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-52 -left-40 w-[480px] h-[480px] rounded-full bg-blue-50 blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pt-16 sm:pt-24 pb-24 sm:pb-32 flex flex-col lg:flex-row items-center gap-16 lg:gap-12">
+          {/* Left: Text */}
+          <div className="flex-1 text-center lg:text-left">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/10 text-primary text-sm font-medium">
+              <Sparkles className="w-3.5 h-3.5" />
+              Platform Karir #1 di Mimika &amp; Papua
+            </span>
+
+            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-950 leading-[1.1]">
+              Temukan Karir{" "}
+              <span className="text-primary">Impian Anda.</span>
             </h1>
-            
-            <p className="mt-8 text-lg sm:text-xl text-slate-500 max-w-xl leading-relaxed font-normal">
-              Akses langsung ke ribuan lowongan pekerjaan terbaik dari perusahaan terkemuka di Timika, dari pertambangan hingga ritel, dengan platform paling modern.
+
+            <p className="mt-6 text-base sm:text-lg text-slate-500 max-w-xl leading-relaxed mx-auto lg:mx-0">
+              Akses langsung ke ribuan lowongan pekerjaan terbaik dari perusahaan
+              terkemuka di Timika, dari pertambangan hingga ritel, dengan platform
+              yang cepat dan terpercaya.
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 mt-10 w-full sm:w-auto">
+
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Link href="/jobs" className="w-full sm:w-auto">
-                <button className="h-12 px-7 rounded-lg bg-slate-950 text-white hover:bg-slate-900 shadow-xl shadow-slate-950/20 transition-all font-semibold text-sm flex items-center justify-center gap-2 w-full">
+                <button className="h-12 px-7 rounded-xl bg-primary text-white hover:bg-primary/90 transition-colors font-semibold text-sm flex items-center justify-center gap-2 w-full cursor-pointer">
                   <Search className="w-4 h-4" />
                   Cari Lowongan
                 </button>
               </Link>
               <Link href="/post" className="w-full sm:w-auto">
-                <button className="h-12 px-7 rounded-lg bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-slate-200 shadow-sm transition-all font-semibold text-sm flex items-center justify-center gap-2 w-full group">
+                <button className="h-12 px-7 rounded-xl bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 transition-colors font-semibold text-sm flex items-center justify-center gap-2 w-full cursor-pointer">
                   Pasang Loker
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 group-hover:text-slate-600 transition-transform" />
+                  <ArrowRight className="w-4 h-4 text-slate-400" />
                 </button>
               </Link>
             </div>
           </div>
 
-          {/* Right Abstract Graphic (Tailwind CSS UI) */}
-          <div className="w-full lg:w-[45%] relative hidden md:flex justify-center lg:justify-end">
-            <div className="w-full max-w-md aspect-square relative">
-              {/* Decorative Enterprise Elements */}
-              <div className="absolute top-10 right-10 w-64 h-64 bg-slate-50 rounded-3xl border border-slate-200 shadow-2xl rotate-3"></div>
-              <div className="absolute top-16 right-16 w-64 h-64 bg-white rounded-3xl border border-slate-200 shadow-xl -rotate-2 flex flex-col p-6 justify-between">
-                 <div className="w-10 h-10 rounded-full bg-slate-100 mb-4"></div>
-                 <div className="space-y-3">
-                   <div className="h-3 w-3/4 bg-slate-100 rounded-full"></div>
-                   <div className="h-3 w-1/2 bg-slate-100 rounded-full"></div>
-                   <div className="h-3 w-5/6 bg-slate-50 rounded-full"></div>
-                 </div>
-                 <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between">
-                   <div className="w-16 h-8 rounded-md bg-slate-900"></div>
-                   <div className="w-8 h-8 rounded-full border border-slate-200"></div>
-                 </div>
+          {/* Right: Minimal Job Card Visual */}
+          <div className="flex-1 w-full max-w-md lg:max-w-none relative">
+            <div className="relative mx-auto max-w-md">
+              {/* Job card */}
+              <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/40 p-6">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
+                    PT
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm text-slate-900 truncate">Mekanik Alat Berat</p>
+                    <p className="text-xs text-slate-400">PT Freeport Indonesia</p>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <span className="px-2.5 py-1 rounded-full bg-slate-50 border border-slate-100 text-[11px] font-medium text-slate-500">
+                    Teknik &amp; Engineering
+                  </span>
+                  <span className="px-2.5 py-1 rounded-full bg-slate-50 border border-slate-100 text-[11px] font-medium text-slate-500">
+                    Full-time
+                  </span>
+                </div>
+
+                <div className="mt-5 space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                    Kuala Kencana, Timika
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <Clock className="w-3.5 h-3.5 text-slate-400" />
+                    Batas lamaran 30 Agustus 2026
+                  </div>
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-slate-900">Rp 8 - 15 jt</span>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    Aktif
+                  </span>
+                </div>
               </div>
-              
-              {/* Floating Badge */}
-              <div className="absolute -bottom-4 left-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-xl flex items-center gap-4 z-20">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                  <ShieldCheck className="w-6 h-6" />
+
+              {/* Floating verified badge */}
+              <div className="absolute -bottom-5 -left-3 sm:-left-6 rounded-xl border border-slate-100 bg-white shadow-lg shadow-slate-200/50 px-4 py-3 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 font-medium">Terverifikasi</p>
-                  <p className="text-sm font-bold text-slate-900">100% Aman</p>
+                  <p className="text-[11px] text-slate-400 font-medium">Perusahaan</p>
+                  <p className="text-sm font-bold text-slate-900">Terverifikasi</p>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* Trust Metrics Section */}
-      <div className="w-full border-b border-slate-100 py-12 flex justify-center bg-white relative z-20">
-        <div className="w-full max-w-[1200px] px-6 sm:px-8 lg:px-12">
-          <p className="text-center text-sm font-semibold text-slate-400 uppercase tracking-widest mb-8">Dipercaya oleh ribuan profesional</p>
+      {/* Trust Metrics */}
+      <div className="border-y border-slate-100 bg-white">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-12 sm:py-14">
+          <p className="text-center text-sm font-medium text-slate-400 uppercase tracking-widest mb-8">
+            Dipercaya oleh ribuan profesional
+          </p>
           <TrustBanner />
         </div>
       </div>
 
-      {/* Enterprise Features Section: Asymmetrical Grid */}
-      <section className="w-full bg-white flex justify-center py-24 sm:py-32 border-b border-slate-100">
-        <div className="w-full max-w-[1200px] px-6 sm:px-8 lg:px-12">
-          
-          <div className="mb-20 max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950 mb-6 leading-tight">
-              Satu Platform, <br className="hidden sm:block" />
-              Standard Enterprise.
-            </h2>
-            <p className="text-lg text-slate-500 leading-relaxed">
-              Infrastruktur karir kelas dunia yang dirancang khusus untuk mempertemukan talenta terbaik dengan perusahaan terkemuka di Papua.
+      {/* Features Section */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-24 sm:py-32">
+        <div className="max-w-2xl mx-auto text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-950">
+            Satu Platform untuk Karir Anda
+          </h2>
+          <p className="mt-4 text-base sm:text-lg text-slate-500 leading-relaxed">
+            Dirancang untuk mempertemukan talenta terbaik dengan perusahaan
+            terkemuka di Papua secara cepat dan aman.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Feature 1 */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-8 transition-shadow hover:shadow-lg hover:shadow-slate-200/50">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+              <Zap className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-950 mb-2.5">Cepat &amp; Mudah</h3>
+            <p className="text-sm text-slate-500 leading-relaxed">
+              Tanpa registrasi berbelit. Temukan lowongan, unggah CV, dan langsung
+              lamar pekerjaan impian Anda dalam hitungan detik.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200 border-y md:border-y-0 border-slate-200">
-            {/* Feature 1 */}
-            <div className="py-12 md:py-8 md:pr-12 flex flex-col">
-              <div className="w-12 h-12 bg-white border shadow-sm border-slate-200 text-slate-800 rounded-xl flex items-center justify-center mb-8">
-                <Zap className="w-5 h-5 text-slate-900" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-950 mb-3">Kecepatan Tinggi</h3>
-              <p className="text-slate-500 text-base leading-relaxed">
-                Tanpa registrasi berbelit. Temukan lowongan, unggah CV, dan langsung lamar pekerjaan impian Anda dalam hitungan detik.
-              </p>
+          {/* Feature 2 */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-8 transition-shadow hover:shadow-lg hover:shadow-slate-200/50">
+            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6">
+              <ShieldCheck className="w-5 h-5" />
             </div>
-
-            {/* Feature 2 */}
-            <div className="py-12 md:py-8 md:px-12 flex flex-col">
-              <div className="w-12 h-12 bg-white border shadow-sm border-slate-200 text-slate-800 rounded-xl flex items-center justify-center mb-8">
-                <ShieldCheck className="w-5 h-5 text-slate-900" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-950 mb-3">Keamanan Enterprise</h3>
-              <p className="text-slate-500 text-base leading-relaxed">
-                Setiap perusahaan dan loker melewati kurasi manual ketat kami untuk memastikan lingkungan yang 100% bebas penipuan.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="py-12 md:py-8 md:pl-12 flex flex-col">
-              <div className="w-12 h-12 bg-white border shadow-sm border-slate-200 text-slate-800 rounded-xl flex items-center justify-center mb-8">
-                <Trophy className="w-5 h-5 text-slate-900" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-950 mb-3">Kualitas Premium</h3>
-              <p className="text-slate-500 text-base leading-relaxed">
-                Kami bermitra eksklusif dengan puluhan perusahaan terkemuka, memberikan Anda akses prioritas ke peluang terbaik.
-              </p>
-            </div>
+            <h3 className="text-lg font-semibold text-slate-950 mb-2.5">100% Terverifikasi</h3>
+            <p className="text-sm text-slate-500 leading-relaxed">
+              Setiap perusahaan dan loker melewati kurasi manual ketat untuk
+              memastikan lingkungan yang aman dan bebas penipuan.
+            </p>
           </div>
-          
+
+          {/* Feature 3 */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-8 transition-shadow hover:shadow-lg hover:shadow-slate-200/50">
+            <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-6">
+              <Trophy className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-950 mb-2.5">Peluang Terbaik</h3>
+            <p className="text-sm text-slate-500 leading-relaxed">
+              Bermitra eksklusif dengan puluhan perusahaan terkemuka, memberikan
+              Anda akses prioritas ke peluang karir terbaik.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Recruiter Dark CTA Section */}
-      <section className="w-full bg-slate-950 flex justify-center py-24 sm:py-32">
-        <div className="w-full max-w-[1200px] px-6 sm:px-8 lg:px-12 flex flex-col lg:flex-row items-center justify-between gap-12">
-           <div className="max-w-2xl text-left">
-             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-6">
-               Rekrut Talenta Terbaik.
-             </h2>
-             <p className="text-slate-400 text-lg sm:text-xl leading-relaxed">
-               Bergabunglah dengan ekosistem karir paling canggih di Papua. Jangkau ribuan kandidat terverifikasi dengan platform rekrutmen kami.
-             </p>
-           </div>
-           <div className="w-full lg:w-auto flex-shrink-0">
-             <Link href="/post">
-               <button className="h-14 px-8 rounded-xl bg-white text-slate-950 hover:bg-slate-100 hover:scale-105 transition-all font-bold text-base flex items-center justify-center gap-3 w-full sm:w-auto shadow-2xl">
-                 <Briefcase className="w-5 h-5" />
-                 Mulai Merekrut Sekarang
-               </button>
-             </Link>
-           </div>
+      {/* Recruiter CTA Section */}
+      <section className="relative overflow-hidden bg-slate-950">
+        <div className="absolute -top-32 right-0 w-[400px] h-[400px] rounded-full bg-primary/20 blur-3xl pointer-events-none" />
+        <div className="relative max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-24 sm:py-28 flex flex-col lg:flex-row items-center justify-between gap-10">
+          <div className="max-w-2xl text-center lg:text-left">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+              Rekrut Talenta Terbaik.
+            </h2>
+            <p className="mt-4 text-base sm:text-lg text-slate-400 leading-relaxed">
+              Bergabunglah dengan ekosistem karir paling canggih di Papua. Jangkau
+              ribuan kandidat terverifikasi dengan platform rekrutmen kami.
+            </p>
+          </div>
+          <div className="flex-shrink-0">
+            <Link href="/post">
+              <button className="h-12 px-8 rounded-xl bg-white text-slate-950 hover:bg-slate-100 transition-colors font-semibold text-sm flex items-center justify-center gap-2 w-full sm:w-auto cursor-pointer">
+                Mulai Merekrut Sekarang
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
+          </div>
         </div>
       </section>
-
     </main>
   );
 }
