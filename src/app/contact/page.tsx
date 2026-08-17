@@ -1,176 +1,180 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, Bug, Send, AlertTriangle } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, Bug, CheckCircle2, Send } from "lucide-react";
+
+const inputClass =
+  "w-full h-14 px-5 bg-white border border-slate-200 rounded-2xl text-base text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none transition-colors";
+const labelClass = "block text-base font-medium text-slate-700";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate submission delay
     setTimeout(() => {
       setIsLoading(false);
       setIsSubmitted(true);
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: "", email: "", subject: "", message: "" });
     }, 1200);
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20">
-      
-      {/* Minimal Navbar / Header Area */}
-      <div className="w-full pt-10 px-6 sm:px-12 max-w-4xl mx-auto flex items-center justify-between">
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
+    <div className="min-h-screen bg-background pb-24">
+      <div className="mx-auto max-w-3xl px-6 pt-10">
+        {/* Back link */}
+        <Link
+          href="/"
+          className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
-          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-          </div>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border transition-colors group-hover:border-foreground">
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
+          </span>
           Kembali
         </Link>
-        <div className="flex items-center gap-2">
-          <Bug className="w-5 h-5 text-primary" />
-          <span className="font-bold text-sm tracking-widest uppercase text-slate-500">Laporan Bug</span>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="w-full max-w-2xl mx-auto px-6 pt-16 pb-24">
-        
         {isSubmitted ? (
-          <div className="py-20 flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mb-8">
-              <CheckCircle2 className="w-8 h-8" />
+          <div className="py-20 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+              <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
             </div>
-            <h2 className="text-3xl font-bold mb-4 tracking-tight">Laporan Diterima</h2>
-            <p className="text-muted-foreground mb-10 text-base max-w-sm leading-relaxed">
-              Terima kasih telah meluangkan waktu. Tim teknis kami akan segera menganalisis dan memperbaiki kendala ini.
+            <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-foreground">
+              Laporan Diterima
+            </h2>
+            <p className="mx-auto mt-3 max-w-sm text-base leading-relaxed text-muted-foreground">
+              Terima kasih telah meluangkan waktu. Tim teknis kami akan segera menganalisis dan
+              memperbaiki kendala ini.
             </p>
-            <Button 
-              onClick={() => setIsSubmitted(false)} 
-              variant="outline"
-              className="h-12 px-8 rounded-full font-semibold border-slate-200 hover:bg-slate-50 hover:border-primary/40 hover:text-primary transition-all"
+            <button
+              onClick={() => setIsSubmitted(false)}
+              className="mt-8 inline-flex h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-8 text-sm font-semibold text-slate-700 transition-colors hover:border-primary/40 hover:text-primary cursor-pointer"
             >
               Laporkan Bug Lainnya
-            </Button>
+            </button>
           </div>
         ) : (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Header section */}
-            <div className="mb-12">
-              <h1 className="text-4xl sm:text-5xl font-black mb-4 tracking-tighter">
-                Sistem tidak berjalan semestinya?
+          <div>
+            {/* Header */}
+            <div className="mt-14 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <Bug className="h-7 w-7" aria-hidden="true" />
+              </div>
+              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                Ada kendala?
               </h1>
-              <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
-                Detailkan kendala yang Anda hadapi. Kami akan menanganinya secepat mungkin.
+              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-muted-foreground">
+                Detailkan masalah yang Anda alami. Tim kami akan segera menanganinya secepat
+                mungkin.
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                {/* Name Input */}
-                <div className="space-y-3">
-                  <label htmlFor="name" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 px-1">
-                    Nama Pelapor
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    required
-                    placeholder="John Doe"
-                    className="w-full h-14 px-5 bg-white border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-primary/40"
-                    value={formData.name}
-                    onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-
-                {/* Email Input */}
-                <div className="space-y-3">
-                  <label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 px-1">
-                    Alamat Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    required
-                    placeholder="john@example.com"
-                    className="w-full h-14 px-5 bg-white border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-primary/40"
-                    value={formData.email}
-                    onChange={e => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              {/* Subject Input */}
-              <div className="space-y-3">
-                <label htmlFor="subject" className="text-[11px] font-bold uppercase tracking-widest text-slate-500 px-1">
-                  Area Masalah
-                </label>
-                <div className="relative">
-                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">
-                    <AlertTriangle className="w-5 h-5" />
+            {/* Form */}
+            <div className="mt-12 rounded-3xl border border-slate-200/80 bg-white p-7 shadow-sm shadow-slate-200/50 sm:p-10">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div className="space-y-2.5">
+                    <label htmlFor="name" className={labelClass}>
+                      Nama
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      placeholder="Nama Anda"
+                      className={inputClass}
+                      value={formData.name}
+                      onChange={handleChange}
+                    />
                   </div>
+                  <div className="space-y-2.5">
+                    <label htmlFor="email" className={labelClass}>
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      placeholder="nama@email.com"
+                      className={inputClass}
+                      value={formData.email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2.5">
+                  <label htmlFor="subject" className={labelClass}>
+                    Area Masalah
+                  </label>
                   <input
                     type="text"
                     id="subject"
+                    name="subject"
                     required
                     placeholder="Contoh: Gagal mengunggah logo perusahaan"
-                    className="w-full h-14 pl-14 pr-5 bg-white border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm hover:border-primary/40"
+                    className={inputClass}
                     value={formData.subject}
-                    onChange={e => setFormData({ ...formData, subject: e.target.value })}
+                    onChange={handleChange}
                   />
                 </div>
-              </div>
 
-              {/* Message Textarea */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <label htmlFor="message" className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
-                    Detail Kendala
-                  </label>
-                  <span className="text-[10px] text-slate-400 font-medium">Opsional tapi disarankan</span>
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="message" className={labelClass}>
+                      Detail Kendala
+                    </label>
+                    <span className="text-sm text-slate-400">Opsional tapi disarankan</span>
+                  </div>
+                  <textarea
+                    id="message"
+                    name="message"
+                    required
+                    rows={7}
+                    placeholder="Ceritakan langkah-langkah yang Anda lakukan sebelum error muncul..."
+                    className={`${inputClass} h-auto resize-y py-4`}
+                    value={formData.message}
+                    onChange={handleChange}
+                  />
                 </div>
-                <textarea
-                  id="message"
-                  required
-                  rows={6}
-                  placeholder="Ceritakan langkah-langkah yang Anda lakukan sebelum error muncul..."
-                  className="w-full px-5 py-4 bg-white border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-3xl focus:outline-none text-base text-slate-800 font-medium placeholder:text-slate-400 transition-all resize-y min-h-[160px] shadow-sm hover:border-primary/40"
-                  value={formData.message}
-                  onChange={e => setFormData({ ...formData, message: e.target.value })}
-                ></textarea>
-              </div>
 
-              {/* Submit Area */}
-              <div className="pt-6 flex justify-end">
-                <Button 
-                  type="submit" 
-                  disabled={isLoading} 
-                  className="w-full sm:w-auto h-14 px-10 rounded-full font-bold text-base flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all duration-300"
-                >
-                  {isLoading ? 'Mengirim Laporan...' : (
-                    <>
-                      Kirim Laporan
-                      <Send className="w-5 h-5" />
-                    </>
-                  )}
-                </Button>
-              </div>
-
-            </form>
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-8 text-base font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-80 cursor-pointer"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Send className="h-5 w-5 animate-pulse" aria-hidden="true" />
+                        Mengirim Laporan...
+                      </>
+                    ) : (
+                      <>
+                        Kirim Laporan
+                        <Send className="h-5 w-5" aria-hidden="true" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>

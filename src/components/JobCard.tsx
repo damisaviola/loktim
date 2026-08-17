@@ -113,14 +113,17 @@ export const JobCard = memo(function JobCard({ job, onClick, className }: { job:
         {isLoaded && (
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark(job.id); }}
-            className={`shrink-0 p-2 rounded-xl transition-all border ${
+            className={`shrink-0 p-2 rounded-xl transition-all duration-300 active:scale-90 cursor-pointer border ${
               isBookmarked(job.id) 
                 ? 'bg-primary/10 border-primary/20 text-primary' 
-                : 'bg-slate-50/80 border-slate-200/60 text-slate-400 hover:bg-slate-100 hover:text-slate-700'
+                : 'bg-slate-50/80 border-slate-200/60 text-slate-400 hover:bg-slate-100 hover:text-slate-700 hover:scale-105'
             }`}
             title={isBookmarked(job.id) ? "Hapus dari tersimpan" : "Simpan loker ini"}
           >
-            <Bookmark className={`w-4 h-4 ${isBookmarked(job.id) ? 'fill-current' : ''}`} />
+            <Bookmark
+              key={isBookmarked(job.id) ? 'saved' : 'unsaved'}
+              className={`w-4 h-4 transition-all duration-300 ${isBookmarked(job.id) ? 'fill-current animate-bookmark-pop' : ''}`}
+            />
           </button>
         )}
       </div>

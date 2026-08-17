@@ -40,6 +40,7 @@ const createJobSchema = z.object({
   newCompanyLocation: z.string().trim().max(150, "Alamat perusahaan terlalu panjang").optional().nullable(),
   newCompanyDesc: z.string().trim().min(30, "Deskripsi perusahaan terlalu pendek. Isi minimal 30 huruf").max(2000, "Deskripsi perusahaan terlalu panjang").optional().nullable(),
   email: emailSchema,
+  picName: z.string().trim().max(100, "Nama PIC maksimal 100 karakter").optional().nullable().or(z.literal("")),
   imageUrl: urlSchema,
   title: z.string().trim().min(3, "Posisi pekerjaan terlalu pendek. Isi minimal 3 huruf").max(120, "Posisi pekerjaan terlalu panjang"),
   category: z.string().trim().min(1, "Silakan pilih kategori pekerjaan"),
@@ -111,6 +112,7 @@ const createJobSchema = z.object({
 
 const updateJobSchema = z.object({
   email: emailSchema,
+  picName: z.string().trim().max(100, "Nama PIC maksimal 100 karakter").optional().nullable().or(z.literal("")),
   imageUrl: urlSchema,
   title: z.string().trim().min(3, "Posisi pekerjaan terlalu pendek. Isi minimal 3 huruf").max(120, "Posisi pekerjaan terlalu panjang"),
   category: z.string().trim().min(1, "Silakan pilih kategori pekerjaan"),
@@ -161,6 +163,7 @@ const updateJobSchema = z.object({
 
 const step1Schema = z.object({
   email: emailSchema,
+  picName: z.string().trim().max(100, "Nama PIC maksimal 100 karakter").optional().nullable().or(z.literal("")),
   whatsapp: whatsappSchema,
   applicationLink: urlSchema,
   isNewCompany: z.boolean(),
@@ -245,6 +248,7 @@ export async function validateJobStepAction(step: number, formData: FormData) {
     newCompanyLocation: formData.get("newCompanyLocation") as string | null,
     newCompanyDesc: formData.get("newCompanyDesc") as string | null,
     email: (formData.get("email") as string) ?? "",
+    picName: (formData.get("picName") as string | null) ?? "",
     title: (formData.get("title") as string) ?? "",
     category: (formData.get("category") as string) ?? "",
     location: (formData.get("location") as string) ?? "",
@@ -316,6 +320,7 @@ export async function createJobAction(formData: FormData) {
       newCompanyLocation: formData.get("newCompanyLocation") as string | null,
       newCompanyDesc: formData.get("newCompanyDesc") as string | null,
       email: (formData.get("email") as string) ?? "",
+      picName: (formData.get("picName") as string | null) ?? "",
       imageUrl: formData.get("imageUrl") as string | null,
       title: (formData.get("title") as string) ?? "",
       category: (formData.get("category") as string) ?? "",
@@ -345,31 +350,80 @@ export async function createJobAction(formData: FormData) {
     const data = validatedData.data;
     let finalCompanyId = data.companyId;
 
+    // Link the company to the logged-in user (if any) so the dashboard can find it
+    let authUserId: string | null = null;
+    try {
+      const { createClient } = await import("@/utils/supabase/server");
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      authUserId = user?.id ?? null;
+    } catch {
+      // ignore, posting stays open to the public
+    }
+
     if (data.isNewCompany) {
-      const newCompany = await prisma.company.create({
-        data: {
-          name: data.newCompanyName!,
-          location: data.newCompanyLocation!,
-          logoUrl: data.imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(data.newCompanyName!)}`,
-          email: data.email,
-          about: data.newCompanyDesc || null,
-        }
-      });
-      finalCompanyId = newCompany.id;
+      let existingCompany = null;
+      if (authUserId) {
+        existingCompany = await prisma.company.findUnique({
+          where: { authUserId },
+        });
+      }
+
+      if (!existingCompany && data.email) {
+        existingCompany = await prisma.company.findFirst({
+          where: { email: data.email },
+        });
+      }
+
+      if (existingCompany) {
+        const updatedCompany = await prisma.company.update({
+          where: { id: existingCompany.id },
+          data: {
+            authUserId: authUserId ?? existingCompany.authUserId,
+            name: data.newCompanyName || existingCompany.name,
+            location: data.newCompanyLocation || existingCompany.location,
+            email: data.email || existingCompany.email,
+            about: data.newCompanyDesc || existingCompany.about,
+            picName: data.picName || existingCompany.picName,
+          },
+        });
+        finalCompanyId = updatedCompany.id;
+      } else {
+        const newCompany = await prisma.company.create({
+          data: {
+            name: data.newCompanyName!,
+            location: data.newCompanyLocation!,
+            logoUrl:
+              data.imageUrl ||
+              `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
+                data.newCompanyName!
+              )}`,
+            email: data.email,
+            picName: data.picName || null,
+            about: data.newCompanyDesc || null,
+            authUserId,
+          },
+        });
+        finalCompanyId = newCompany.id;
+      }
     } else {
       const updateData: any = {};
       if (data.imageUrl) updateData.logoUrl = data.imageUrl;
-      
+      if (authUserId) updateData.authUserId = authUserId;
+      if (data.picName) updateData.picName = data.picName;
+
       if (Object.keys(updateData).length > 0 && finalCompanyId) {
         await prisma.company.update({
           where: { id: finalCompanyId },
-          data: updateData
+          data: updateData,
         });
       }
     }
 
     if (!finalCompanyId) {
-      throw new Error("Company ID is missing");
+      throw new Error("ID Perusahaan tidak ditemukan.");
     }
 
     const salaryMin = data.salaryMinStr ? parseInt(data.salaryMinStr, 10) : null;
@@ -378,12 +432,12 @@ export async function createJobAction(formData: FormData) {
 
     // Sanitize requirements and description to prevent XSS
     const cleanDescription = DOMPurify.sanitize(data.description);
-    
+
     const requirements = data.requirementsRaw
-      .replace(/<\/p>|<\/li>|<br\s*\/?>/gi, '\n')
-      .split('\n')
-      .map(r => DOMPurify.sanitize(r.trim().replace(/<[^>]*>/g, "")))
-      .filter(r => r.length > 0);
+      .replace(/<\/p>|<\/li>|<br\s*\/?>/gi, "\n")
+      .split("\n")
+      .map((r) => DOMPurify.sanitize(r.trim().replace(/<[^>]*>/g, "")))
+      .filter((r) => r.length > 0);
 
     const newJob = await prisma.job.create({
       data: {
@@ -392,46 +446,64 @@ export async function createJobAction(formData: FormData) {
         location: data.location,
         description: cleanDescription,
         requirements,
+        picName: data.picName || null,
         type: data.type,
         education: data.education || "Semua",
         experience: data.experience || "Tanpa Pengalaman",
         gender: data.gender || "Pria/Wanita",
-        ageRange: data.ageRange && data.ageRange !== "Bebas" ? `Maks. ${data.ageRange.replace(/\D/g, "")} Tahun` : "Bebas",
+        ageRange:
+          data.ageRange && data.ageRange !== "Bebas"
+            ? `Maks. ${data.ageRange.replace(/\D/g, "")} Tahun`
+            : "Bebas",
         companyId: finalCompanyId,
         salaryMin,
         salaryMax,
         deadline,
         imageUrl: data.imageUrl || null,
-        contactUrl: data.applicationLink || (data.whatsapp ? `https://wa.me/${data.whatsapp.replace(/\D/g, '')}` : `mailto:${data.email}`),
+        contactUrl:
+          data.applicationLink ||
+          (data.whatsapp
+            ? `https://wa.me/${data.whatsapp.replace(/\D/g, "")}`
+            : `mailto:${data.email}`),
         contacts: {
           email: data.email,
+          picName: data.picName || "",
           whatsapp: data.whatsapp || "",
           applicationLink: data.applicationLink || "",
         },
       },
       include: {
-        company: true
-      }
+        company: true,
+      },
     });
 
     // Send email non-blocking
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const manageLink = `${baseUrl}/manage/${newJob.id}`;
-    
-    sendEmail({
-      to: data.email,
-      subject: `Lowongan ${newJob.title} Sedang Direview`,
-      react: JobSubmittedEmail({ 
-        jobTitle: newJob.title, 
-        companyName: newJob.company?.name || "Perusahaan", 
-        manageLink 
-      }) as any,
-    }).catch(console.error);
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const manageLink = `${baseUrl}/manage/${newJob.id}`;
+
+      sendEmail({
+        to: data.email,
+        subject: `Lowongan ${newJob.title} Sedang Direview`,
+        react: JobSubmittedEmail({
+          jobTitle: newJob.title,
+          companyName: newJob.company?.name || "Perusahaan",
+          manageLink,
+        }) as any,
+      }).catch(console.error);
+    } catch (emailErr) {
+      console.error("Email notification skipped:", emailErr);
+    }
 
     return { success: true, jobId: newJob.id };
   } catch (error: any) {
     console.error("Failed to create job:", error);
-    return { success: false, error: "Terjadi kesalahan pada sistem. Silakan coba lagi beberapa saat lagi." };
+    return {
+      success: false,
+      error:
+        error?.message ||
+        "Terjadi kesalahan saat memproses lowongan. Silakan coba kembali.",
+    };
   }
 }
 
@@ -485,6 +557,7 @@ export async function updateJobAction(jobId: string, formData: FormData) {
       location: data.location,
       description: cleanDescription,
       requirements,
+      picName: data.picName || null,
       type: data.type,
       education: data.education || "Semua",
       experience: data.experience || "Tanpa Pengalaman",
@@ -496,6 +569,7 @@ export async function updateJobAction(jobId: string, formData: FormData) {
       contactUrl: data.applicationLink || (data.whatsapp ? `https://wa.me/${data.whatsapp.replace(/\D/g, '')}` : `mailto:${data.email}`),
       contacts: {
         email: data.email,
+        picName: data.picName || "",
         whatsapp: data.whatsapp || "",
         applicationLink: data.applicationLink || "",
       },

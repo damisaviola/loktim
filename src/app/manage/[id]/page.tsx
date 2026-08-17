@@ -2,174 +2,273 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { CheckCircle2, Clock, XCircle, Briefcase, Building, MapPin, ExternalLink, CalendarDays } from "lucide-react";
+import {
+  ArrowLeft,
+  Briefcase,
+  Building2,
+  MapPin,
+  ExternalLink,
+  CalendarDays,
+  CalendarClock,
+  Banknote,
+  GraduationCap,
+  Award,
+  LayoutGrid,
+  LifeBuoy,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  Check,
+  ListChecks,
+} from "lucide-react";
 import CloseJobButton from "./CloseJobButton";
+
+const STATUS_CONFIG = {
+  approved: {
+    label: "Aktif",
+    badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    dot: "bg-emerald-500",
+    Icon: CheckCircle2,
+  },
+  pending: {
+    label: "Menunggu Review",
+    badge: "bg-amber-50 text-amber-700 border-amber-200",
+    dot: "bg-amber-500",
+    Icon: Clock,
+  },
+  rejected: {
+    label: "Ditolak",
+    badge: "bg-red-50 text-red-700 border-red-200",
+    dot: "bg-red-500",
+    Icon: XCircle,
+  },
+  closed: {
+    label: "Ditutup",
+    badge: "bg-slate-100 text-slate-600 border-slate-200",
+    dot: "bg-slate-400",
+    Icon: XCircle,
+  },
+} as const;
+
+function getStatus(status?: string | null) {
+  return (
+    STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] ?? {
+      label: status || "Draft",
+      badge: "bg-slate-100 text-slate-600 border-slate-200",
+      dot: "bg-slate-400",
+      Icon: Clock,
+    }
+  );
+}
+
+const dateFormatter = new Intl.DateTimeFormat("id-ID", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+const formatDate = (d?: Date | null) => (d ? dateFormatter.format(new Date(d)) : "—");
+
+const formatSalary = (job: {
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+}) => {
+  if (job.salaryMin && job.salaryMax) {
+    return `Rp ${job.salaryMin.toLocaleString("id-ID")} - ${job.salaryMax.toLocaleString("id-ID")}`;
+  }
+  if (job.salaryMin) return `Rp ${job.salaryMin.toLocaleString("id-ID")}`;
+  return "Dibicarakan";
+};
 
 export default async function ManageJobPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const job = await prisma.job.findUnique({
     where: { id: resolvedParams.id },
-    include: { company: true }
+    include: { company: true },
   });
 
   if (!job) {
     return notFound();
   }
 
-  const dateFormatter = new Intl.DateTimeFormat('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
+  const status = getStatus(job.status);
+
+  const infoCells = [
+    { label: "Tipe", value: job.type, Icon: Briefcase },
+    { label: "Kategori", value: job.category, Icon: LayoutGrid },
+    { label: "Lokasi", value: job.location || job.company.location, Icon: MapPin },
+    { label: "Gaji", value: formatSalary(job), Icon: Banknote },
+    { label: "Pendidikan", value: job.education || "Semua", Icon: GraduationCap },
+    { label: "Pengalaman", value: job.experience || "Semua", Icon: Award },
+    { label: "Diposting", value: formatDate(job.createdAt), Icon: CalendarDays },
+    { label: "Batas Lamaran", value: formatDate(job.deadline), Icon: CalendarClock },
+  ];
 
   return (
-    <div className="min-h-screen bg-secondary/10 py-12 px-4 sm:px-6 font-sans">
-      <div className="max-w-5xl mx-auto space-y-8">
-        
-        {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-6 sm:px-8 rounded-3xl border border-border/60 shadow-sm">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">Dashboard Pengelola</h1>
-            <p className="text-muted-foreground mt-1 text-sm sm:text-base">Kelola status dan pantau detail lowongan Anda dari halaman ini.</p>
+    <div className="min-h-screen bg-muted/20 pb-20">
+      <div className="mx-auto max-w-6xl px-6 pt-8 sm:px-8">
+        {/* Back link */}
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Kembali ke Dasbor
+        </Link>
+
+        {/* Header */}
+        <div className="mt-6 rounded-2xl border border-border/60 bg-card p-6 shadow-sm sm:p-8">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Kelola Lowongan
+              </p>
+              <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+                {job.title}
+              </h1>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/60 px-3 py-1 text-xs font-semibold text-foreground">
+                  <Building2 className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                  {job.company.name}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/60 px-3 py-1 text-xs font-semibold text-foreground">
+                  <MapPin className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                  {job.location || job.company.location}
+                </span>
+              </div>
+            </div>
+
+            <span
+              className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-semibold ${status.badge}`}
+            >
+              <span className={`h-2 w-2 rounded-full ${status.dot}`} aria-hidden="true" />
+              {status.label}
+            </span>
           </div>
-          <Link href="/">
-            <Button variant="outline" className="rounded-xl font-semibold border-border hover:bg-secondary h-11 px-6">
-              Kembali ke Beranda
-            </Button>
-          </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          
-          {/* Main Content (Left, spans 2 cols) */}
-          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-            
-            {/* Job Detail Card */}
-            <div className="bg-card rounded-3xl border border-border/60 p-6 sm:p-8 shadow-sm relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-10 -mt-10 blur-2xl transition-all group-hover:bg-primary/10"></div>
-              
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start gap-4 mb-8 relative z-10">
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground leading-tight">{job.title}</h2>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-muted-foreground text-sm font-medium">
-                    <div className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full border border-border/40">
-                      <Building className="w-4 h-4 text-primary" />
-                      <span>{job.company.name}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full border border-border/40">
-                      <MapPin className="w-4 h-4 text-primary" />
-                      <span>{job.company.location}</span>
-                    </div>
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+          {/* Main content */}
+          <div className="space-y-6 lg:col-span-2">
+            {/* Detail Lowongan */}
+            <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm sm:p-8">
+              <h2 className="flex items-center gap-2.5 text-lg font-bold text-foreground">
+                <span className="h-5 w-1 rounded-full bg-primary" aria-hidden="true" />
+                Detail Lowongan
+              </h2>
+              <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+                {infoCells.map((cell) => (
+                  <div
+                    key={cell.label}
+                    className="rounded-xl border border-border/60 bg-muted/20 p-3.5"
+                  >
+                    <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      <cell.Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                      {cell.label}
+                    </p>
+                    <p className="mt-1.5 truncate text-sm font-semibold text-foreground" title={cell.value}>
+                      {cell.value}
+                    </p>
                   </div>
-                </div>
-                
-                {/* Status Badge */}
-                <div className="shrink-0 mt-2 sm:mt-0">
-                  {job.status === "approved" && (
-                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-sm font-bold border border-emerald-200 shadow-sm">
-                      <CheckCircle2 className="w-4 h-4" /> Aktif
-                    </span>
-                  )}
-                  {job.status === "pending" && (
-                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-orange-50 text-orange-600 text-sm font-bold border border-orange-200 shadow-sm">
-                      <Clock className="w-4 h-4" /> Menunggu
-                    </span>
-                  )}
-                  {job.status === "rejected" && (
-                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-red-50 text-red-600 text-sm font-bold border border-red-200 shadow-sm">
-                      <XCircle className="w-4 h-4" /> Ditolak
-                    </span>
-                  )}
-                  {job.status === "closed" && (
-                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-secondary text-muted-foreground text-sm font-bold border border-border shadow-sm">
-                      <XCircle className="w-4 h-4" /> Ditutup
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 bg-secondary/30 p-5 rounded-2xl border border-border/40">
-                <div>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-bold mb-1.5 flex items-center gap-1.5">
-                    <Briefcase className="w-3.5 h-3.5" /> Tipe
-                  </p>
-                  <p className="font-semibold text-foreground text-sm">{job.type}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-bold mb-1.5 flex items-center gap-1.5">
-                    <CalendarDays className="w-3.5 h-3.5" /> Diposting
-                  </p>
-                  <p className="font-semibold text-foreground text-sm">{dateFormatter.format(new Date(job.createdAt))}</p>
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-widest font-bold mb-1.5 flex items-center gap-1.5">
-                    Kategori
-                  </p>
-                  <p className="font-semibold text-foreground text-sm">{job.category}</p>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Status Information Box */}
-            <div className="bg-card rounded-3xl border border-border/60 p-6 sm:p-8 shadow-sm">
-              <h3 className="font-bold text-lg mb-5 text-foreground flex items-center gap-2">
-                <div className="w-2 h-6 bg-primary rounded-full"></div>
+            {/* Status information */}
+            <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm sm:p-8">
+              <h2 className="flex items-center gap-2.5 text-lg font-bold text-foreground">
+                <span className="h-5 w-1 rounded-full bg-primary" aria-hidden="true" />
                 Papan Informasi
-              </h3>
-              
-              {job.status === "approved" && (
-                <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-5 text-emerald-900 text-sm leading-relaxed">
-                  <p className="font-semibold mb-2 flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" /> Lowongan Sedang Tayang
-                  </p>
-                  Lowongan Anda saat ini sedang tayang dan dapat dilihat oleh publik di beranda. Jika Anda sudah menemukan kandidat yang cocok atau lowongan sudah tidak tersedia, segera tutup lowongan ini agar tidak ada lagi pelamar yang mengirimkan lamaran.
-                </div>
-              )}
-              {job.status === "pending" && (
-                <div className="bg-orange-50/50 border border-orange-100 rounded-2xl p-5 text-orange-900 text-sm leading-relaxed">
-                  <p className="font-semibold mb-2 flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-orange-500" /> Dalam Proses Antrean
-                  </p>
-                  Lowongan Anda sedang dalam antrean review oleh tim admin. Proses ini biasanya memakan waktu maksimal 1x24 jam kerja. Anda tidak perlu melakukan apapun saat ini, silakan pantau berkala halaman ini.
-                </div>
-              )}
-              {job.status === "rejected" && (
-                <div className="bg-red-50/50 border border-red-100 rounded-2xl p-5 text-red-900 text-sm leading-relaxed">
-                  <p className="font-semibold mb-2 flex items-center gap-2">
-                    <XCircle className="w-5 h-5 text-red-500" /> Lowongan Ditolak
-                  </p>
-                  Lowongan Anda tidak memenuhi syarat dan ketentuan platform kami (misalnya: duplikasi, data tidak lengkap, atau menyalahi aturan). Lowongan ini tidak akan ditayangkan.
-                </div>
-              )}
-              {job.status === "closed" && (
-                <div className="bg-secondary/50 border border-border rounded-2xl p-5 text-muted-foreground text-sm leading-relaxed">
-                  <p className="font-semibold mb-2 flex items-center gap-2 text-foreground">
-                    <XCircle className="w-5 h-5" /> Lowongan Telah Ditutup
-                  </p>
-                  Lowongan ini telah Anda tutup secara manual. Lowongan ini tidak akan lagi muncul di halaman publik dan hasil pencarian. Terima kasih telah mempercayakan rekrutmen Anda di platform kami!
-                </div>
-              )}
+              </h2>
+
+              <div className="mt-6">
+                {job.status === "approved" && (
+                  <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-5 text-sm leading-relaxed text-emerald-900">
+                    <p className="mb-2 flex items-center gap-2 font-semibold">
+                      <CheckCircle2 className="h-5 w-5 text-emerald-500" aria-hidden="true" />
+                      Lowongan Sedang Tayang
+                    </p>
+                    Lowongan Anda saat ini sedang tayang dan dapat dilihat oleh publik di beranda.
+                    Jika Anda sudah menemukan kandidat yang cocok atau lowongan sudah tidak
+                    tersedia, segera tutup lowongan ini agar tidak ada lagi pelamar yang
+                    mengirimkan lamaran.
+                  </div>
+                )}
+                {job.status === "pending" && (
+                  <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-5 text-sm leading-relaxed text-amber-900">
+                    <p className="mb-2 flex items-center gap-2 font-semibold">
+                      <Clock className="h-5 w-5 text-amber-500" aria-hidden="true" />
+                      Dalam Proses Antrean
+                    </p>
+                    Lowongan Anda sedang dalam antrean review oleh tim admin. Proses ini biasanya
+                    memakan waktu maksimal 1x24 jam kerja. Anda tidak perlu melakukan apapun saat
+                    ini, silakan pantau berkala halaman ini.
+                  </div>
+                )}
+                {job.status === "rejected" && (
+                  <div className="rounded-2xl border border-red-100 bg-red-50/60 p-5 text-sm leading-relaxed text-red-900">
+                    <p className="mb-2 flex items-center gap-2 font-semibold">
+                      <XCircle className="h-5 w-5 text-red-500" aria-hidden="true" />
+                      Lowongan Ditolak
+                    </p>
+                    Lowongan Anda tidak memenuhi syarat dan ketentuan platform kami (misalnya:
+                    duplikasi, data tidak lengkap, atau menyalahi aturan). Lowongan ini tidak akan
+                    ditayangkan.
+                  </div>
+                )}
+                {job.status === "closed" && (
+                  <div className="rounded-2xl border border-border bg-muted/40 p-5 text-sm leading-relaxed text-muted-foreground">
+                    <p className="mb-2 flex items-center gap-2 font-semibold text-foreground">
+                      <XCircle className="h-5 w-5" aria-hidden="true" />
+                      Lowongan Telah Ditutup
+                    </p>
+                    Lowongan ini telah Anda tutup secara manual. Lowongan ini tidak akan lagi
+                    muncul di halaman publik dan hasil pencarian. Terima kasih telah mempercayakan
+                    rekrutmen Anda di platform kami!
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Persyaratan */}
+            {job.requirements.length > 0 && (
+              <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm sm:p-8">
+                <h2 className="flex items-center gap-2.5 text-lg font-bold text-foreground">
+                  <span className="h-5 w-1 rounded-full bg-primary" aria-hidden="true" />
+                  Persyaratan
+                </h2>
+                <ul className="mt-6 space-y-3">
+                  {job.requirements.map((req, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Check className="h-3 w-3" aria-hidden="true" />
+                      </span>
+                      <span className="text-foreground/80">{req}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
-          {/* Sidebar Actions (Right, spans 1 col) */}
-          <div className="space-y-6 sm:space-y-8">
-            <div className="bg-card rounded-3xl border border-border/60 p-6 sm:p-7 shadow-sm flex flex-col gap-5 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-bl-full -mr-4 -mt-4"></div>
-              <h3 className="font-bold text-lg text-foreground relative z-10">Tindakan Cepat</h3>
-              
-              <div className="space-y-4 relative z-10">
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Quick actions */}
+            <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-foreground">Tindakan Cepat</h3>
+              <div className="mt-5 space-y-4">
                 {job.status === "approved" && (
                   <Link href={`/job/${job.id}`} className="block">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 font-bold rounded-xl h-12 gap-2 transition-all hover:-translate-y-0.5">
-                      <ExternalLink className="w-4 h-4" /> Lihat di Publik
+                    <Button className="h-12 w-full gap-2 rounded-xl font-bold shadow-sm">
+                      <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                      Lihat di Publik
                     </Button>
                   </Link>
                 )}
 
                 {(job.status === "approved" || job.status === "pending") && (
-                  <div className="pt-2 border-t border-border/60">
-                    <p className="text-[13px] text-muted-foreground mb-3 font-medium text-center">
+                  <div className="border-t border-border/60 pt-4">
+                    <p className="mb-3 text-center text-[13px] font-medium text-muted-foreground">
                       Sudah menemukan kandidat atau ingin membatalkan rekrutmen?
                     </p>
                     <CloseJobButton jobId={job.id} />
@@ -177,29 +276,34 @@ export default async function ManageJobPage({ params }: { params: Promise<{ id: 
                 )}
 
                 {(job.status === "closed" || job.status === "rejected") && (
-                  <div className="text-center text-sm font-medium text-muted-foreground bg-secondary/50 p-4 rounded-xl border border-border/40">
+                  <div className="flex items-center justify-center gap-2 rounded-xl border border-border/40 bg-muted/40 p-4 text-sm font-medium text-muted-foreground">
+                    <ListChecks className="h-4 w-4" aria-hidden="true" />
                     Tidak ada tindakan yang tersedia.
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Help / Support Sidebar */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-3xl p-6 sm:p-7 shadow-sm">
-              <h3 className="font-bold text-blue-900 flex items-center gap-2 mb-3 text-lg">
-                <Briefcase className="w-5 h-5 text-blue-600" /> Butuh Bantuan?
+            {/* Help */}
+            <div className="rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/5 to-sky-500/5 p-6">
+              <h3 className="flex items-center gap-2 text-lg font-bold text-foreground">
+                <LifeBuoy className="h-5 w-5 text-primary" aria-hidden="true" />
+                Butuh Bantuan?
               </h3>
-              <p className="text-blue-800/80 text-sm leading-relaxed mb-5 font-medium">
-                Punya pertanyaan tentang status lowongan Anda atau kendala teknis? Tim support kami siap membantu.
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Punya pertanyaan tentang status lowongan Anda atau kendala teknis? Tim support
+                kami siap membantu.
               </p>
-              <Link href="/contact" className="block">
-                <Button variant="outline" className="w-full bg-white border-blue-200 text-blue-700 hover:bg-blue-600 hover:text-white rounded-xl h-11 font-bold shadow-sm transition-all">
+              <Link href="/contact" className="mt-5 block">
+                <Button
+                  variant="outline"
+                  className="h-11 w-full rounded-xl border-primary/25 font-bold text-primary shadow-sm transition-colors hover:bg-primary/5"
+                >
                   Hubungi Dukungan
                 </Button>
               </Link>
             </div>
           </div>
-
         </div>
       </div>
     </div>

@@ -118,25 +118,36 @@ export default function JobActionButtons({
 
       {/* Modal Confirm Reject */}
       {isRejectConfirmOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 text-center animate-in zoom-in-95 duration-200 border border-slate-200/80">
-            <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-amber-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center animate-in zoom-in-95 duration-150 border border-slate-200/90 space-y-4">
+            <div className="w-13 h-13 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto ring-1 ring-amber-200/60 shadow-xs">
               <AlertTriangle className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-extrabold text-slate-900 mb-1">Tolak Lowongan Ini?</h3>
-            <p className="text-xs font-medium text-slate-500 mb-6 leading-relaxed">
-              Lowongan <strong className="text-slate-800">{job.title}</strong> akan ditolak dan tidak akan dipublikasikan.
-            </p>
-            <div className="flex gap-2.5 justify-center">
+
+            <div className="space-y-1.5">
+              <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+                Tolak Lowongan Ini?
+              </h3>
+              <div className="px-3 py-2 bg-slate-50 rounded-xl border border-slate-200/80 text-xs font-bold text-slate-800 truncate">
+                {job.title}
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Lowongan ini akan ditolak dan tidak akan dipublikasikan ke daftar lowongan aktif.
+              </p>
+            </div>
+
+            <div className="flex gap-2.5 pt-1">
               <button 
+                type="button"
                 onClick={() => setIsRejectConfirmOpen(false)}
-                className="px-4 py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-2xl transition-colors flex-1"
+                className="h-10 px-4 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all flex-1 cursor-pointer"
               >
                 Batal
               </button>
               <button 
+                type="button"
                 onClick={handleConfirmReject}
-                className="px-4 py-2.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-2xl transition-colors shadow-2xs flex-1"
+                className="h-10 px-4 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-all shadow-xs flex-1 cursor-pointer"
               >
                 Ya, Tolak
               </button>
@@ -147,25 +158,36 @@ export default function JobActionButtons({
 
       {/* Modal Confirm Delete */}
       {isDeleteConfirmOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 text-center animate-in zoom-in-95 duration-200 border border-slate-200/80">
-            <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-rose-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center animate-in zoom-in-95 duration-150 border border-slate-200/90 space-y-4">
+            <div className="w-13 h-13 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto ring-1 ring-rose-200/60 shadow-xs">
               <Trash2 className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-extrabold text-slate-900 mb-1">Hapus Lowongan Permanen?</h3>
-            <p className="text-xs font-medium text-slate-500 mb-6 leading-relaxed">
-              Lowongan <strong className="text-slate-800">{job.title}</strong> akan dihapus permanen dari sistem. Aksi ini tidak dapat dibatalkan.
-            </p>
-            <div className="flex gap-2.5 justify-center">
+
+            <div className="space-y-1.5">
+              <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+                Hapus Lowongan Permanen?
+              </h3>
+              <div className="px-3 py-2 bg-slate-50 rounded-xl border border-slate-200/80 text-xs font-bold text-slate-800 truncate">
+                {job.title}
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Lowongan akan dihapus permanen dari database. Tindakan ini tidak dapat dibatalkan.
+              </p>
+            </div>
+
+            <div className="flex gap-2.5 pt-1">
               <button 
+                type="button"
                 onClick={() => setIsDeleteConfirmOpen(false)}
-                className="px-4 py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-2xl transition-colors flex-1"
+                className="h-10 px-4 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all flex-1 cursor-pointer"
               >
                 Batal
               </button>
               <button 
+                type="button"
                 onClick={handleConfirmDelete}
-                className="px-4 py-2.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-2xl transition-colors shadow-2xs flex-1"
+                className="h-10 px-4 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-all shadow-xs flex-1 cursor-pointer"
               >
                 Ya, Hapus
               </button>
@@ -176,15 +198,16 @@ export default function JobActionButtons({
 
       {/* Modal Detail Pekerjaan */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200/80">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 border border-slate-200/90">
             
             {/* Modal Header */}
-            <div className="flex justify-between items-center p-5 border-b border-slate-100">
-              <h2 className="text-base font-extrabold text-slate-900">Detail Permohonan Lowongan</h2>
+            <div className="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50/50">
+              <h2 className="text-base font-extrabold text-slate-900">Detail Lowongan Kerja</h2>
               <button 
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-slate-200/60 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -193,38 +216,38 @@ export default function JobActionButtons({
             {/* Modal Body */}
             <div className="overflow-y-auto p-6 space-y-6 text-left">
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden relative shadow-2xs">
+                <div className="w-14 h-14 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 overflow-hidden relative shadow-2xs">
                   {job.company?.logoUrl ? (
                     <Image 
                       src={job.company.logoUrl} 
                       alt={job.company.name} 
                       fill 
-                      sizes="64px" 
+                      sizes="56px" 
                       loading="lazy" 
                       className="object-contain p-1.5" 
                     />
                   ) : (
-                    <Building2 className="w-8 h-8 text-slate-400" />
+                    <Building2 className="w-7 h-7 text-slate-400" />
                   )}
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-slate-900">{job.title}</h1>
-                  <p className="text-sm font-semibold text-slate-600 mt-0.5">{job.company?.name}</p>
+                  <h1 className="text-lg font-bold text-slate-900">{job.title}</h1>
+                  <p className="text-xs font-semibold text-slate-600 mt-0.5">{job.company?.name}</p>
                 </div>
               </div>
 
               {/* Grid Metadata */}
-              <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50/80 p-4 rounded-2xl border border-slate-100">
+              <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50/80 p-4 rounded-xl border border-slate-200/70">
                 <div className="flex items-center gap-2 text-slate-700 font-medium">
-                  <MapPin className="w-4 h-4 text-slate-400" />
-                  <span>{job.location || job.company?.location}</span>
+                  <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span className="truncate">{job.location || job.company?.location}</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-700 font-medium">
-                  <Briefcase className="w-4 h-4 text-slate-400" />
+                  <Briefcase className="w-4 h-4 text-slate-400 shrink-0" />
                   <span>{job.type}</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-700 font-medium">
-                  <Banknote className="w-4 h-4 text-slate-400" />
+                  <Banknote className="w-4 h-4 text-slate-400 shrink-0" />
                   <span>
                     {job.salaryMin 
                       ? `Rp ${job.salaryMin.toLocaleString('id-ID')} ${job.salaryMax && job.salaryMax !== job.salaryMin ? `- Rp ${job.salaryMax.toLocaleString('id-ID')}` : ''}`
@@ -233,27 +256,27 @@ export default function JobActionButtons({
                 </div>
                 {job.education && (
                   <div className="flex items-center gap-2 text-slate-700 font-medium">
-                    <GraduationCap className="w-4 h-4 text-slate-400" />
+                    <GraduationCap className="w-4 h-4 text-slate-400 shrink-0" />
                     <span>{job.education}</span>
                   </div>
                 )}
                 {job.gender && (
                   <div className="flex items-center gap-2 text-slate-700 font-medium">
-                    <Users className="w-4 h-4 text-slate-400" />
+                    <Users className="w-4 h-4 text-slate-400 shrink-0" />
                     <span>{job.gender}</span>
                   </div>
                 )}
                 {job.ageRange && (
                   <div className="flex items-center gap-2 text-slate-700 font-medium">
-                    <CalendarRange className="w-4 h-4 text-slate-400" />
-                    <span>Batas Usia: {job.ageRange} Thn</span>
+                    <CalendarRange className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span>Batas Usia: {job.ageRange}</span>
                   </div>
                 )}
               </div>
 
               {/* Deskripsi */}
               <div>
-                <h3 className="font-extrabold text-slate-900 mb-2 text-sm">Deskripsi Pekerjaan</h3>
+                <h3 className="font-extrabold text-slate-900 mb-2 text-xs uppercase tracking-wider">Deskripsi Pekerjaan</h3>
                 <div 
                   className="text-slate-600 text-xs leading-relaxed break-words whitespace-pre-wrap prose prose-slate prose-xs max-w-none"
                   dangerouslySetInnerHTML={{ __html: job.description }}
@@ -263,7 +286,7 @@ export default function JobActionButtons({
               {/* Persyaratan */}
               {job.requirements && (
                 <div>
-                  <h3 className="font-extrabold text-slate-900 mb-2 text-sm">Persyaratan</h3>
+                  <h3 className="font-extrabold text-slate-900 mb-2 text-xs uppercase tracking-wider">Persyaratan</h3>
                   <div 
                     className="text-slate-600 text-xs leading-relaxed break-words whitespace-pre-wrap prose prose-slate prose-xs max-w-none"
                     dangerouslySetInnerHTML={{ __html: typeof job.requirements === 'string' ? job.requirements : job.requirements.join('\n') }}
@@ -275,6 +298,7 @@ export default function JobActionButtons({
             {/* Modal Footer */}
             <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2.5">
               <button 
+                type="button"
                 onClick={() => setIsModalOpen(false)}
                 className="px-4 py-2 font-bold text-xs text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
               >

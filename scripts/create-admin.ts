@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 async function main() {
   const username = 'admin';
   const rawPassword = 'adminpassword123'; // The user can change this
-  
+
   const existingAdmin = await prisma.admin.findUnique({
     where: { username }
   });

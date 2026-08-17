@@ -1,21 +1,69 @@
 import prisma from "@/lib/prisma";
-import DashboardClient from "./DashboardClient";
+import DashboardClient, { DashboardJob } from "./DashboardClient";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function DashboardPage() {
-  // Since authentication is not fully implemented yet,
-  // we will fetch the first company in the database to act as the logged-in company.
-  const firstCompany = await prisma.company.findFirst();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  let hrdJobs: any[] = [];
-  
-  if (firstCompany) {
-    hrdJobs = await prisma.job.findMany({
-      where: { companyId: firstCompany.id },
-      orderBy: { createdAt: 'desc' }
+  const userEmail = user?.email ?? null;
+  let company = null;
+
+  if (user) {
+    company = await prisma.company.findFirst({
+      where: {
+        OR: [
+          { authUserId: user.id },
+          ...(user.email ? [{ email: user.email }] : []),
+        ],
+      },
     });
   }
 
+  // Fallback to first company in database if not logged in or during initial preview
+  if (!company) {
+    company = await prisma.company.findFirst();
+  }
+
+  let hrdJobs: DashboardJob[] = [];
+
+  if (company) {
+    const rawJobs = await prisma.job.findMany({
+      where: { companyId: company.id },
+      orderBy: { createdAt: "desc" },
+    });
+
+    hrdJobs = rawJobs.map((job) => ({
+      id: job.id,
+      title: job.title,
+      category: job.category,
+      location: job.location,
+      status: job.status,
+      isPremium: job.isPremium,
+      salaryMin: job.salaryMin,
+      salaryMax: job.salaryMax,
+      postedAt: job.postedAt.toISOString(),
+      deadline: job.deadline ? job.deadline.toISOString() : null,
+    }));
+  }
+
+  const companyData = company
+    ? {
+        id: company.id,
+        name: company.name,
+        location: company.location,
+        logoUrl: company.logoUrl,
+        email: company.email,
+      }
+    : null;
+
   return (
-    <DashboardClient hrdJobs={hrdJobs} />
+    <DashboardClient
+      company={companyData}
+      hrdJobs={hrdJobs}
+      userEmail={userEmail}
+    />
   );
 }

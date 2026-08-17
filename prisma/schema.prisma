@@ -14,6 +14,7 @@ model Company {
   logoUrl    String?
   email      String?
   about      String?
+  picName    String?
   jobs       Job[]
 }
 
@@ -36,6 +37,7 @@ model Job {
   location     String?
   description  String
   requirements String[]
+  picName      String?
   contactUrl   String
   contacts     Json?
   imageUrl     String?
