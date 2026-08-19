@@ -10,11 +10,7 @@ import { z } from 'zod'
 import DOMPurify from 'isomorphic-dompurify'
 import { getClientIp, checkRateLimit } from '@/lib/rate-limit'
 
-const reportSchema = z.object({
-  jobId: z.string().trim().min(1, 'ID Lowongan tidak valid'),
-  reason: z.string().trim().min(3, 'Alasan pelaporan minimal 3 karakter').max(200, 'Alasan pelaporan maksimal 200 karakter'),
-  details: z.string().trim().max(1000, 'Rincian laporan maksimal 1000 karakter').optional().nullable(),
-});
+import { reportJobSchema } from '@/lib/validations/report'
 
 export async function reportJobAction(jobId: string, reason: string, details?: string) {
   try {
@@ -24,7 +20,7 @@ export async function reportJobAction(jobId: string, reason: string, details?: s
       return { success: false, error: rateLimit.error };
     }
     const rawData = { jobId, reason, details };
-    const validatedData = reportSchema.safeParse(rawData);
+    const validatedData = reportJobSchema.safeParse(rawData);
 
     if (!validatedData.success) {
       const errorMessage = validatedData.error.issues.map(err => err.message).join(", ");

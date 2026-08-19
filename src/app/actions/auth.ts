@@ -7,6 +7,7 @@ import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { getClientIp, checkRateLimit } from '@/lib/rate-limit'
+import { adminLegacyLoginSchema } from '@/lib/validations/auth'
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET || 'super-secret-key-for-local-dev-change-in-prod'
 const key = new TextEncoder().encode(JWT_SECRET_KEY)
@@ -21,8 +22,9 @@ export async function loginAction(formData: FormData) {
   const username = formData.get('username') as string
   const password = formData.get('password') as string
 
-  if (!username || !password) {
-    return { success: false, error: 'Username dan kata sandi wajib diisi.' }
+  const validation = adminLegacyLoginSchema.safeParse({ username, password })
+  if (!validation.success) {
+    return { success: false, error: validation.error.issues[0].message }
   }
 
   // Find admin in DB

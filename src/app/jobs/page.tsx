@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { getApprovedJobsAction } from '@/app/actions/job';
+import { getApprovedJobsAction } from '@/lib/queries/job';
 import { jobs as dummyJobs } from '@/lib/dummy-data';
 import { Job } from '@/types';
 import { JobsClient } from './JobsClient';
@@ -32,7 +32,7 @@ async function HomeContent() {
 
 export default function JobsPage() {
   return (
-    <main className="bg-slate-50/50 min-h-screen pt-4">
+    <main className="bg-slate-50/70 min-h-screen">
       <Suspense fallback={<HomeLoadingSkeleton />}>
         <HomeContent />
       </Suspense>

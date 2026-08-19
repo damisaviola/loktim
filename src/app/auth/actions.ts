@@ -3,13 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import { z } from 'zod'
+import { loginSchema } from '@/lib/validations/auth'
 import { getClientIp, checkRateLimit } from '@/lib/rate-limit'
-
-const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().email('Format email tidak valid'),
-  password: z.string().min(6, 'Password minimal 6 karakter'),
-})
 
 export async function loginAdmin(formData: FormData) {
   const ip = await getClientIp()

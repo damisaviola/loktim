@@ -1,4 +1,4 @@
-import { getApprovedJobsAction } from '@/app/actions/job';
+import { getApprovedJobsAction } from '@/lib/queries/job';
 import { jobs as dummyJobs } from '@/lib/dummy-data';
 import { Job } from '@/types';
 import { SavedClient } from './SavedClient';

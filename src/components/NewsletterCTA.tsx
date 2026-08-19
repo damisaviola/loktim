@@ -3,6 +3,7 @@
 import { Send, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { newsletterSchema } from "@/lib/validations/newsletter";
 
 export function NewsletterCTA() {
   const [email, setEmail] = useState("");
@@ -10,7 +11,12 @@ export function NewsletterCTA() {
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    
+    const validation = newsletterSchema.safeParse({ email });
+    if (!validation.success) {
+      toast.error(validation.error.issues[0].message);
+      return;
+    }
     
     setIsLoading(true);
     // Simulate API call

@@ -6,7 +6,19 @@ import { Job } from "@/types";
 import { ExternalLink, X, Mail, MessageCircle, Link as LinkIcon } from "lucide-react";
 import { Button } from "./ui/Button";
 
-export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: Job, isMobile?: boolean, isExpired?: boolean }) {
+export function ApplyModal({ 
+  job, 
+  isMobile = false, 
+  isExpired = false,
+  className,
+  label
+}: { 
+  job: Job; 
+  isMobile?: boolean; 
+  isExpired?: boolean;
+  className?: string;
+  label?: string;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -26,7 +38,6 @@ export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: 
 
   const getWhatsappUrl = (number?: string) => {
     if (!number) return fallbackUrl;
-    // Basic format to wa.me link
     const cleanNumber = number.replace(/\D/g, '');
     return `https://wa.me/${cleanNumber}`;
   };
@@ -37,17 +48,14 @@ export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: 
 
     if (typeof window !== "undefined") {
       const ua = navigator.userAgent.toLowerCase();
-      // Android deep link to Gmail
       if (ua.indexOf("android") > -1) {
         return `intent://compose?to=${email}&subject=${subject}#Intent;scheme=mailto;package=com.google.android.gm;end;`;
       }
-      // iOS deep link to Gmail
       if (/iphone|ipad|ipod/.test(ua)) {
         return `googlegmail:///co?to=${email}&subject=${subject}`;
       }
     }
 
-    // Fallback for Desktop
     return `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}`;
   };
 
@@ -57,24 +65,26 @@ export function ApplyModal({ job, isMobile = false, isExpired = false }: { job: 
         disabled={isExpired}
         onClick={handleApplyClick}
         className={
-          isMobile
-            ? "inline-flex items-center justify-center whitespace-nowrap rounded-full font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-sm flex-1"
-            : "inline-flex items-center justify-center whitespace-nowrap rounded-full font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-sm sm:text-base flex-1"
+          className || (
+            isMobile
+              ? "inline-flex items-center justify-center whitespace-nowrap rounded-xl font-bold transition-all disabled:opacity-50 bg-primary text-white hover:bg-primary/90 h-12 text-sm flex-1 cursor-pointer shadow-xs"
+              : "inline-flex items-center justify-center whitespace-nowrap rounded-xl font-bold transition-all disabled:opacity-50 bg-primary text-white hover:bg-primary/90 h-12 px-7 text-sm cursor-pointer shadow-xs"
+          )
         }
       >
-        {isExpired ? "Lowongan Ditutup" : (isMobile ? "Lamar Sekarang" : "Lamar")}
-        {!isMobile && !isExpired && <ExternalLink className="w-4 h-4 ml-2" />}
+        <span>{isExpired ? "Lowongan Ditutup" : (label || (isMobile ? "Lamar Sekarang" : "Lamar Sekarang"))}</span>
+        {!isExpired && <ExternalLink className="w-4 h-4 ml-2 shrink-0" />}
       </button>
 
       {isOpen && mounted && createPortal(
         <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center bg-slate-950/60 backdrop-blur-xl animate-in fade-in p-0 sm:p-4">
-          <div 
-            className="absolute inset-0 bg-transparent" 
+          <div
+            className="absolute inset-0 bg-transparent"
             onClick={() => setIsOpen(false)}
           />
-          
+
           <div className="relative bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-full sm:zoom-in-95 duration-300 z-10 flex flex-col max-h-[85vh]">
-            
+
             {/* Mobile Drag Indicator Handle */}
             <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mt-3 mb-1 shrink-0 sm:hidden" />
 

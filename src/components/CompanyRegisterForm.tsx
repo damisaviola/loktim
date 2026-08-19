@@ -32,6 +32,7 @@ import { toast } from 'sonner';
 import imageCompression from 'browser-image-compression';
 import { createClient } from '@/utils/supabase/client';
 import { registerCompanyAction } from '@/app/actions/company';
+import { registerCompanySchema, formatZodErrors } from '@/lib/validations';
 
 const INDUSTRY_OPTIONS = [
   'Pertambangan & Energi',
@@ -77,6 +78,7 @@ export default function CompanyRegisterForm() {
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [successData, setSuccessData] = useState<{
     companyName: string;
     companyId: string;
@@ -93,6 +95,14 @@ export default function CompanyRegisterForm() {
       setFormData((prev) => ({ ...prev, [name]: checked }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
     }
   };
 
@@ -124,46 +134,30 @@ export default function CompanyRegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setFieldErrors({});
 
-    // Client-side validations
-    if (!formData.name.trim()) {
-      setErrorMessage('Nama perusahaan wajib diisi.');
-      return;
-    }
-    if (!formData.industry) {
-      setErrorMessage('Silakan pilih kategori industri perusahaan.');
-      return;
-    }
-    if (!formData.location.trim()) {
-      setErrorMessage('Alamat / lokasi perusahaan wajib diisi.');
-      return;
-    }
-    if (formData.about.trim().length < 20) {
-      setErrorMessage('Deskripsi profil perusahaan minimal 20 karakter.');
-      return;
-    }
-    if (!formData.picName.trim()) {
-      setErrorMessage('Nama PIC HRD / penanggung jawab wajib diisi.');
-      return;
-    }
-    if (!formData.phone.trim()) {
-      setErrorMessage('Nomor WhatsApp / telepon wajib diisi.');
-      return;
-    }
-    if (!formData.email.trim()) {
-      setErrorMessage('Email resmi perusahaan wajib diisi.');
-      return;
-    }
-    if (formData.password.length < 6) {
-      setErrorMessage('Kata sandi minimal 6 karakter.');
-      return;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setErrorMessage('Konfirmasi kata sandi tidak cocok.');
-      return;
-    }
-    if (!formData.agreeTerms) {
-      setErrorMessage('Anda harus menyetujui syarat & komitmen pemasangan lowongan.');
+    // Client-side Zod validation
+    const validationResult = registerCompanySchema.safeParse({
+      name: formData.name,
+      industry: formData.industry,
+      location: formData.location,
+      about: formData.about,
+      website: formData.website || null,
+      picName: formData.picName,
+      phone: formData.phone,
+      email: formData.email,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+      logoUrl: logoPreview ? 'https://dummy.valid-url.com' : null,
+      agreeTerms: formData.agreeTerms,
+    });
+
+    if (!validationResult.success) {
+      const { fieldErrors: errs, generalErrors } = formatZodErrors(validationResult.error);
+      setFieldErrors(errs);
+      const firstError = Object.values(errs)[0] || generalErrors[0] || 'Mohon lengkapi formulir dengan benar.';
+      setErrorMessage(firstError);
+      toast.error(firstError);
       return;
     }
 
@@ -424,9 +418,19 @@ export default function CompanyRegisterForm() {
                       placeholder="Contoh: PT Papua Gemilang Jaya"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                      className={`w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${
+                        fieldErrors.name
+                          ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                          : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                      }`}
                     />
                   </div>
+                  {fieldErrors.name && (
+                    <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {fieldErrors.name}
+                    </p>
+                  )}
                 </div>
 
                 {/* Kategori Industri */}
@@ -439,7 +443,11 @@ export default function CompanyRegisterForm() {
                     required
                     value={formData.industry}
                     onChange={handleInputChange}
-                    className="w-full h-12 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all cursor-pointer"
+                    className={`w-full h-12 px-3.5 rounded-xl bg-slate-50 border text-sm text-slate-900 focus:bg-white focus:outline-none transition-all cursor-pointer ${
+                      fieldErrors.industry
+                        ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                        : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                    }`}
                   >
                     <option value="">Pilih Bidang Industri...</option>
                     {INDUSTRY_OPTIONS.map((opt) => (
@@ -448,6 +456,12 @@ export default function CompanyRegisterForm() {
                       </option>
                     ))}
                   </select>
+                  {fieldErrors.industry && (
+                    <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {fieldErrors.industry}
+                    </p>
+                  )}
                 </div>
 
                 {/* Alamat / Lokasi */}
@@ -466,9 +480,19 @@ export default function CompanyRegisterForm() {
                       placeholder="Contoh: Jl. Cenderawasih No. 45, Timika, Mimika Baru"
                       value={formData.location}
                       onChange={handleInputChange}
-                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                      className={`w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${
+                        fieldErrors.location
+                          ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                          : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                      }`}
                     />
                   </div>
+                  {fieldErrors.location && (
+                    <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {fieldErrors.location}
+                    </p>
+                  )}
                 </div>
 
                 {/* Deskripsi Perusahaan */}
@@ -488,8 +512,18 @@ export default function CompanyRegisterForm() {
                     placeholder="Ceritakan tentang profil bisnis, budaya kerja, visi misi, atau layanan yang disediakan oleh perusahaan Anda..."
                     value={formData.about}
                     onChange={handleInputChange}
-                    className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    className={`w-full p-3.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${
+                      fieldErrors.about
+                        ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                        : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                    }`}
                   />
+                  {fieldErrors.about && (
+                    <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {fieldErrors.about}
+                    </p>
+                  )}
                 </div>
 
                 {/* Website URL */}
@@ -507,9 +541,19 @@ export default function CompanyRegisterForm() {
                       placeholder="https://perusahaan.co.id"
                       value={formData.website}
                       onChange={handleInputChange}
-                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                      className={`w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${
+                        fieldErrors.website
+                          ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                          : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                      }`}
                     />
                   </div>
+                  {fieldErrors.website && (
+                    <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {fieldErrors.website}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -546,9 +590,19 @@ export default function CompanyRegisterForm() {
                         placeholder="Contoh: Budi Santoso"
                         value={formData.picName}
                         onChange={handleInputChange}
-                        className="w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                        className={`w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${
+                          fieldErrors.picName
+                            ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                            : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                        }`}
                       />
                     </div>
+                    {fieldErrors.picName && (
+                      <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        {fieldErrors.picName}
+                      </p>
+                    )}
                   </div>
 
                   {/* Nomor WhatsApp */}
@@ -567,9 +621,19 @@ export default function CompanyRegisterForm() {
                         placeholder="081234567890"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                        className={`w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${
+                          fieldErrors.phone
+                            ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                            : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                        }`}
                       />
                     </div>
+                    {fieldErrors.phone && (
+                      <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        {fieldErrors.phone}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -589,9 +653,19 @@ export default function CompanyRegisterForm() {
                       placeholder="hrd@perusahaan.com"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                      className={`w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${
+                        fieldErrors.email
+                          ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                          : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                      }`}
                     />
                   </div>
+                  {fieldErrors.email && (
+                    <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {fieldErrors.email}
+                    </p>
+                  )}
                   <p className="text-[11px] text-slate-400">
                     Email ini akan digunakan sebagai username login ke Dasbor Perusahaan.
                   </p>
@@ -616,7 +690,11 @@ export default function CompanyRegisterForm() {
                         placeholder="••••••••"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="w-full h-12 pl-10 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                        className={`w-full h-12 pl-10 pr-10 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${
+                          fieldErrors.password
+                            ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                            : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                        }`}
                       />
                       <button
                         type="button"
@@ -626,6 +704,12 @@ export default function CompanyRegisterForm() {
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
+                    {fieldErrors.password && (
+                      <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        {fieldErrors.password}
+                      </p>
+                    )}
 
                     {/* Password Strength Indicator */}
                     {formData.password && (
@@ -679,7 +763,11 @@ export default function CompanyRegisterForm() {
                         placeholder="••••••••"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className="w-full h-12 pl-10 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                        className={`w-full h-12 pl-10 pr-10 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${
+                          fieldErrors.confirmPassword
+                            ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                            : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                        }`}
                       />
                       <button
                         type="button"
@@ -693,8 +781,14 @@ export default function CompanyRegisterForm() {
                         )}
                       </button>
                     </div>
+                    {fieldErrors.confirmPassword && (
+                      <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        {fieldErrors.confirmPassword}
+                      </p>
+                    )}
 
-                    {formData.confirmPassword && (
+                    {formData.confirmPassword && !fieldErrors.confirmPassword && (
                       <p
                         className={`text-[11px] font-medium pt-1 ${
                           formData.password === formData.confirmPassword
@@ -748,6 +842,12 @@ export default function CompanyRegisterForm() {
                     di LokerTimika.
                   </span>
                 </label>
+                {fieldErrors.agreeTerms && (
+                  <p className="text-xs text-red-600 font-medium flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    {fieldErrors.agreeTerms}
+                  </p>
+                )}
               </div>
 
               {/* Submit Button */}

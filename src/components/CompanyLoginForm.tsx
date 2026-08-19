@@ -16,6 +16,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import { loginSchema } from "@/lib/validations/auth";
+
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
@@ -50,6 +52,23 @@ export default function CompanyLoginForm({
   error?: string;
 }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [clientError, setClientError] = useState<string | null>(null);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    setClientError(null);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const email = (formData.get("email") as string) || "";
+    const password = (formData.get("password") as string) || "";
+
+    const validation = loginSchema.safeParse({ email, password });
+    if (!validation.success) {
+      e.preventDefault();
+      setClientError(validation.error.issues[0].message);
+    }
+  };
+
+  const activeError = clientError || error;
 
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row bg-white font-sans selection:bg-primary/30">
@@ -90,16 +109,16 @@ export default function CompanyLoginForm({
             </p>
           </div>
 
-          {error && (
+          {activeError && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium flex items-center gap-3 animate-in slide-in-from-top-2">
               <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
                 <ShieldCheck className="w-4 h-4 text-red-600" />
               </div>
-              {error}
+              {activeError}
             </div>
           )}
 
-          <form action={loginAction} className="space-y-5">
+          <form action={loginAction} onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div className="space-y-2">
               <label

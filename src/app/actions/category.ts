@@ -3,12 +3,8 @@
 import prisma from "@/lib/prisma";
 import { getUserSession } from "./auth";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { categorySchema } from "@/lib/validations/category";
 import DOMPurify from "isomorphic-dompurify";
-
-const categorySchema = z.object({
-  name: z.string().trim().min(2, "Nama kategori minimal 2 karakter").max(50, "Nama kategori maksimal 50 karakter"),
-});
 
 export async function getCategoriesAction() {
   try {

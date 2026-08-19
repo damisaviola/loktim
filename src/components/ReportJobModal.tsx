@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { X, Flag, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { reportJobAction } from '@/app/actions/report';
+import { reportJobSchema } from '@/lib/validations/report';
 
 interface ReportJobModalProps {
   jobId: string;
@@ -35,9 +36,15 @@ export function ReportJobModal({ jobId, isOpen, onClose }: ReportJobModalProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError(null);
 
+    const validation = reportJobSchema.safeParse({ jobId, reason, details });
+    if (!validation.success) {
+      setError(validation.error.issues[0].message);
+      return;
+    }
+
+    setIsSubmitting(true);
     const result = await reportJobAction(jobId, reason, details);
 
     if (result.success) {

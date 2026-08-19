@@ -22,7 +22,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-lg border-b border-white/20 shadow-lg shadow-black/5 transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-lg border-b border-white/20 shadow-lg shadow-black/5 transition-all duration-300 animate-navbar-slide-down">
       <div className="container mx-auto flex h-16 max-w-[1128px] items-center justify-between px-4 sm:px-6 lg:px-0">
 
         {/* Brand / Logo & Desktop Nav Links */}

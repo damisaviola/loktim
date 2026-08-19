@@ -9,15 +9,17 @@ import {
   EyeOff, 
   ArrowRight, 
   Loader2, 
-  CheckCircle2,
-  ShieldCheck,
-  ChevronLeft,
-  Briefcase
+  CheckCircle2, 
+  ShieldCheck, 
+  ChevronLeft, 
+  Briefcase,
+  AlertCircle 
 } from 'lucide-react';
 import { loginAction } from '@/app/actions/auth';
+import { adminLoginSchema, formatZodErrors } from '@/lib/validations';
 import Link from 'next/link';
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const searchParams = useSearchParams();
   const initialError = searchParams.get('error');
 
@@ -26,6 +28,7 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [status, setStatus] = React.useState<'idle' | 'loading' | 'success'>('idle');
   const [errorMsg, setErrorMsg] = React.useState<string | null>(initialError);
+  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
   const router = useRouter();
 
   React.useEffect(() => {
@@ -38,9 +41,43 @@ export default function AdminLoginPage() {
     setShowPassword((prev) => !prev);
   }, []);
 
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+    if (fieldErrors.username) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next.username;
+        return next;
+      });
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (fieldErrors.password) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next.password;
+        return next;
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+    setFieldErrors({});
+
+    // Client-side Zod validation
+    const validationResult = adminLoginSchema.safeParse({ username, password });
+    if (!validationResult.success) {
+      const { fieldErrors: errs, generalErrors } = formatZodErrors(validationResult.error);
+      setFieldErrors(errs);
+      const firstError = Object.values(errs)[0] || generalErrors[0] || 'Kredensial tidak valid.';
+      setErrorMsg(firstError);
+      return;
+    }
+
     setStatus('loading');
     
     const formData = new FormData();
@@ -125,11 +162,21 @@ export default function AdminLoginPage() {
                   type="text" 
                   required
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={handleUsernameChange}
                   placeholder="Masukkan username atau email admin" 
-                  className="w-full h-14 pl-12 pr-4 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-[15px] text-slate-900 placeholder:text-slate-400 transition-all duration-300"
+                  className={`w-full h-14 pl-12 pr-4 rounded-xl bg-slate-50 border text-[15px] text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all duration-300 ${
+                    fieldErrors.username
+                      ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                      : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                  }`}
                 />
               </div>
+              {fieldErrors.username && (
+                <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  {fieldErrors.username}
+                </p>
+              )}
             </div>
 
             {/* Password Field */}
@@ -147,9 +194,13 @@ export default function AdminLoginPage() {
                   type={showPassword ? "text" : "password"} 
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                   placeholder="••••••••" 
-                  className="w-full h-14 pl-12 pr-12 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 text-[15px] text-slate-900 placeholder:text-slate-400 transition-all duration-300"
+                  className={`w-full h-14 pl-12 pr-12 rounded-xl bg-slate-50 border text-[15px] text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all duration-300 ${
+                    fieldErrors.password
+                      ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-500/10'
+                      : 'border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10'
+                  }`}
                 />
                 <button
                   type="button"
@@ -159,6 +210,12 @@ export default function AdminLoginPage() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {fieldErrors.password && (
+                <p className="text-xs text-red-600 font-medium flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             {/* Submit Button */}
@@ -253,5 +310,13 @@ export default function AdminLoginPage() {
       </div>
       
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-white"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+      <AdminLoginForm />
+    </React.Suspense>
   );
 }

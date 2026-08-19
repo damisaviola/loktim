@@ -11,234 +11,15 @@ import DOMPurify from "isomorphic-dompurify";
 import { headers } from "next/headers";
 import { getClientIp, checkRateLimit } from "@/lib/rate-limit";
 
-const emailSchema = z.string().trim().toLowerCase()
-  .email("Email belum diisi dengan benar. Contoh: nama@perusahaan.com")
-  .max(255, "Email terlalu panjang");
-
-const whatsappSchema = z.string().trim().optional().nullable().or(z.literal(""))
-  .refine(val => {
-    if (!val || val.trim() === "") return true;
-    const digitsOnly = val.replace(/\D/g, "");
-    return digitsOnly.length >= 9 && digitsOnly.length <= 15;
-  }, { message: "Nomor WhatsApp belum benar. Isi 9-15 angka, contoh: 081234567890" });
-
-const urlSchema = z.string().trim().optional().nullable().or(z.literal(""))
-  .refine(val => {
-    if (!val || val.trim() === "") return true;
-    try {
-      const parsed = new URL(val);
-      return (parsed.protocol === "http:" || parsed.protocol === "https:") && val.length <= 2048;
-    } catch {
-      return false;
-    }
-  }, { message: "Link belum benar. Harus diawali http:// atau https://" });
-
-const createJobSchema = z.object({
-  isNewCompany: z.boolean(),
-  companyId: z.string().optional().nullable(),
-  newCompanyName: z.string().trim().max(100, "Nama perusahaan terlalu panjang").optional().nullable(),
-  newCompanyLocation: z.string().trim().max(150, "Alamat perusahaan terlalu panjang").optional().nullable(),
-  newCompanyDesc: z.string().trim().min(30, "Deskripsi perusahaan terlalu pendek. Isi minimal 30 huruf").max(2000, "Deskripsi perusahaan terlalu panjang").optional().nullable(),
-  email: emailSchema,
-  picName: z.string().trim().max(100, "Nama PIC maksimal 100 karakter").optional().nullable().or(z.literal("")),
-  imageUrl: urlSchema,
-  title: z.string().trim().min(3, "Posisi pekerjaan terlalu pendek. Isi minimal 3 huruf").max(120, "Posisi pekerjaan terlalu panjang"),
-  category: z.string().trim().min(1, "Silakan pilih kategori pekerjaan"),
-  location: z.string().trim().min(1, "Lokasi penempatan masih kosong, harap diisi").max(150, "Lokasi penempatan terlalu panjang"),
-  description: z.string().trim().min(10, "Deskripsi pekerjaan terlalu pendek. Isi minimal 10 huruf").max(20000, "Deskripsi pekerjaan terlalu panjang"),
-  requirementsRaw: z.string().trim().min(5, "Persyaratan terlalu pendek. Isi minimal 5 huruf").max(10000, "Persyaratan terlalu panjang"),
-  type: z.string().trim().min(1, "Silakan pilih tipe kontrak"),
-  education: z.string().default("Semua").nullable(),
-  experience: z.string().default("Tanpa Pengalaman").nullable(),
-  gender: z.string().default("Pria/Wanita").nullable(),
-  ageRange: z.string().default("Bebas").nullable(),
-  whatsapp: whatsappSchema,
-  salaryMinStr: z.string().optional().nullable().or(z.literal("")),
-  salaryMaxStr: z.string().optional().nullable().or(z.literal("")),
-  deadlineStr: z.string().optional().nullable().or(z.literal("")),
-  applicationLink: urlSchema,
-  terms: z.boolean().refine(val => val, {
-    message: "Anda harus menyetujui Panduan & Ketentuan terlebih dahulu",
-  }),
-})
-.refine(data => {
-  if (data.isNewCompany) {
-    return !!data.newCompanyName && !!data.newCompanyLocation;
-  }
-  return !!data.companyId;
-}, {
-  message: "Nama dan alamat perusahaan baru wajib diisi",
-  path: ["newCompanyName"]
-})
-.refine(data => {
-  if (data.isNewCompany) {
-    return !!data.newCompanyDesc;
-  }
-  return true;
-}, {
-  message: "Deskripsi perusahaan wajib diisi",
-  path: ["newCompanyDesc"]
-})
-.refine(data => {
-  if (data.salaryMinStr && data.salaryMaxStr && data.salaryMinStr !== "" && data.salaryMaxStr !== "") {
-    const min = parseInt(data.salaryMinStr, 10);
-    const max = parseInt(data.salaryMaxStr, 10);
-    if (!isNaN(min) && !isNaN(max) && max < min) {
-      return false;
-    }
-  }
-  return true;
-}, {
-  message: "Gaji maksimal tidak boleh lebih kecil dari gaji minimal",
-  path: ["salaryMaxStr"]
-})
-.refine(data => {
-  if (data.deadlineStr && data.deadlineStr.trim() !== "") {
-    const deadline = new Date(data.deadlineStr);
-    if (isNaN(deadline.getTime())) {
-      return false;
-    }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (deadline < today) {
-      return false;
-    }
-  }
-  return true;
-}, {
-  message: "Tanggal batas lamaran tidak boleh sudah lewat",
-  path: ["deadlineStr"]
-});
-
-const updateJobSchema = z.object({
-  email: emailSchema,
-  picName: z.string().trim().max(100, "Nama PIC maksimal 100 karakter").optional().nullable().or(z.literal("")),
-  imageUrl: urlSchema,
-  title: z.string().trim().min(3, "Posisi pekerjaan terlalu pendek. Isi minimal 3 huruf").max(120, "Posisi pekerjaan terlalu panjang"),
-  category: z.string().trim().min(1, "Silakan pilih kategori pekerjaan"),
-  location: z.string().trim().min(1, "Lokasi penempatan masih kosong, harap diisi").max(150, "Lokasi penempatan terlalu panjang"),
-  description: z.string().trim().min(10, "Deskripsi pekerjaan terlalu pendek. Isi minimal 10 huruf").max(20000, "Deskripsi pekerjaan terlalu panjang"),
-  requirementsRaw: z.string().trim().min(5, "Persyaratan terlalu pendek. Isi minimal 5 huruf").max(10000, "Persyaratan terlalu panjang"),
-  type: z.string().trim().min(1, "Silakan pilih tipe kontrak"),
-  education: z.string().default("Semua").nullable(),
-  experience: z.string().default("Tanpa Pengalaman").nullable(),
-  gender: z.string().default("Pria/Wanita").nullable(),
-  ageRange: z.string().default("Bebas").nullable(),
-  whatsapp: whatsappSchema,
-  salaryMinStr: z.string().optional().nullable().or(z.literal("")),
-  salaryMaxStr: z.string().optional().nullable().or(z.literal("")),
-  deadlineStr: z.string().optional().nullable().or(z.literal("")),
-  applicationLink: urlSchema,
-})
-.refine(data => {
-  if (data.salaryMinStr && data.salaryMaxStr && data.salaryMinStr !== "" && data.salaryMaxStr !== "") {
-    const min = parseInt(data.salaryMinStr, 10);
-    const max = parseInt(data.salaryMaxStr, 10);
-    if (!isNaN(min) && !isNaN(max) && max < min) {
-      return false;
-    }
-  }
-  return true;
-}, {
-  message: "Gaji maksimal tidak boleh lebih kecil dari gaji minimal",
-  path: ["salaryMaxStr"]
-})
-.refine(data => {
-  if (data.deadlineStr && data.deadlineStr.trim() !== "") {
-    const deadline = new Date(data.deadlineStr);
-    if (isNaN(deadline.getTime())) {
-      return false;
-    }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (deadline < today) {
-      return false;
-    }
-  }
-  return true;
-}, {
-  message: "Tanggal batas lamaran tidak boleh sudah lewat",
-  path: ["deadlineStr"]
-});
-
-const step1Schema = z.object({
-  email: emailSchema,
-  picName: z.string().trim().max(100, "Nama PIC maksimal 100 karakter").optional().nullable().or(z.literal("")),
-  whatsapp: whatsappSchema,
-  applicationLink: urlSchema,
-  isNewCompany: z.boolean(),
-  companyId: z.string().optional().nullable(),
-  newCompanyName: z.string().trim().max(100, "Nama perusahaan terlalu panjang").optional().nullable(),
-  newCompanyLocation: z.string().trim().max(150, "Alamat perusahaan terlalu panjang").optional().nullable(),
-  newCompanyDesc: z.string().trim().min(30, "Deskripsi perusahaan terlalu pendek. Isi minimal 30 huruf").max(2000, "Deskripsi perusahaan terlalu panjang").optional().nullable(),
-}).refine(data => {
-  if (data.isNewCompany) {
-    return !!data.newCompanyName && !!data.newCompanyLocation;
-  }
-  return !!data.companyId;
-}, {
-  message: "Nama dan alamat perusahaan baru wajib diisi",
-  path: ["newCompanyName"]
-})
-.refine(data => {
-  if (data.isNewCompany) {
-    return !!data.newCompanyDesc;
-  }
-  return true;
-}, {
-  message: "Deskripsi perusahaan wajib diisi",
-  path: ["newCompanyDesc"]
-});
-
-const step2Schema = z.object({
-  title: z.string().trim().min(3, "Posisi pekerjaan terlalu pendek. Isi minimal 3 huruf").max(120, "Posisi pekerjaan terlalu panjang"),
-  category: z.string().trim().min(1, "Silakan pilih kategori pekerjaan"),
-  location: z.string().trim().min(1, "Lokasi penempatan masih kosong, harap diisi").max(150, "Lokasi penempatan terlalu panjang"),
-  description: z.string().trim().min(10, "Deskripsi pekerjaan terlalu pendek. Isi minimal 10 huruf").max(20000, "Deskripsi pekerjaan terlalu panjang"),
-  requirementsRaw: z.string().trim().min(5, "Persyaratan terlalu pendek. Isi minimal 5 huruf").max(10000, "Persyaratan terlalu panjang"),
-  salaryMinStr: z.string().optional().nullable().or(z.literal("")),
-  salaryMaxStr: z.string().optional().nullable().or(z.literal("")),
-}).refine(data => {
-  if (data.salaryMinStr && data.salaryMaxStr && data.salaryMinStr !== "" && data.salaryMaxStr !== "") {
-    const min = parseInt(data.salaryMinStr, 10);
-    const max = parseInt(data.salaryMaxStr, 10);
-    if (!isNaN(min) && !isNaN(max) && max < min) {
-      return false;
-    }
-  }
-  return true;
-}, {
-  message: "Gaji maksimal tidak boleh lebih kecil dari gaji minimal",
-  path: ["salaryMaxStr"]
-});
-
-const step3Schema = z.object({
-  type: z.string().trim().min(1, "Silakan pilih tipe kontrak"),
-  education: z.string().default("Semua").nullable(),
-  experience: z.string().default("Tanpa Pengalaman").nullable(),
-  gender: z.string().default("Pria/Wanita").nullable(),
-  ageRange: z.string().default("Bebas").nullable(),
-  deadlineStr: z.string().optional().nullable().or(z.literal("")),
-  terms: z.boolean().refine(val => val, {
-    message: "Anda harus menyetujui Panduan & Ketentuan terlebih dahulu",
-  }),
-}).refine(data => {
-  if (data.deadlineStr && data.deadlineStr.trim() !== "") {
-    const deadline = new Date(data.deadlineStr);
-    if (isNaN(deadline.getTime())) {
-      return false;
-    }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (deadline < today) {
-      return false;
-    }
-  }
-  return true;
-}, {
-  message: "Tanggal batas lamaran tidak boleh sudah lewat",
-  path: ["deadlineStr"]
-});
+import {
+  createJobSchema,
+  updateJobSchema,
+  step1Schema,
+  step2Schema,
+  step3Schema,
+  type CreateJobInput,
+  type UpdateJobInput,
+} from "@/lib/validations/job";
 
 export async function validateJobStepAction(step: number, formData: FormData) {
   const rawData = {
@@ -544,7 +325,7 @@ export async function updateJobAction(jobId: string, formData: FormData) {
 
     // Sanitize description and requirements
     const cleanDescription = DOMPurify.sanitize(data.description);
-    
+
     const requirements = data.requirementsRaw
       .replace(/<\/p>|<\/li>|<br\s*\/?>/gi, '\n')
       .split('\n')
@@ -615,11 +396,11 @@ export async function approveJobAction(jobId: string) {
 
     // Extract email from contacts json or company email
     const posterEmail = (job.contacts as any)?.email || job.company?.email;
-    
+
     if (posterEmail) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
       const publicLink = `${baseUrl}/job/${job.id}`;
-      
+
       sendEmail({
         to: posterEmail,
         subject: `✅ Lowongan ${job.title} Telah Disetujui`,
@@ -654,11 +435,11 @@ export async function rejectJobAction(jobId: string) {
     });
 
     const posterEmail = (job.contacts as any)?.email || job.company?.email;
-    
+
     if (posterEmail) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
       const manageLink = `${baseUrl}/manage/${job.id}`;
-      
+
       sendEmail({
         to: posterEmail,
         subject: `❌ Lowongan ${job.title} Belum Dapat Ditayangkan`,
@@ -697,29 +478,6 @@ export async function deleteJobAction(jobId: string) {
     return { success: false, error: error.message };
   }
 }
-
-import { unstable_cache } from "next/cache";
-
-export const getApprovedJobsAction = unstable_cache(async () => {
-  try {
-    const jobs = await prisma.job.findMany({
-      where: { status: "approved" },
-      include: { company: true },
-      orderBy: { postedAt: "desc" },
-      take: 150, // Batasi 150 loker terbaru agar hemat RAM
-    });
-    
-    return jobs.map(job => ({
-      ...job,
-      postedAt: job.postedAt.toISOString(),
-      createdAt: job.createdAt.toISOString(),
-      updatedAt: job.updatedAt.toISOString(),
-    }));
-  } catch (error) {
-    console.error("Failed to fetch approved jobs:", error);
-    return [];
-  }
-}, ['approved-jobs'], { revalidate: 60, tags: ['jobs'] });
 
 export async function getAdminCompaniesAction() {
   try {
@@ -774,7 +532,7 @@ export async function getAdminCategoriesAction() {
     });
 
     const categoryData: Record<string, { count: number; companies: Map<string, any> }> = {};
-    
+
     jobs.forEach(job => {
       if (!categoryData[job.category]) {
         categoryData[job.category] = { count: 0, companies: new Map() };
