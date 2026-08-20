@@ -4,7 +4,7 @@ import { getApprovedJobsAction } from '@/lib/queries/job';
 import { jobs as dummyJobs } from '@/lib/dummy-data';
 import { Job } from '@/types';
 import { JobsClient } from './JobsClient';
-import { HomeLoadingSkeleton } from '@/components/HomeLoadingSkeleton';
+import JobsLoading from './loading';
 
 export const metadata: Metadata = {
   title: "Daftar Lowongan Kerja Terbaru di Timika & Mimika",
@@ -33,9 +33,10 @@ async function HomeContent() {
 export default function JobsPage() {
   return (
     <main className="bg-slate-50/70 min-h-screen">
-      <Suspense fallback={<HomeLoadingSkeleton />}>
+      <Suspense fallback={<JobsLoading />}>
         <HomeContent />
       </Suspense>
     </main>
   );
 }
+

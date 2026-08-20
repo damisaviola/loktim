@@ -208,7 +208,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
             <div className="rounded-2xl border border-border/70 bg-card p-5 space-y-5 shadow-xs">
               <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider border-b border-border/50 pb-3">
                 <Building2 className="w-4 h-4" />
-                <span>1. Profil Perusahaan &amp; Kontak PIC</span>
+                <span>1. Profil Perusahaan / Usaha &amp; Kontak</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -234,13 +234,13 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                   ) : null}
                 </div>
 
-                {/* PIC Name */}
+                {/* Nama Penanggung Jawab */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className={labelClass}>Nama PIC / Kontak HRD</label>
+                    <label className={labelClass}>Nama Penanggung Jawab / Pemilik</label>
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
                       <UserCheck className="w-3 h-3" />
-                      Person in Charge
+                      Pemilik / HRD
                     </span>
                   </div>
                   <input
@@ -248,7 +248,7 @@ export default function JobFormModal({ open, onOpenChange }: JobFormModalProps) 
                     type="text"
                     value={picName}
                     onChange={(e) => setPicName(e.target.value)}
-                    placeholder="Cth: Hendra Wijaya (HR Officer) / Maria"
+                    placeholder="Cth: Hendra Wijaya (Pemilik / HRD)"
                     className={inputClass}
                   />
                 </div>

@@ -9,7 +9,7 @@ export const step1Schema = z
     newCompanyLocation: z.string().trim().max(150, "Alamat perusahaan terlalu panjang").optional().nullable(),
     newCompanyDesc: z.string().trim().max(2000, "Deskripsi perusahaan terlalu panjang").optional().nullable(),
     email: emailSchema,
-    picName: z.string().trim().max(100, "Nama PIC maksimal 100 karakter").optional().nullable().or(z.literal("")),
+    picName: z.string().trim().max(100, "Nama penanggung jawab maksimal 100 karakter").optional().nullable().or(z.literal("")),
     imageUrl: urlSchema,
   })
   .refine(
@@ -119,7 +119,7 @@ export const createJobSchema = z
     newCompanyLocation: z.string().trim().max(150, "Alamat perusahaan terlalu panjang").optional().nullable(),
     newCompanyDesc: z.string().trim().min(20, "Deskripsi perusahaan minimal 20 huruf").max(2000, "Deskripsi perusahaan terlalu panjang").optional().nullable(),
     email: emailSchema,
-    picName: z.string().trim().max(100, "Nama PIC maksimal 100 karakter").optional().nullable().or(z.literal("")),
+    picName: z.string().trim().max(100, "Nama penanggung jawab maksimal 100 karakter").optional().nullable().or(z.literal("")),
     imageUrl: urlSchema,
     title: z.string().trim().min(3, "Posisi pekerjaan minimal 3 huruf").max(120, "Posisi pekerjaan terlalu panjang"),
     category: z.string().trim().min(1, "Silakan pilih kategori pekerjaan"),
@@ -205,7 +205,7 @@ export type CreateJobInput = z.infer<typeof createJobSchema>;
 
 export const updateJobSchema = z.object({
   email: emailSchema,
-  picName: z.string().trim().max(100, "Nama PIC maksimal 100 karakter").optional().nullable().or(z.literal("")),
+  picName: z.string().trim().max(100, "Nama penanggung jawab maksimal 100 karakter").optional().nullable().or(z.literal("")),
   imageUrl: urlSchema,
   title: z.string().trim().min(3, "Posisi pekerjaan minimal 3 huruf").max(120, "Posisi pekerjaan terlalu panjang"),
   category: z.string().trim().min(1, "Silakan pilih kategori pekerjaan"),

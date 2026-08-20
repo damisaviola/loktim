@@ -170,7 +170,7 @@ export default function PrivacyPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-emerald-600 font-bold">•</span>
-                  <span><strong>Kontak HRD/PIC:</strong> Email rekrutmen, nomor WhatsApp HRD, dan URL portal karir resmi.</span>
+                  <span><strong>Kontak Perekrut / Penanggung Jawab:</strong> Email rekrutmen, nomor WhatsApp pengelola lowongan, dan URL portal karir resmi.</span>
                 </li>
               </ul>
             </div>

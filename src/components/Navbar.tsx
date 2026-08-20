@@ -27,7 +27,7 @@ export function Navbar() {
 
         {/* Brand / Logo & Desktop Nav Links */}
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2.5 group">
+          <Link href="/jobs" className="flex items-center gap-2.5 group">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 group-hover:scale-105 transition-transform duration-300 overflow-hidden bg-transparent">
               <Image 
                 src="/logo.png" 

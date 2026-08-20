@@ -574,10 +574,10 @@ export default function CompanyRegisterForm() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Nama PIC HRD */}
+                  {/* Nama Penanggung Jawab / Pemilik */}
                   <div className="space-y-1.5">
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                      Nama PIC / HRD <span className="text-red-500">*</span>
+                      Nama Penanggung Jawab / Pemilik <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
@@ -587,7 +587,7 @@ export default function CompanyRegisterForm() {
                         type="text"
                         name="picName"
                         required
-                        placeholder="Contoh: Budi Santoso"
+                        placeholder="Contoh: Budi Santoso (Pemilik / HRD)"
                         value={formData.picName}
                         onChange={handleInputChange}
                         className={`w-full h-12 pl-10 pr-4 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none transition-all ${

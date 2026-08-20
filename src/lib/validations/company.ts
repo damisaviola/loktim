@@ -26,8 +26,8 @@ export const registerCompanySchema = z
     picName: z
       .string()
       .trim()
-      .min(3, "Nama kontak HRD / PIC minimal 3 karakter")
-      .max(100, "Nama PIC maksimal 100 karakter"),
+      .min(3, "Nama penanggung jawab / pemilik minimal 3 karakter")
+      .max(100, "Nama penanggung jawab maksimal 100 karakter"),
     phone: phoneSchema,
     email: emailSchema,
     password: z
@@ -80,8 +80,8 @@ export const updateCompanyProfileSchema = z.object({
   picName: z
     .string()
     .trim()
-    .min(3, "Nama PIC minimal 3 karakter")
-    .max(100, "Nama PIC maksimal 100 karakter"),
+    .min(3, "Nama penanggung jawab / pemilik minimal 3 karakter")
+    .max(100, "Nama penanggung jawab maksimal 100 karakter"),
   phone: phoneSchema,
   logoUrl: urlSchema,
 });

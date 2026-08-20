@@ -52,7 +52,7 @@ export default function NotFound() {
 
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
           <Link
-            href="/"
+            href="/jobs"
             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20"
           >
             <Home className="h-4 w-4" />

@@ -22,7 +22,7 @@ export function Footer() {
           
           {/* Column 1: Brand & Desc */}
           <div className="md:col-span-4 flex flex-col gap-6">
-            <Link href="/" className="flex items-center gap-2 group">
+            <Link href="/jobs" className="flex items-center gap-2 group">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl shrink-0 group-hover:scale-105 transition-transform duration-300 overflow-hidden bg-transparent">
                 <Image 
                   src="/logo.png" 
@@ -55,7 +55,7 @@ export function Footer() {
           <div className="md:col-span-2 flex flex-col gap-4">
             <h4 className="font-bold text-slate-900 text-base">Pencari Kerja</h4>
             <div className="flex flex-col gap-3 text-sm font-medium">
-              <Link href="/" className="hover:text-primary transition-colors inline-block">Cari Lowongan</Link>
+              <Link href="/jobs" className="hover:text-primary transition-colors inline-block">Cari Lowongan</Link>
               <Link href="/tersimpan" className="hover:text-primary transition-colors inline-block">Lowongan Tersimpan</Link>
               <Link href="/privacy" className="hover:text-primary transition-colors inline-block">Kebijakan Privasi</Link>
             </div>
