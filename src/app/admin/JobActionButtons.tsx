@@ -1,9 +1,10 @@
 "use client";
 
-import { CheckCircle2, Eye, Edit, Trash2, XCircle, X, Building2, MapPin, Banknote, Briefcase, GraduationCap, Users, CalendarRange, AlertTriangle } from "lucide-react";
+import { CheckCircle2, Eye, Edit, Trash2, XCircle, X, Building2, MapPin, Banknote, Briefcase, GraduationCap, Users, CalendarRange, AlertTriangle, ExternalLink } from "lucide-react";
 import { useTransition, useState } from "react";
 import { approveJobAction, rejectJobAction, deleteJobAction } from "@/app/actions/job";
 import Image from "next/image";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { AlertModal } from "@/components/ui/AlertModal";
@@ -284,19 +285,60 @@ export default function JobActionButtons({
               </div>
 
               {/* Persyaratan */}
-              {job.requirements && (
+              {job.requirements && (Array.isArray(job.requirements) ? job.requirements.length > 0 : Boolean(job.requirements)) && (
                 <div>
                   <h3 className="font-extrabold text-slate-900 mb-2 text-xs uppercase tracking-wider">Persyaratan</h3>
-                  <div 
-                    className="text-slate-600 text-xs leading-relaxed break-words whitespace-pre-wrap prose prose-slate prose-xs max-w-none"
-                    dangerouslySetInnerHTML={{ __html: typeof job.requirements === 'string' ? job.requirements : job.requirements.join('\n') }}
-                  />
+                  <div className="text-slate-600 text-xs leading-relaxed space-y-1.5">
+                    {(Array.isArray(job.requirements)
+                      ? job.requirements
+                      : typeof job.requirements === "string"
+                      ? job.requirements.replace(/<li[^>]*>(.*?)<\/li>/gi, "• $1\n").replace(/<\/p>|<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").split("\n")
+                      : []
+                    ).map((req: string, i: number) => {
+                      const trimmed = req.trim();
+                      if (!trimmed) return null;
+
+                      const bulletMatch = trimmed.match(/^([•\-\*–—✓→]\s*)(.*)$/);
+                      if (bulletMatch) {
+                        return (
+                          <div key={i} className="flex items-start gap-2">
+                            <span className="w-1 h-1 rounded-full bg-slate-400 shrink-0 mt-1.5" />
+                            <span className="flex-1">{bulletMatch[2]}</span>
+                          </div>
+                        );
+                      }
+
+                      const numberMatch = trimmed.match(/^(\(?\d+[\.\)]|\(?[a-zA-Z][\.\)]|\(?[ivxIVX]+[\.\)])\s*(.*)$/);
+                      if (numberMatch) {
+                        return (
+                          <div key={i} className="flex items-start gap-2">
+                            <span className="font-bold text-slate-800 shrink-0">{numberMatch[1]}</span>
+                            <span className="flex-1">{numberMatch[2]}</span>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <p key={i} className="leading-relaxed">
+                          {trimmed}
+                        </p>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2.5">
+            <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-2.5">
+              <Link
+                href={`/job/${job.id}`}
+                className="px-4 py-2 font-bold text-xs text-primary bg-primary/10 border border-primary/20 rounded-xl hover:bg-primary/15 transition-colors shadow-2xs inline-flex items-center gap-1.5"
+              >
+                <span>Buka Halaman Detail Publik</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+
               <button 
                 type="button"
                 onClick={() => setIsModalOpen(false)}

@@ -214,8 +214,13 @@ export async function createJobAction(formData: FormData) {
     // Sanitize requirements and description to prevent XSS
     const cleanDescription = DOMPurify.sanitize(data.description);
 
-    const requirements = data.requirementsRaw
-      .replace(/<\/p>|<\/li>|<br\s*\/?>/gi, "\n")
+    // Convert <li> bullet list items from RichTextEditor to "• " so points are preserved
+    const formattedReqRaw = data.requirementsRaw.replace(/<li[^>]*>(.*?)<\/li>/gi, (_m, content) => {
+      return `• ${content}\n`;
+    });
+
+    const requirements = formattedReqRaw
+      .replace(/<\/p>|<br\s*\/?>|<\/div>/gi, "\n")
       .split("\n")
       .map((r) => DOMPurify.sanitize(r.trim().replace(/<[^>]*>/g, "")))
       .filter((r) => r.length > 0);
@@ -326,8 +331,12 @@ export async function updateJobAction(jobId: string, formData: FormData) {
     // Sanitize description and requirements
     const cleanDescription = DOMPurify.sanitize(data.description);
 
-    const requirements = data.requirementsRaw
-      .replace(/<\/p>|<\/li>|<br\s*\/?>/gi, '\n')
+    const formattedReqRaw = data.requirementsRaw.replace(/<li[^>]*>(.*?)<\/li>/gi, (_m, content) => {
+      return `• ${content}\n`;
+    });
+
+    const requirements = formattedReqRaw
+      .replace(/<\/p>|<br\s*\/?>|<\/div>/gi, '\n')
       .split('\n')
       .map(r => DOMPurify.sanitize(r.trim().replace(/<[^>]*>/g, "")))
       .filter(r => r.length > 0);

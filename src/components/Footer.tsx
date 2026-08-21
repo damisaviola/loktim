@@ -37,7 +37,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm font-medium leading-relaxed text-slate-500 max-w-xs">
-              Platform karir nomor satu di Mimika. Mempertemukan talenta lokal terbaik dengan perusahaan terkemuka.
+              Pusat info lowongan kerja di Mimika. Membantu mempertemukan pencari kerja dengan tempat usaha dan perusahaan lokal.
             </p>
           </div>
 

@@ -4,10 +4,9 @@ import { memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Job } from "@/types";
-import { useBookmarks } from "@/hooks/useBookmarks";
+import { BookmarkButton } from "@/components/BookmarkButton";
 import { 
   Building2, 
-  Bookmark, 
   MapPin, 
   Briefcase, 
   Banknote, 
@@ -27,7 +26,6 @@ export const JobCard = memo(function JobCard({
   onClick?: (job: Job) => void;
   isSelected?: boolean;
 }) {
-  const { toggleBookmark, isBookmarked, isLoaded } = useBookmarks();
 
   const formatTimeAgo = (dateStr?: string) => {
     if (!dateStr) return '';
@@ -112,26 +110,13 @@ export const JobCard = memo(function JobCard({
           </div>
         </div>
 
-        {/* Bookmark Button */}
-        {isLoaded && (
-          <button
-            onClick={(e) => { 
-              e.preventDefault(); 
-              e.stopPropagation(); 
-              toggleBookmark(job.id); 
-            }}
-            className={`p-2 rounded-xl transition-all duration-200 shrink-0 cursor-pointer border ${
-              isBookmarked(job.id) 
-                ? 'text-primary bg-primary/10 border-primary/20' 
-                : 'text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 border-slate-200/60'
-            }`}
-            title={isBookmarked(job.id) ? "Hapus dari tersimpan" : "Simpan lowongan"}
-          >
-            <Bookmark
-              className={`w-4 h-4 ${isBookmarked(job.id) ? 'fill-current' : ''}`}
-            />
-          </button>
-        )}
+        {/* Animated Bookmark Button */}
+        <BookmarkButton
+          jobId={job.id}
+          jobTitle={job.title}
+          className="w-9 h-9"
+          iconClassName="w-4 h-4"
+        />
       </div>
 
       {/* Metadata Badges Row */}

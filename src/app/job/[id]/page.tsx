@@ -16,12 +16,12 @@ import {
   Award, 
   ShieldCheck, 
   ArrowLeft,
-  CheckCircle2,
   AlertTriangle
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ShareButton } from '@/components/ShareButton';
+import { BookmarkButton } from '@/components/BookmarkButton';
 import { JobMoreOptions } from '@/components/JobMoreOptions';
 import { ApplyModal } from '@/components/ApplyModal';
 
@@ -242,6 +242,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
             {/* Top Right Action Icons */}
             <div className="hidden sm:flex items-center gap-2 shrink-0">
+              <BookmarkButton jobId={job.id} jobTitle={job.title} className="w-11 h-11 rounded-xl shadow-2xs" iconClassName="w-4 h-4" />
               <ShareButton title={job.title} className="rounded-xl w-11 h-11 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 shadow-2xs" />
               <JobMoreOptions jobId={job.id} />
             </div>
@@ -330,19 +331,51 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                 dangerouslySetInnerHTML={{ __html: job.description }}
               />
 
-              {job.requirements && job.requirements.length > 0 && (
-                <div className="pt-6 border-t border-slate-100 space-y-4">
+              {job.requirements && (Array.isArray(job.requirements) ? job.requirements.length > 0 : Boolean(job.requirements)) && (
+                <div className="pt-6 border-t border-slate-100 space-y-3">
                   <h3 className="text-base font-bold text-slate-900 tracking-tight">
                     Kualifikasi &amp; Persyaratan
                   </h3>
-                  <ul className="space-y-2.5 text-sm text-slate-700">
-                    {job.requirements.map((req: string, i: number) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <span>{req}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="text-slate-700 text-sm leading-relaxed space-y-2">
+                    {(Array.isArray(job.requirements)
+                      ? job.requirements
+                      : typeof job.requirements === "string"
+                      ? job.requirements.replace(/<li[^>]*>(.*?)<\/li>/gi, "• $1\n").replace(/<\/p>|<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").split("\n")
+                      : []
+                    ).map((req: string, i: number) => {
+                      const trimmed = req.trim();
+                      if (!trimmed) return null;
+
+                      // 1. Cek jika baris adalah poin (diawali •, -, *, –, —, ✓, →)
+                      const bulletMatch = trimmed.match(/^([•\-\*–—✓→]\s*)(.*)$/);
+                      if (bulletMatch) {
+                        return (
+                          <div key={i} className="flex items-start gap-2.5 leading-relaxed">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0 mt-2" />
+                            <span className="flex-1">{bulletMatch[2]}</span>
+                          </div>
+                        );
+                      }
+
+                      // 2. Cek jika baris adalah penomoran (1., 2., a., dll)
+                      const numberMatch = trimmed.match(/^(\(?\d+[\.\)]|\(?[a-zA-Z][\.\)]|\(?[ivxIVX]+[\.\)])\s*(.*)$/);
+                      if (numberMatch) {
+                        return (
+                          <div key={i} className="flex items-start gap-2.5 leading-relaxed">
+                            <span className="font-semibold text-slate-700 shrink-0 min-w-[20px]">{numberMatch[1]}</span>
+                            <span className="flex-1">{numberMatch[2]}</span>
+                          </div>
+                        );
+                      }
+
+                      // 3. Teks biasa tanpa bullet (paragraf / kalimat utuh)
+                      return (
+                        <p key={i} className="leading-relaxed">
+                          {trimmed}
+                        </p>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -450,6 +483,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
         {/* 3. MOBILE STICKY BOTTOM ACTION BAR */}
         <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-3 flex flex-row gap-2 z-50 shadow-lg pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <ApplyModal job={job} isMobile={true} isExpired={isExpired} />
+          <BookmarkButton jobId={job.id} jobTitle={job.title} className="rounded-xl w-11 h-11 shrink-0 relative" />
           <ShareButton title={job.title} className="rounded-xl w-11 h-11 shrink-0 relative bg-slate-50 border border-slate-200 text-slate-600" />
           <JobMoreOptions jobId={job.id} />
         </div>

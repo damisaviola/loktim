@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef, Fragment } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import imageCompression from "browser-image-compression";
+import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/Button";
 import {
   CheckCircle2,
@@ -25,7 +28,11 @@ import {
   Banknote,
   Clock,
   ExternalLink,
-  Store
+  Store,
+  Upload,
+  X,
+  ImageIcon,
+  Loader2
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import {
@@ -124,6 +131,86 @@ export default function PostFormClient({
   const [newCompanyLocation, setNewCompanyLocation] = useState(initialCompany?.location || "");
   const [newCompanyDesc, setNewCompanyDesc] = useState(initialCompany?.about || "");
 
+  // Logo Upload State
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(initialCompany?.logoUrl || null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(initialCompany?.logoUrl || null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Validasi tipe file
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
+      if (!validTypes.includes(file.type)) {
+        toast.error('Format gambar harus JPG, PNG, WEBP, atau SVG.');
+        return;
+      }
+
+      // Validasi ukuran awal (Maksimal 2 MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('Ukuran file logo maksimal 2 MB.');
+        return;
+      }
+
+      // Set preview instan
+      const objectUrl = URL.createObjectURL(file);
+      setLogoFile(file);
+      setLogoPreview(objectUrl);
+
+      // Kompresi otomatis & upload ke Supabase Storage
+      setIsUploadingLogo(true);
+      try {
+        const options = {
+          maxSizeMB: 0.15, // Kompresi ekstra hemat (~50KB - 150KB)
+          maxWidthOrHeight: 500,
+          useWebWorker: true,
+          fileType: 'image/webp' as const,
+        };
+
+        let uploadPayload: Blob = file;
+        if (file.type !== 'image/svg+xml') {
+          uploadPayload = await imageCompression(file, options);
+        }
+
+        const supabase = createClient();
+        const fileExt = file.type === 'image/svg+xml' ? 'svg' : 'webp';
+        const fileName = `logos/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(fileName, uploadPayload, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (uploadError) {
+          console.error('Supabase upload error:', uploadError);
+          toast.error('Gagal mengunggah logo ke penyimpanan. Anda tetap dapat melanjutkan.');
+        } else if (uploadData) {
+          const { data: { publicUrl } } = supabase.storage.from('images').getPublicUrl(fileName);
+          setUploadedImageUrl(publicUrl);
+          toast.success('Logo berhasil diunggah & dioptimalkan!');
+        }
+      } catch (err) {
+        console.error('Compression error:', err);
+      } finally {
+        setIsUploadingLogo(false);
+      }
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+    setUploadedImageUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("Timika, Papua Tengah");
@@ -207,6 +294,9 @@ export default function PostFormClient({
     formData.append("description", description);
     formData.append("requirements", requirements);
     formData.append("isNewCompany", isNewCompany.toString());
+    if (uploadedImageUrl) {
+      formData.set("imageUrl", uploadedImageUrl);
+    }
 
     setIsValidating(true);
     try {
@@ -244,6 +334,9 @@ export default function PostFormClient({
       formData.append("description", description);
       formData.append("requirements", requirements);
       formData.append("isNewCompany", isNewCompany.toString());
+      if (uploadedImageUrl) {
+        formData.set("imageUrl", uploadedImageUrl);
+      }
 
       const result = await createJobAction(formData);
 
@@ -443,6 +536,7 @@ export default function PostFormClient({
           noValidate
           className="space-y-6"
         >
+          <input type="hidden" name="imageUrl" value={uploadedImageUrl || ""} />
           {/* ================= STEP 1: PROFIL PERUSAHAAN / UMKM & PENANGGUNG JAWAB ================= */}
           <div className={currentStep === 1 ? "block space-y-6 animate-fade-in" : "hidden"}>
             <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
@@ -630,6 +724,89 @@ export default function PostFormClient({
                       placeholder="Jelaskan bidang usaha, fokus industri, toko/UMKM, atau tempat operasional Anda di wilayah Mimika..."
                       className={`${inputClass} h-auto py-3 resize-none`}
                     />
+                  </div>
+
+                  {/* Logo Perusahaan / UMKM */}
+                  <div className="space-y-2 pt-3 border-t border-slate-200/70">
+                    <div className="flex items-center justify-between">
+                      <label className={labelClass}>
+                        Logo Usaha / Perusahaan (Opsional)
+                      </label>
+                      <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                        Maks 2 MB
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+                      {/* Logo Preview or Placeholder */}
+                      <div className="relative w-16 h-16 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden group">
+                        {logoPreview ? (
+                          <>
+                            <Image
+                              src={logoPreview}
+                              alt="Logo Preview"
+                              fill
+                              sizes="64px"
+                              className="object-contain p-1"
+                            />
+                            {isUploadingLogo && (
+                              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-2xs flex items-center justify-center text-white">
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <Building2 className="w-7 h-7 text-slate-300" />
+                        )}
+                      </div>
+
+                      {/* Controls & Description */}
+                      <div className="flex-1 min-w-0 space-y-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                            onChange={handleLogoSelect}
+                            className="hidden"
+                            id="company-logo-upload"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploadingLogo}
+                            className="px-3.5 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25 font-bold text-xs inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                          >
+                            {isUploadingLogo ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Mengoptimalkan...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="w-3.5 h-3.5" />
+                                <span>{logoPreview ? "Ganti Logo" : "Unggah Logo"}</span>
+                              </>
+                            )}
+                          </button>
+
+                          {logoPreview && (
+                            <button
+                              type="button"
+                              onClick={handleRemoveLogo}
+                              className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs inline-flex items-center gap-1 transition-colors cursor-pointer"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                              <span>Hapus</span>
+                            </button>
+                          )}
+                        </div>
+
+                        <p className="text-[11px] text-slate-500 leading-snug">
+                          Format JPG, PNG, atau WEBP. Gambar otomatis dikompresi menjadi WebP ringan (&lt;150 KB) agar hemat ruang penyimpanan dan cepat dimuat.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1056,8 +1233,20 @@ export default function PostFormClient({
                 <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-3.5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3.5 min-w-0">
-                      <div className="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-2xs">
-                        {displayCompanyName.slice(0, 2).toUpperCase()}
+                      <div className="relative w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                        {logoPreview || uploadedImageUrl ? (
+                          <Image
+                            src={logoPreview || uploadedImageUrl || ""}
+                            alt="Logo Usaha"
+                            fill
+                            sizes="48px"
+                            className="object-contain p-1"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-slate-900 text-white flex items-center justify-center font-bold text-base">
+                            {displayCompanyName.slice(0, 2).toUpperCase()}
+                          </div>
+                        )}
                       </div>
                       <div className="min-w-0">
                         <div className="text-xs font-semibold text-slate-500 truncate">

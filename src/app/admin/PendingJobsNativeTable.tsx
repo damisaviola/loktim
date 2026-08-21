@@ -1,10 +1,11 @@
 "use client";
 
 import { useTableSortAndSearch } from "@/hooks/useTableSortAndSearch";
-import { CheckCircle2, Search, ArrowUpDown, ChevronDown, ChevronUp, Briefcase, MapPin, Building } from "lucide-react";
+import { CheckCircle2, Search, ArrowUpDown, ChevronDown, ChevronUp, Briefcase, MapPin, Building, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import JobActionButtons from "./JobActionButtons";
 import { Input } from "@/components/ui/Input";
+import Link from "next/link";
 
 export default function PendingJobsNativeTable({ pendingJobs }: { pendingJobs: any[] }) {
   const {
@@ -91,7 +92,14 @@ export default function PendingJobsNativeTable({ pendingJobs }: { pendingJobs: a
                   
                   {/* Posisi & Tipe */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-extrabold text-slate-900 text-sm group-hover:text-primary transition-colors">{job.title}</div>
+                    <Link
+                      href={`/job/${job.id}`}
+                      className="font-extrabold text-slate-900 text-sm hover:text-primary transition-colors flex items-center gap-1.5 group/link"
+                      title="Buka Halaman Detail Lowongan"
+                    >
+                      <span className="truncate max-w-[260px] sm:max-w-xs">{job.title}</span>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover/link:opacity-100 transition-opacity text-primary shrink-0" />
+                    </Link>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-semibold text-[10px]">
                         <Briefcase className="w-3 h-3 text-slate-400" />

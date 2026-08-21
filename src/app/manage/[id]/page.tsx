@@ -231,22 +231,44 @@ export default async function ManageJobPage({ params }: { params: Promise<{ id: 
             </div>
 
             {/* Persyaratan */}
-            {job.requirements.length > 0 && (
+            {job.requirements && job.requirements.length > 0 && (
               <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm sm:p-8">
                 <h2 className="flex items-center gap-2.5 text-lg font-bold text-foreground">
                   <span className="h-5 w-1 rounded-full bg-primary" aria-hidden="true" />
                   Persyaratan
                 </h2>
-                <ul className="mt-6 space-y-3">
-                  {job.requirements.map((req, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Check className="h-3 w-3" aria-hidden="true" />
-                      </span>
-                      <span className="text-foreground/80">{req}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-5 space-y-2 text-sm text-foreground/85 leading-relaxed">
+                  {job.requirements.map((req, idx) => {
+                    const trimmed = req.trim();
+                    if (!trimmed) return null;
+
+                    const bulletMatch = trimmed.match(/^([•\-\*–—✓→]\s*)(.*)$/);
+                    if (bulletMatch) {
+                      return (
+                        <div key={idx} className="flex items-start gap-2.5 leading-relaxed">
+                          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 shrink-0 mt-2" />
+                          <span className="flex-1">{bulletMatch[2]}</span>
+                        </div>
+                      );
+                    }
+
+                    const numberMatch = trimmed.match(/^(\(?\d+[\.\)]|\(?[a-zA-Z][\.\)]|\(?[ivxIVX]+[\.\)])\s*(.*)$/);
+                    if (numberMatch) {
+                      return (
+                        <div key={idx} className="flex items-start gap-2.5 leading-relaxed">
+                          <span className="font-semibold text-foreground shrink-0 min-w-[20px]">{numberMatch[1]}</span>
+                          <span className="flex-1">{numberMatch[2]}</span>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <p key={idx} className="leading-relaxed">
+                        {trimmed}
+                      </p>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>

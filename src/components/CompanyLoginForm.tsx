@@ -231,8 +231,7 @@ export default function CompanyLoginForm({
               untuk perusahaan Anda.
             </h2>
             <p className="text-white/70 text-lg leading-relaxed mb-8">
-              Kelola lowongan, pantau pelamar, dan bangun brand perusahaan
-              Anda di platform karir nomor satu di Mimika.
+              Kelola lowongan, pantau pelamar, dan temukan karyawan terbaik untuk tempat usaha dan perusahaan Anda di Timika.
             </p>
 
             <div className="flex flex-wrap gap-3">

@@ -2,11 +2,12 @@
 
 import { useTableSortAndSearch } from "@/hooks/useTableSortAndSearch";
 import { useSearchParams } from "next/navigation";
-import { Briefcase, Search, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
+import { Briefcase, Search, ArrowUpDown, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import JobActionButtons from "../JobActionButtons";
 import { Input } from "@/components/ui/Input";
 import { Suspense } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 function AllJobsTableContent({ jobs }: { jobs: any[] }) {
   const searchParams = useSearchParams();
@@ -125,10 +126,17 @@ function AllJobsTableContent({ jobs }: { jobs: any[] }) {
           <tbody className="divide-y divide-gray-200">
             {processedData.length > 0 ? (
               processedData.map((job) => (
-                <tr key={job.id} className="hover:bg-gray-50 transition-colors group">
+                <tr key={job.id} className="hover:bg-slate-50 transition-colors group">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-semibold text-gray-900">{job.title}</div>
-                    <div className="text-xs text-gray-500 mt-1">{job.type}</div>
+                    <Link 
+                      href={`/job/${job.id}`} 
+                      className="font-bold text-slate-900 hover:text-primary transition-colors flex items-center gap-1.5 group/link"
+                      title="Buka Halaman Detail Lowongan"
+                    >
+                      <span className="truncate max-w-[260px] sm:max-w-xs">{job.title}</span>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover/link:opacity-100 transition-opacity text-primary shrink-0" />
+                    </Link>
+                    <div className="text-xs text-slate-500 mt-0.5">{job.type}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
