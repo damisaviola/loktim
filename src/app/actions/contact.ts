@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { getUserSession } from './auth'
 import { contactFormSchema } from '@/lib/validations/contact'
 import { getClientIp, checkRateLimit } from '@/lib/rate-limit'
-import DOMPurify from 'isomorphic-dompurify'
+import DOMPurify from '@/lib/sanitize'
 
 export async function submitContactMessageAction(rawInput: {
   name: string

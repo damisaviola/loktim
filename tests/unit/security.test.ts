@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import bcrypt from "bcryptjs";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "../../src/lib/sanitize";
 
 describe("8. Security & Cryptography Standards", () => {
   describe("Password Hashing & Verification (bcryptjs)", () => {

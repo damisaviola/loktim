@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { getUserSession } from "./auth";
 import { revalidatePath } from "next/cache";
 import { categorySchema } from "@/lib/validations/category";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "@/lib/sanitize";
 
 export async function getCategoriesAction() {
   try {

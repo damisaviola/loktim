@@ -7,7 +7,7 @@ import JobSubmittedEmail from "@/emails/JobSubmittedEmail";
 import JobApprovedEmail from "@/emails/JobApprovedEmail";
 import JobRejectedEmail from "@/emails/JobRejectedEmail";
 import { render } from "@react-email/render";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "@/lib/sanitize";
 import { headers } from "next/headers";
 import { getClientIp, checkRateLimit } from "@/lib/rate-limit";
 

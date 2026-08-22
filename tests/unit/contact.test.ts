@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "../../src/lib/sanitize";
 
 describe("6. Contact Management & Response Helpers", () => {
   // WhatsApp link generator logic helper
