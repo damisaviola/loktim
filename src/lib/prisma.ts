@@ -3,8 +3,13 @@ import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 const prismaClientSingleton = () => {
-  const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || ''
-  const pool = new Pool({ connectionString })
+  const connectionString = process.env.DATABASE_URL || process.env.DIRECT_URL || ''
+  const pool = new Pool({
+    connectionString,
+    max: 10,
+    connectionTimeoutMillis: 10000,
+    idleTimeoutMillis: 30000,
+  })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }
