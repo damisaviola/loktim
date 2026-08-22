@@ -2,6 +2,8 @@ import { getAdminCategoriesAction } from "@/app/actions/job";
 import CategoriesClient from "./CategoriesClient";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Kategori Pekerjaan | Admin Dashboard",
   description: "Kelola daftar kategori lowongan kerja di Admin Dashboard.",

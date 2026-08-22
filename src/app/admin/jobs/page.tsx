@@ -4,6 +4,8 @@ import { Briefcase, Plus } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Kelola Lowongan - Admin LokerTimika",
   description: "Manajemen dan moderasi seluruh lowongan pekerjaan di LokerTimika.",

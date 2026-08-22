@@ -2,6 +2,8 @@ import prisma from "@/lib/prisma";
 import DashboardClient, { DashboardJob } from "./DashboardClient";
 import { createClient } from "@/utils/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {

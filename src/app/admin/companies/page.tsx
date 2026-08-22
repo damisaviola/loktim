@@ -2,9 +2,11 @@ import { getAdminCompaniesAction } from "@/app/actions/job";
 import CompaniesClient from "./CompaniesClient";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Perusahaan Mitra | Admin Dashboard",
-  description: "Kelola daftar perusahaan mitra di Admin Dashboard.",
+  title: "Kelola Perusahaan | Admin Dashboard",
+  description: "Daftar perusahaan dan tempat usaha terdaftar di LokerTimika.",
 };
 
 export default async function CompaniesPage() {

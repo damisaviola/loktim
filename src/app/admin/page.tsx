@@ -4,14 +4,14 @@ import {
   Briefcase, 
   Building, 
   CheckCircle2,
-  AlertCircle,
   Clock,
   Sparkles,
-  ArrowUpRight,
   Mail,
   ArrowRight
 } from "lucide-react";
 import PendingJobsNativeTable from "./PendingJobsNativeTable";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
   // Hitung statistik

@@ -3,6 +3,8 @@ import { Mail, MessageSquare, Inbox, Clock, CheckCircle2, Archive } from "lucide
 import ContactsTable, { ContactMessageItem } from "./ContactsTable";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Kelola Pesan Kontak - Admin LokerTimika",
   description: "Manajemen dan tindak lanjut pesan, pertanyaan, dan permohonan dari formulir kontak LokerTimika.",

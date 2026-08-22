@@ -2,6 +2,8 @@ import prisma from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import PostFormClient from "./PostFormClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function QuickPostPage() {
   let userEmail: string | null = null;
   let userCompany: {

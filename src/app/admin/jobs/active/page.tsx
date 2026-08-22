@@ -8,6 +8,8 @@ import {
 import JobActionButtons from "../../JobActionButtons";
 import ActiveJobsNativeTable from "./ActiveJobsNativeTable";
 
+export const dynamic = "force-dynamic";
+
 export default async function ActiveJobsPage() {
   // Ambil lowongan yang aktif (status: approved)
   const activeJobs = await prisma.job.findMany({

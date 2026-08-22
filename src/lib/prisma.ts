@@ -13,9 +13,7 @@ declare const globalThis: {
   prismaGlobal: ReturnType<typeof prismaClientSingleton> | undefined;
 } & typeof global;
 
-const prisma = process.env.NODE_ENV === 'production' 
-  ? (globalThis.prismaGlobal ?? prismaClientSingleton())
-  : (globalThis.prismaGlobal && 'contactMessage' in globalThis.prismaGlobal ? globalThis.prismaGlobal : prismaClientSingleton())
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
 
 if (process.env.NODE_ENV !== 'production') {
   globalThis.prismaGlobal = prisma
@@ -43,4 +41,3 @@ export function getExtendedClient(userId?: string) {
   });
 }
 
-if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma

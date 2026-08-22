@@ -1,9 +1,13 @@
 import { getJobReportsAction } from "@/app/actions/report";
 import { Flag } from "lucide-react";
 import ReportsNativeTable from "./ReportsNativeTable";
+import { Metadata } from "next";
 
-export const metadata = {
-  title: "Kelola Laporan - Admin LokerTimika",
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Laporan Kendala Lowongan | Admin LokerTimika",
+  description: "Moderasi dan tindak lanjut laporan lowongan mencurigakan atau bermasalah.",
 };
 
 export default async function ReportsAdminPage() {
