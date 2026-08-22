@@ -23,24 +23,28 @@ export default async function QuickPostPage() {
 
     if (user) {
       userEmail = user.email ?? null;
-      const company = await prisma.company.findFirst({
-        where: {
-          OR: [
-            { authUserId: user.id },
-            ...(user.email ? [{ email: user.email }] : []),
-          ],
-        },
-      });
+      try {
+        const company = await prisma.company.findFirst({
+          where: {
+            OR: [
+              { authUserId: user.id },
+              ...(user.email ? [{ email: user.email }] : []),
+            ],
+          },
+        });
 
-      if (company) {
-        userCompany = {
-          id: company.id,
-          name: company.name,
-          location: company.location,
-          logoUrl: company.logoUrl,
-          about: company.about,
-          email: company.email,
-        };
+        if (company) {
+          userCompany = {
+            id: company.id,
+            name: company.name,
+            location: company.location,
+            logoUrl: company.logoUrl,
+            about: company.about,
+            email: company.email,
+          };
+        }
+      } catch (dbError) {
+        console.error("Database unavailable for user company query in post page:", dbError);
       }
     }
   } catch (error) {

@@ -8,7 +8,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { AlertModal } from "@/components/ui/AlertModal";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "@/lib/sanitize";
 
 
 const EditJobFormModal = dynamic(() => import("@/components/admin/EditJobFormModal"), { ssr: false });

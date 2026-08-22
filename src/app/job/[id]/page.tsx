@@ -24,7 +24,7 @@ import { ShareButton } from '@/components/ShareButton';
 import { BookmarkButton } from '@/components/BookmarkButton';
 import { JobMoreOptions } from '@/components/JobMoreOptions';
 import { ApplyModal } from '@/components/ApplyModal';
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from '@/lib/sanitize';
 
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
   }
 
-  const cleanDescription = job.description.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+  const cleanDescription = (job.description || '').replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
   const snippet = cleanDescription.length > 160 ? cleanDescription.substring(0, 157) + '...' : cleanDescription;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://lokertimika.com';
   const pageUrl = `${baseUrl}/job/${job.id}`;

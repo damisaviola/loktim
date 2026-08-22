@@ -7,7 +7,7 @@ import { jobs as dummyJobs } from '@/lib/dummy-data'
 import { sendEmail } from '@/lib/email'
 import JobReportedEmail from '@/emails/JobReportedEmail'
 import { z } from 'zod'
-import DOMPurify from 'isomorphic-dompurify'
+import DOMPurify from '@/lib/sanitize'
 import { getClientIp, checkRateLimit } from '@/lib/rate-limit'
 
 import { reportJobSchema } from '@/lib/validations/report'
