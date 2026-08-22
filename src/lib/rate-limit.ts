@@ -9,7 +9,7 @@ const store = new Map<string, RateLimitStore>();
 
 // Cleanup stale keys periodically to avoid memory leaks
 if (typeof setInterval !== "undefined") {
-  setInterval(() => {
+  const cleanupTimer = setInterval(() => {
     const now = Date.now();
     for (const [key, value] of store.entries()) {
       if (now > value.resetAt) {
@@ -17,6 +17,10 @@ if (typeof setInterval !== "undefined") {
       }
     }
   }, 5 * 60 * 1000);
+
+  if (typeof cleanupTimer.unref === "function") {
+    cleanupTimer.unref();
+  }
 }
 
 /**

@@ -47,15 +47,20 @@ export async function registerCompanyAction(rawData: {
 
     const data = validation.data;
 
-    // 3. Check existing Company in Prisma
+    // 3. Check existing Company in Prisma by email
     const existingCompany = await prisma.company.findFirst({
       where: {
-        OR: [
-          { email: data.email },
-          { name: { equals: data.name, mode: 'insensitive' } },
-        ],
+        email: data.email,
       },
     });
+
+    if (existingCompany && existingCompany.authUserId) {
+      return {
+        success: false,
+        error: 'Email ini sudah terhubung dengan akun perusahaan yang terdaftar. Silakan login.',
+        isExistingUser: true,
+      };
+    }
 
     const supabase = await createClient();
 
@@ -76,7 +81,6 @@ export async function registerCompanyAction(rawData: {
     });
 
     if (signUpError) {
-      // If user already exists in Supabase Auth, try signing in to verify if they own it
       if (
         signUpError.message.toLowerCase().includes('already registered') ||
         signUpError.message.toLowerCase().includes('already exists')
@@ -105,12 +109,13 @@ export async function registerCompanyAction(rawData: {
 
     // 6. Create or Link Company record in Database
     let savedCompany;
-    if (existingCompany) {
-      // If company existed without auth link, attach authUserId
+    if (existingCompany && !existingCompany.authUserId) {
+      // If company previously posted as guest with matching email and no auth link, attach authUserId
       savedCompany = await prisma.company.update({
         where: { id: existingCompany.id },
         data: {
-          authUserId: authUserId ?? existingCompany.authUserId,
+          authUserId,
+          name: data.name || existingCompany.name,
           location: data.location || existingCompany.location,
           about: data.about || existingCompany.about,
           logoUrl: finalLogoUrl || existingCompany.logoUrl,

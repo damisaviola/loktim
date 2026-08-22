@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Briefcase, Menu, X, Search, Home, LogIn, Bookmark, FileText, Phone } from 'lucide-react';
+import { Briefcase, Menu, X, Search, Home, LogIn, Bookmark, FileText, Phone, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export function LandingNavbar() {
@@ -17,6 +17,7 @@ export function LandingNavbar() {
   const navLinks = [
     { href: "/", label: "Beranda", icon: <Home className="w-5 h-5" />, active: pathname === "/" },
     { href: "/jobs", label: "Lowongan", icon: <Search className="w-5 h-5" />, active: pathname === "/jobs" || pathname?.startsWith("/job/") },
+    { href: "/panduan-pasang-loker", label: "Panduan", icon: <BookOpen className="w-5 h-5" />, active: pathname === "/panduan-pasang-loker" },
     { href: "/tersimpan", label: "Tersimpan", icon: <Bookmark className="w-5 h-5" />, active: pathname === "/tersimpan" },
     { href: "/ketentuan-pasang-loker", label: "Ketentuan", icon: <FileText className="w-5 h-5" />, active: pathname === "/ketentuan-pasang-loker" },
     { href: "/contact", label: "Kontak", icon: <Phone className="w-5 h-5" />, active: pathname === "/contact" },

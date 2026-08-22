@@ -21,7 +21,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
           
           {/* Column 1: Brand & Desc */}
-          <div className="md:col-span-4 flex flex-col gap-6">
+          <div className="md:col-span-6 flex flex-col gap-6">
             <Link href="/jobs" className="flex items-center gap-2 group">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl shrink-0 group-hover:scale-105 transition-transform duration-300 overflow-hidden bg-transparent">
                 <Image 
@@ -36,38 +36,29 @@ export function Footer() {
                 Loker<span className="text-[#026CA0] group-hover:text-[#015883] transition-colors">Timika</span>
               </span>
             </Link>
-            <p className="text-sm font-medium leading-relaxed text-slate-500 max-w-xs">
+            <p className="text-sm font-medium leading-relaxed text-slate-500 max-w-sm">
               Pusat info lowongan kerja di Mimika. Membantu mempertemukan pencari kerja dengan tempat usaha dan perusahaan lokal.
             </p>
           </div>
 
           {/* Column 2: Perusahaan */}
-          <div className="md:col-span-2 md:col-start-6 flex flex-col gap-4">
+          <div className="md:col-span-3 flex flex-col gap-4">
             <h4 className="font-bold text-slate-900 text-base">Untuk Perusahaan</h4>
             <div className="flex flex-col gap-3 text-sm font-medium">
               <Link href="/post" className="hover:text-primary transition-colors inline-block">Pasang Lowongan</Link>
+              <Link href="/panduan-pasang-loker" className="hover:text-primary transition-colors inline-block">Panduan Pasang Loker</Link>
               <Link href="/ketentuan-pasang-loker" className="hover:text-primary transition-colors inline-block">Ketentuan Layanan</Link>
               <Link href="/contact" className="hover:text-primary transition-colors inline-block">Bantuan & Kontak</Link>
             </div>
           </div>
 
           {/* Column 3: Pencari Kerja */}
-          <div className="md:col-span-2 flex flex-col gap-4">
+          <div className="md:col-span-3 flex flex-col gap-4">
             <h4 className="font-bold text-slate-900 text-base">Pencari Kerja</h4>
             <div className="flex flex-col gap-3 text-sm font-medium">
               <Link href="/jobs" className="hover:text-primary transition-colors inline-block">Cari Lowongan</Link>
               <Link href="/tersimpan" className="hover:text-primary transition-colors inline-block">Lowongan Tersimpan</Link>
               <Link href="/privacy" className="hover:text-primary transition-colors inline-block">Kebijakan Privasi</Link>
-            </div>
-          </div>
-
-          {/* Column 4: Kontak */}
-          <div className="md:col-span-2 flex flex-col gap-4">
-            <h4 className="font-bold text-slate-900 text-base">Ikuti Kami</h4>
-            <div className="flex flex-col gap-3 text-sm font-medium">
-              <a href="#" className="hover:text-primary transition-colors inline-block">Instagram</a>
-              <a href="#" className="hover:text-primary transition-colors inline-block">Facebook</a>
-              <a href="#" className="hover:text-primary transition-colors inline-block">LinkedIn</a>
             </div>
           </div>
         </div>

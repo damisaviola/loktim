@@ -76,6 +76,17 @@ export default function KetentuanPasangLoker() {
               Perusahaan &amp; UMKM
             </span>
           </div>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <Link
+              href="/panduan-pasang-loker"
+              className="h-10 px-4 rounded-xl bg-primary/10 hover:bg-primary/15 text-primary font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+            >
+              <Briefcase className="w-3.5 h-3.5" />
+              <span>Lihat Panduan Lengkap Pasang Loker (Step-by-Step)</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
 
         {/* Quick Anchor Navigation */}

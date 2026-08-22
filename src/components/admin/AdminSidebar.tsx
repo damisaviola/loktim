@@ -18,7 +18,8 @@ import {
   Plus,
   LogOut,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  Mail
 } from "lucide-react";
 import JobFormModal from "@/components/admin/JobFormModal";
 import { logoutAction } from "@/app/actions/auth";
@@ -57,6 +58,7 @@ export default function AdminSidebar({ children }: { children: ReactNode }) {
     { name: "Perusahaan", href: "/admin/companies", icon: Building },
     { name: "Kategori", href: "/admin/categories", icon: Tags },
     { name: "Lokasi", href: "/admin/locations", icon: MapPin },
+    { name: "Pesan Kontak", href: "/admin/contacts", icon: Mail },
     { name: "Laporan", href: "/admin/reports", icon: Flag },
     { name: "Pengaturan", href: "/admin/settings", icon: Settings },
   ];

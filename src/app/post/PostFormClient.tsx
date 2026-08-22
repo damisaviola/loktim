@@ -412,6 +412,18 @@ export default function PostFormClient({
           <p className="text-slate-300 text-xs sm:text-sm font-medium max-w-xl mx-auto leading-relaxed">
             Iklankan lowongan kerja perusahaan, bisnis lokal, UMKM, toko, kafe, hingga kontraktor Anda ke ribuan pencari kerja aktif di wilayah Timika, Kuala Kencana, Tembagapura, &amp; sekitarnya.
           </p>
+
+          <div className="pt-1 flex items-center justify-center gap-3 text-xs">
+            <Link
+              href="/panduan-pasang-loker"
+              target="_blank"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/15 text-slate-200 border border-white/20 transition-all font-medium"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-primary" />
+              <span>Butuh bantuan? Baca Panduan Pasang Loker</span>
+              <ArrowRight className="w-3 h-3 text-slate-300" />
+            </Link>
+          </div>
         </div>
       </div>
 

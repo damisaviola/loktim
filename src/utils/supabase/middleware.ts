@@ -1,5 +1,19 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { jwtVerify } from 'jose'
+
+const JWT_SECRET_KEY = process.env.JWT_SECRET || 'super-secret-key-for-local-dev-change-in-prod'
+const key = new TextEncoder().encode(JWT_SECRET_KEY)
+
+async function isValidAdminSession(token?: string): Promise<boolean> {
+  if (!token) return false
+  try {
+    const { payload } = await jwtVerify(token, key)
+    return Boolean(payload && payload.adminId)
+  } catch {
+    return false
+  }
+}
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -32,7 +46,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const adminSession = request.cookies.get('admin_session')?.value
-  const isAuthenticatedAdmin = !!user || !!adminSession
+  const isAuthenticatedAdmin = await isValidAdminSession(adminSession)
   const url = request.nextUrl.clone()
 
   // Redirect logged-in admin away from /admin/login to /admin
@@ -60,3 +74,4 @@ export async function updateSession(request: NextRequest) {
 
   return supabaseResponse
 }
+

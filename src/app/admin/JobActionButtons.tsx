@@ -8,6 +8,8 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { AlertModal } from "@/components/ui/AlertModal";
+import DOMPurify from "isomorphic-dompurify";
+
 
 const EditJobFormModal = dynamic(() => import("@/components/admin/EditJobFormModal"), { ssr: false });
 
@@ -280,8 +282,9 @@ export default function JobActionButtons({
                 <h3 className="font-extrabold text-slate-900 mb-2 text-xs uppercase tracking-wider">Deskripsi Pekerjaan</h3>
                 <div 
                   className="text-slate-600 text-xs leading-relaxed break-words whitespace-pre-wrap prose prose-slate prose-xs max-w-none"
-                  dangerouslySetInnerHTML={{ __html: job.description }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }}
                 />
+
               </div>
 
               {/* Persyaratan */}

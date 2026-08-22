@@ -72,3 +72,20 @@ model Category {
   name      String   @unique
   createdAt DateTime @default(now())
 }
+
+model ContactMessage {
+  id           String   @id @default(cuid())
+  ticketId     String   @unique
+  name         String
+  email        String
+  phone        String?
+  organization String?
+  category     String   @default("general")
+  subject      String
+  message      String
+  status       String   @default("unread") // unread, read, replied, archived
+  replyNotes   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+

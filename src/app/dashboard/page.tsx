@@ -22,12 +22,8 @@ export default async function DashboardPage() {
     });
   }
 
-  // Fallback to first company in database if not logged in or during initial preview
-  if (!company) {
-    company = await prisma.company.findFirst();
-  }
-
   let hrdJobs: DashboardJob[] = [];
+
 
   if (company) {
     const rawJobs = await prisma.job.findMany({

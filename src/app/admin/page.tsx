@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import Link from "next/link";
 import { 
   Briefcase, 
   Building, 
@@ -6,7 +7,9 @@ import {
   AlertCircle,
   Clock,
   Sparkles,
-  ArrowUpRight
+  ArrowUpRight,
+  Mail,
+  ArrowRight
 } from "lucide-react";
 import PendingJobsNativeTable from "./PendingJobsNativeTable";
 
@@ -16,6 +19,7 @@ export default async function AdminDashboard() {
   const activeJobs = await prisma.job.count({ where: { status: "approved" } });
   const pendingJobsCount = await prisma.job.count({ where: { status: "pending" } }); 
   const totalCompanies = await prisma.company.count();
+  const unreadContactsCount = await prisma.contactMessage.count({ where: { status: "unread" } });
 
   // Ambil lowongan yang menunggu approval
   const pendingJobs = await prisma.job.findMany({
@@ -38,11 +42,37 @@ export default async function AdminDashboard() {
             Selamat Datang Kembali 👋
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-medium">
-            Pantau statistik platform, tinjau permohonan lowongan, dan kelola mitra perusahaan.
+            Pantau statistik platform, tinjau permohonan lowongan, dan kelola pesan kontak.
           </p>
         </div>
         <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-primary/20 blur-3xl rounded-full pointer-events-none"></div>
       </div>
+
+      {/* Unread Contact Messages Notification Alert Banner */}
+      {unreadContactsCount > 0 && (
+        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-rose-900 shadow-2xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-2xs">
+              <Mail className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="font-extrabold text-sm text-rose-950">
+                Ada {unreadContactsCount} Pesan Kontak Baru yang Belum Dibaca!
+              </div>
+              <p className="text-xs text-rose-700">
+                Pengguna atau pelaku usaha mengirimkan pesan / pertanyaan yang memerlukan tindak lanjut admin.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin/contacts"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors shrink-0 shadow-xs"
+          >
+            <span>Buka Kotak Masuk</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
 
       {/* Stats Widgets Grid */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">

@@ -24,6 +24,8 @@ import { ShareButton } from '@/components/ShareButton';
 import { BookmarkButton } from '@/components/BookmarkButton';
 import { JobMoreOptions } from '@/components/JobMoreOptions';
 import { ApplyModal } from '@/components/ApplyModal';
+import DOMPurify from 'isomorphic-dompurify';
+
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -328,8 +330,9 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
 
               <div
                 className="text-slate-700 text-sm leading-relaxed prose prose-slate max-w-none prose-p:mb-3 prose-ul:mb-3 prose-li:my-1 prose-strong:font-bold break-words"
-                dangerouslySetInnerHTML={{ __html: job.description }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }}
               />
+
 
               {job.requirements && (Array.isArray(job.requirements) ? job.requirements.length > 0 : Boolean(job.requirements)) && (
                 <div className="pt-6 border-t border-slate-100 space-y-3">

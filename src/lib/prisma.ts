@@ -3,7 +3,7 @@ import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 const prismaClientSingleton = () => {
-  const connectionString = `${process.env.DIRECT_URL}`
+  const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || ''
   const pool = new Pool({ connectionString })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
@@ -15,7 +15,7 @@ declare const globalThis: {
 
 const prisma = process.env.NODE_ENV === 'production' 
   ? (globalThis.prismaGlobal ?? prismaClientSingleton())
-  : prismaClientSingleton()
+  : (globalThis.prismaGlobal && 'contactMessage' in globalThis.prismaGlobal ? globalThis.prismaGlobal : prismaClientSingleton())
 
 if (process.env.NODE_ENV !== 'production') {
   globalThis.prismaGlobal = prisma

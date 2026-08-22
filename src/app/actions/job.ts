@@ -65,7 +65,7 @@ export async function validateJobStepAction(step: number, formData: FormData) {
 export async function getCompaniesAction() {
   try {
     const companies = await prisma.company.findMany({
-      select: { id: true, name: true, email: true }
+      select: { id: true, name: true, location: true, logoUrl: true }
     });
     return companies;
   } catch (error) {
@@ -73,6 +73,7 @@ export async function getCompaniesAction() {
     return [];
   }
 }
+
 
 export async function getCompaniesByEmailAction(email: string) {
   try {
@@ -293,11 +294,46 @@ export async function createJobAction(formData: FormData) {
   }
 }
 
+async function isAuthorizedForJob(jobId: string): Promise<boolean> {
+  const admin = await getUserSession();
+  if (admin) return true;
+
+  try {
+    const { createClient } = await import("@/utils/supabase/server");
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const job = await prisma.job.findUnique({
+      where: { id: jobId },
+      include: { company: true },
+    });
+
+    if (!job) return false;
+
+    if (user && job.company) {
+      if (job.company.authUserId === user.id) return true;
+      if (user.email && job.company.email?.toLowerCase() === user.email.toLowerCase()) return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 export async function updateJobAction(jobId: string, formData: FormData) {
   try {
+    const authorized = await isAuthorizedForJob(jobId);
+    if (!authorized) {
+      return { success: false, error: "Akses ditolak: Anda tidak memiliki izin untuk mengubah lowongan ini." };
+    }
+
     const rawData = {
       email: (formData.get("email") as string) ?? "",
       imageUrl: formData.get("imageUrl") as string | null,
+
       title: (formData.get("title") as string) ?? "",
       category: (formData.get("category") as string) ?? "",
       location: (formData.get("location") as string) ?? "",
@@ -580,11 +616,31 @@ export async function getAdminCategoriesAction() {
 export async function closeJobAction(jobId: string) {
   try {
     const job = await prisma.job.findUnique({
-      where: { id: jobId }
+      where: { id: jobId },
+      include: { company: true }
     });
 
     if (!job) {
       return { success: false, error: "Lowongan tidak ditemukan" };
+    }
+
+    const admin = await getUserSession();
+    let isOwner = false;
+
+    try {
+      const { createClient } = await import("@/utils/supabase/server");
+      const supabase = await createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && job.company) {
+        if (job.company.authUserId === user.id || (user.email && job.company.email?.toLowerCase() === user.email.toLowerCase())) {
+          isOwner = true;
+        }
+      }
+    } catch {}
+
+    // Reject if the job belongs to a registered company and caller is neither admin nor the owner
+    if (job.company?.authUserId && !admin && !isOwner) {
+      return { success: false, error: "Akses ditolak: Anda tidak memiliki izin untuk menutup lowongan ini." };
     }
 
     await prisma.job.update({
@@ -607,3 +663,4 @@ export async function closeJobAction(jobId: string) {
     return { success: false, error: error.message || "Failed to close job" };
   }
 }
+
