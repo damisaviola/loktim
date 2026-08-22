@@ -14,19 +14,30 @@ import PendingJobsNativeTable from "./PendingJobsNativeTable";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  // Hitung statistik
-  const totalJobs = await prisma.job.count();
-  const activeJobs = await prisma.job.count({ where: { status: "approved" } });
-  const pendingJobsCount = await prisma.job.count({ where: { status: "pending" } }); 
-  const totalCompanies = await prisma.company.count();
-  const unreadContactsCount = await prisma.contactMessage.count({ where: { status: "unread" } });
+  let totalJobs = 0;
+  let activeJobs = 0;
+  let pendingJobsCount = 0;
+  let totalCompanies = 0;
+  let unreadContactsCount = 0;
+  let pendingJobs: any[] = [];
 
-  // Ambil lowongan yang menunggu approval
-  const pendingJobs = await prisma.job.findMany({
-    where: { status: 'pending' },
-    include: { company: true },
-    orderBy: { createdAt: 'desc' }
-  });
+  try {
+    // Hitung statistik
+    totalJobs = await prisma.job.count();
+    activeJobs = await prisma.job.count({ where: { status: "approved" } });
+    pendingJobsCount = await prisma.job.count({ where: { status: "pending" } }); 
+    totalCompanies = await prisma.company.count();
+    unreadContactsCount = await prisma.contactMessage.count({ where: { status: "unread" } });
+
+    // Ambil lowongan yang menunggu approval
+    pendingJobs = await prisma.job.findMany({
+      where: { status: 'pending' },
+      include: { company: true },
+      orderBy: { createdAt: 'desc' }
+    });
+  } catch (error) {
+    console.error("Failed to load admin dashboard data:", error);
+  }
 
   return (
     <div className="space-y-8 pb-10">

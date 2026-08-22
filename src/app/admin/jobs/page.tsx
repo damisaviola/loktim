@@ -13,10 +13,15 @@ export const metadata: Metadata = {
 
 export default async function AllJobsPage() {
   // Ambil semua lowongan tanpa memfilter status
-  const allJobs = await prisma.job.findMany({
-    include: { company: true },
-    orderBy: { createdAt: 'desc' }
-  });
+  let allJobs: any[] = [];
+  try {
+    allJobs = await prisma.job.findMany({
+      include: { company: true },
+      orderBy: { createdAt: 'desc' }
+    });
+  } catch (error) {
+    console.error("Failed to fetch all jobs:", error);
+  }
 
   return (
     <div className="space-y-6 pb-10">

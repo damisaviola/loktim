@@ -12,11 +12,16 @@ export const dynamic = "force-dynamic";
 
 export default async function ActiveJobsPage() {
   // Ambil lowongan yang aktif (status: approved)
-  const activeJobs = await prisma.job.findMany({
-    where: { status: 'approved' },
-    include: { company: true },
-    orderBy: { createdAt: 'desc' }
-  });
+  let activeJobs: any[] = [];
+  try {
+    activeJobs = await prisma.job.findMany({
+      where: { status: 'approved' },
+      include: { company: true },
+      orderBy: { createdAt: 'desc' }
+    });
+  } catch (error) {
+    console.error("Failed to fetch active jobs:", error);
+  }
 
   return (
     <div className="space-y-8 pb-10">
