@@ -59,6 +59,17 @@ export function Footer() {
               <Link href="/jobs" className="hover:text-primary transition-colors inline-block">Cari Lowongan</Link>
               <Link href="/tersimpan" className="hover:text-primary transition-colors inline-block">Lowongan Tersimpan</Link>
               <Link href="/privacy" className="hover:text-primary transition-colors inline-block">Kebijakan Privasi</Link>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    window.dispatchEvent(new Event("open-pwa-installer"));
+                  }
+                }}
+                className="text-left font-bold text-primary hover:underline transition-colors inline-flex items-center gap-1.5 cursor-pointer pt-1"
+              >
+                <span>📱 Install App (PWA)</span>
+              </button>
             </div>
           </div>
         </div>
