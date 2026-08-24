@@ -7,6 +7,7 @@ import { getClientIp, checkRateLimit } from '@/lib/rate-limit';
 import { revalidatePath } from 'next/cache';
 
 import { registerCompanySchema, type RegisterCompanyInput } from '@/lib/validations/company';
+import { getUserSession } from '@/app/actions/auth';
 
 export async function registerCompanyAction(rawData: {
   name: string;
@@ -171,51 +172,67 @@ export async function deleteCompanyAction(companyId: string) {
       return { success: false, error: 'ID Perusahaan tidak valid.' };
     }
 
+    // Check admin authorization
+    const admin = await getUserSession();
+    if (!admin) {
+      return { success: false, error: 'Akses ditolak: Anda harus login sebagai admin.' };
+    }
+
     const company = await prisma.company.findUnique({
       where: { id: companyId },
       include: { jobs: { select: { id: true } } },
     });
 
     if (!company) {
-      return { success: false, error: 'Perusahaan tidak ditemukan.' };
+      return { success: false, error: 'Perusahaan tidak ditemukan di database.' };
     }
 
     const jobIds = company.jobs.map((j) => j.id);
 
-    // 1. Delete all reports for jobs belonging to this company
-    if (jobIds.length > 0) {
-      await prisma.jobReport.deleteMany({
-        where: { jobId: { in: jobIds } },
-      });
+    // Atomic transaction for deleting company and associated jobs/reports
+    await prisma.$transaction(async (tx) => {
+      if (jobIds.length > 0) {
+        // 1. Delete job reports for company's jobs
+        await tx.jobReport.deleteMany({
+          where: { jobId: { in: jobIds } },
+        });
 
-      // 2. Delete all jobs belonging to this company
-      await prisma.job.deleteMany({
-        where: { companyId },
-      });
-    }
+        // 2. Delete all jobs for this company
+        await tx.job.deleteMany({
+          where: { companyId },
+        });
+      }
 
-    // 3. Delete company record
-    await prisma.company.delete({
-      where: { id: companyId },
+      // 3. Delete company record
+      await tx.company.delete({
+        where: { id: companyId },
+      });
     });
 
-    // 4. Optionally delete Supabase auth user if authUserId is present
+    // 4. Safely attempt to delete Supabase auth user if authUserId is present
     if (company.authUserId) {
       try {
-        const supabase = await createClient();
-        await supabase.auth.admin.deleteUser(company.authUserId);
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (supabaseUrl && serviceRoleKey) {
+          const { createClient: createSupabaseAdminClient } = await import('@supabase/supabase-js');
+          const adminSupabase = createSupabaseAdminClient(supabaseUrl, serviceRoleKey);
+          await adminSupabase.auth.admin.deleteUser(company.authUserId);
+        }
       } catch (authErr) {
         console.warn('Non-fatal: Error deleting Supabase auth user:', authErr);
       }
     }
 
     revalidatePath('/', 'layout');
+    revalidatePath('/admin', 'layout');
     revalidatePath('/admin/companies', 'page');
     revalidatePath('/jobs', 'page');
 
     return {
       success: true,
-      message: `Perusahaan ${company.name} dan seluruh data pendukungnya berhasil dihapus!`,
+      message: `Perusahaan "${company.name}" dan seluruh lowongannya berhasil dihapus!`,
     };
   } catch (error: any) {
     console.error('Error in deleteCompanyAction:', error);
