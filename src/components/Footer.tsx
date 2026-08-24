@@ -16,7 +16,7 @@ export function Footer() {
     return null;
 
   return (
-    <footer className="bg-white border-t border-slate-200 mt-16 py-16 text-slate-600">
+    <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-16 py-16 text-slate-600 dark:text-slate-400 transition-colors duration-200">
       <div className="container mx-auto px-4 max-w-[1128px]">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
           
@@ -32,46 +32,46 @@ export function Footer() {
                   className="w-full h-full object-cover scale-[1.2]"
                 />
               </div>
-              <span className="font-extrabold text-2xl tracking-tight text-slate-900">
-                Loker<span className="text-[#026CA0] group-hover:text-[#015883] transition-colors">Timika</span>
+              <span className="font-extrabold text-2xl tracking-tight text-slate-900 dark:text-slate-100">
+                Loker<span className="text-[#026CA0] dark:text-[#38bdf8] group-hover:text-[#015883] dark:group-hover:text-[#0284c7] transition-colors">Timika</span>
               </span>
             </Link>
-            <p className="text-sm font-medium leading-relaxed text-slate-500 max-w-sm">
+            <p className="text-sm font-medium leading-relaxed text-slate-500 dark:text-slate-400 max-w-sm">
               Pusat info lowongan kerja di Mimika. Membantu mempertemukan pencari kerja dengan tempat usaha dan perusahaan lokal.
             </p>
           </div>
 
           {/* Column 2: Perusahaan */}
           <div className="md:col-span-3 flex flex-col gap-4">
-            <h4 className="font-bold text-slate-900 text-base">Untuk Perusahaan</h4>
+            <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">Untuk Perusahaan</h4>
             <div className="flex flex-col gap-3 text-sm font-medium">
-              <Link href="/post" className="hover:text-primary transition-colors inline-block">Pasang Lowongan</Link>
-              <Link href="/panduan-pasang-loker" className="hover:text-primary transition-colors inline-block">Panduan Pasang Loker</Link>
-              <Link href="/ketentuan-pasang-loker" className="hover:text-primary transition-colors inline-block">Ketentuan Layanan</Link>
-              <Link href="/contact" className="hover:text-primary transition-colors inline-block">Bantuan & Kontak</Link>
+              <Link href="/post" className="hover:text-primary dark:hover:text-primary transition-colors inline-block">Pasang Lowongan</Link>
+              <Link href="/panduan-pasang-loker" className="hover:text-primary dark:hover:text-primary transition-colors inline-block">Panduan Pasang Loker</Link>
+              <Link href="/ketentuan-pasang-loker" className="hover:text-primary dark:hover:text-primary transition-colors inline-block">Ketentuan Layanan</Link>
+              <Link href="/contact" className="hover:text-primary dark:hover:text-primary transition-colors inline-block">Bantuan & Kontak</Link>
             </div>
           </div>
 
           {/* Column 3: Pencari Kerja */}
           <div className="md:col-span-3 flex flex-col gap-4">
-            <h4 className="font-bold text-slate-900 text-base">Pencari Kerja</h4>
+            <h4 className="font-bold text-slate-900 dark:text-slate-100 text-base">Pencari Kerja</h4>
             <div className="flex flex-col gap-3 text-sm font-medium">
-              <Link href="/jobs" className="hover:text-primary transition-colors inline-block">Cari Lowongan</Link>
-              <Link href="/tersimpan" className="hover:text-primary transition-colors inline-block">Lowongan Tersimpan</Link>
-              <Link href="/privacy" className="hover:text-primary transition-colors inline-block">Kebijakan Privasi</Link>
+              <Link href="/jobs" className="hover:text-primary dark:hover:text-primary transition-colors inline-block">Cari Lowongan</Link>
+              <Link href="/tersimpan" className="hover:text-primary dark:hover:text-primary transition-colors inline-block">Lowongan Tersimpan</Link>
+              <Link href="/privacy" className="hover:text-primary dark:hover:text-primary transition-colors inline-block">Kebijakan Privasi</Link>
             </div>
           </div>
         </div>
 
         {/* Divider & Copyright */}
-        <div className="flex flex-col sm:flex-row justify-between items-center border-t border-slate-200 mt-12 pt-8 gap-4 text-xs font-medium text-slate-500">
+        <div className="flex flex-col sm:flex-row justify-between items-center border-t border-slate-200 dark:border-slate-800 mt-12 pt-8 gap-4 text-xs font-medium text-slate-500 dark:text-slate-400">
           <p>
             © {new Date().getFullYear()} LokerTimika. Hak cipta dilindungi undang-undang.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="hover:text-primary transition-colors">Privasi</Link>
-            <Link href="/ketentuan-pasang-loker" className="hover:text-primary transition-colors">Syarat & Ketentuan</Link>
-            <span className="text-slate-400">ID (Bahasa Indonesia)</span>
+            <Link href="/privacy" className="hover:text-primary dark:hover:text-primary transition-colors">Privasi</Link>
+            <Link href="/ketentuan-pasang-loker" className="hover:text-primary dark:hover:text-primary transition-colors">Syarat & Ketentuan</Link>
+            <span className="text-slate-400 dark:text-slate-500">ID (Bahasa Indonesia)</span>
           </div>
         </div>
       </div>
