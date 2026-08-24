@@ -328,54 +328,80 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
                 Deskripsi &amp; Tanggung Jawab
               </h2>
 
-              <div
-                className="text-slate-700 text-sm leading-relaxed prose prose-slate max-w-none prose-p:mb-3 prose-ul:mb-3 prose-li:my-1 prose-strong:font-bold break-words"
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }}
-              />
+              {/* Description Content */}
+              {(() => {
+                const isHtml = job.description.includes('<p>') || job.description.includes('<ul>') || job.description.includes('<br>') || job.description.includes('<li>');
+                const textLines = !isHtml && job.description.includes('\n') 
+                  ? job.description.split('\n').map((l: string) => l.trim()).filter(Boolean)
+                  : [];
 
+                if (textLines.length > 1) {
+                  return (
+                    <div className="space-y-2.5 text-slate-700 text-sm leading-relaxed">
+                      {textLines.map((line: string, i: number) => {
+                        const numberMatch = line.match(/^(\(?\d+[\.\)]|\(?[a-zA-Z][\.\)]|\(?[ivxIVX]+[\.\)])\s*(.*)$/);
+                        if (numberMatch) {
+                          return (
+                            <div key={i} className="flex items-start gap-2.5">
+                              <span className="font-bold text-primary shrink-0 min-w-[20px]">{numberMatch[1]}</span>
+                              <span className="flex-1 text-slate-700">{numberMatch[2]}</span>
+                            </div>
+                          );
+                        }
+                        const cleanText = line.replace(/^([•\-\*–—✓→]\s*)/, '');
+                        return (
+                          <div key={i} className="flex items-start gap-2.5">
+                            <span className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />
+                            <span className="flex-1 text-slate-700">{cleanText}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
 
+                return (
+                  <div
+                    className="text-slate-700 text-sm leading-relaxed prose prose-slate max-w-none prose-p:mb-3 prose-ul:mb-3 prose-li:my-1 prose-strong:font-bold break-words"
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }}
+                  />
+                );
+              })()}
+
+              {/* Requirements Content */}
               {job.requirements && (Array.isArray(job.requirements) ? job.requirements.length > 0 : Boolean(job.requirements)) && (
                 <div className="pt-6 border-t border-slate-100 space-y-3">
                   <h3 className="text-base font-bold text-slate-900 tracking-tight">
                     Kualifikasi &amp; Persyaratan
                   </h3>
-                  <div className="text-slate-700 text-sm leading-relaxed space-y-2">
+                  <div className="space-y-2.5 text-slate-700 text-sm leading-relaxed">
                     {(Array.isArray(job.requirements)
                       ? job.requirements
                       : typeof job.requirements === "string"
-                      ? job.requirements.replace(/<li[^>]*>(.*?)<\/li>/gi, "• $1\n").replace(/<\/p>|<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").split("\n")
+                      ? job.requirements.replace(/<li[^>]*>(.*?)<\/li>/gi, "$1\n").replace(/<\/p>|<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").split("\n")
                       : []
                     ).map((req: string, i: number) => {
                       const trimmed = req.trim();
                       if (!trimmed) return null;
 
-                      // 1. Cek jika baris adalah poin (diawali •, -, *, –, —, ✓, →)
-                      const bulletMatch = trimmed.match(/^([•\-\*–—✓→]\s*)(.*)$/);
-                      if (bulletMatch) {
-                        return (
-                          <div key={i} className="flex items-start gap-2.5 leading-relaxed">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0 mt-2" />
-                            <span className="flex-1">{bulletMatch[2]}</span>
-                          </div>
-                        );
-                      }
-
-                      // 2. Cek jika baris adalah penomoran (1., 2., a., dll)
+                      // 1. Check for number prefix (1., 2., a., etc)
                       const numberMatch = trimmed.match(/^(\(?\d+[\.\)]|\(?[a-zA-Z][\.\)]|\(?[ivxIVX]+[\.\)])\s*(.*)$/);
                       if (numberMatch) {
                         return (
                           <div key={i} className="flex items-start gap-2.5 leading-relaxed">
-                            <span className="font-semibold text-slate-700 shrink-0 min-w-[20px]">{numberMatch[1]}</span>
-                            <span className="flex-1">{numberMatch[2]}</span>
+                            <span className="font-bold text-primary shrink-0 min-w-[20px]">{numberMatch[1]}</span>
+                            <span className="flex-1 text-slate-700">{numberMatch[2]}</span>
                           </div>
                         );
                       }
 
-                      // 3. Teks biasa tanpa bullet (paragraf / kalimat utuh)
+                      // 2. Always display bullet dot for every item
+                      const cleanText = trimmed.replace(/^([•\-\*–—✓→]\s*)/, '');
                       return (
-                        <p key={i} className="leading-relaxed">
-                          {trimmed}
-                        </p>
+                        <div key={i} className="flex items-start gap-2.5 leading-relaxed">
+                          <span className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />
+                          <span className="flex-1 text-slate-700">{cleanText}</span>
+                        </div>
                       );
                     })}
                   </div>
