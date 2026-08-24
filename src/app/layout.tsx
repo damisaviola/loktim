@@ -7,6 +7,7 @@ import NextTopLoader from "nextjs-toploader";
 import { MainLayoutWrapper } from "@/components/MainLayoutWrapper";
 import { Toaster } from "sonner";
 import PWAInstaller from "@/components/PWAInstaller";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -80,6 +81,7 @@ export default function RootLayout({
         </MainLayoutWrapper>
         <Footer />
         <PWAInstaller />
+        <GoogleAnalytics />
       </body>
     </html>
   );
