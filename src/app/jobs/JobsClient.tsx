@@ -18,7 +18,15 @@ import {
   ArrowRight,
   Filter,
   GraduationCap,
-  Award
+  Award,
+  Pickaxe,
+  Wrench,
+  Truck,
+  Laptop,
+  Utensils,
+  Stethoscope,
+  Settings,
+  ShoppingBag
 } from 'lucide-react';
 
 export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
@@ -35,16 +43,16 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const categories = [
-    { label: 'Semua', icon: '✨' },
-    { label: 'Pertambangan', icon: '⛏️' },
-    { label: 'Teknik & Engineering', icon: '🛠️' },
-    { label: 'Logistik & Driver', icon: '🚛' },
-    { label: 'Admin & HR', icon: '💼' },
-    { label: 'IT & Digital', icon: '💻' },
-    { label: 'F&B & Resto', icon: '☕' },
-    { label: 'Kesehatan & K3', icon: '🩺' },
-    { label: 'Operasional', icon: '⚙️' },
-    { label: 'Penjualan & Retail', icon: '🏪' },
+    { label: 'Semua', icon: Sparkles },
+    { label: 'Pertambangan', icon: Pickaxe },
+    { label: 'Teknik & Engineering', icon: Wrench },
+    { label: 'Logistik & Driver', icon: Truck },
+    { label: 'Admin & HR', icon: Briefcase },
+    { label: 'IT & Digital', icon: Laptop },
+    { label: 'F&B & Resto', icon: Utensils },
+    { label: 'Kesehatan & K3', icon: Stethoscope },
+    { label: 'Operasional', icon: Settings },
+    { label: 'Penjualan & Retail', icon: ShoppingBag },
   ];
 
   const locations = [
@@ -184,20 +192,24 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
       {/* 2. HORIZONTAL CATEGORY CHIPS */}
       <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="flex items-center gap-2 min-w-max">
-          {categories.map((cat) => (
-            <button
-              key={cat.label}
-              onClick={() => setActiveCategory(cat.label)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
-                activeCategory === cat.label
-                  ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
-                  : 'bg-white border-slate-200/90 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-              }`}
-            >
-              <span>{cat.icon}</span>
-              <span>{cat.label}</span>
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+            const isActive = activeCategory === cat.label;
+            return (
+              <button
+                key={cat.label}
+                onClick={() => setActiveCategory(cat.label)}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                  isActive
+                    ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                    : 'bg-white border-slate-200/90 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-500'}`} />
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
