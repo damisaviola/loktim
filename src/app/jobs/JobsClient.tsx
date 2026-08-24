@@ -201,7 +201,7 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                 onClick={() => setActiveCategory(cat.label)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
                   isActive
-                    ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                    ? 'bg-primary border-primary text-white shadow-xs font-bold'
                     : 'bg-white border-slate-200/90 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
                 }`}
               >
@@ -249,7 +249,7 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                     onClick={() => setSortBy(sort.id as any)}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                       sortBy === sort.id
-                        ? 'bg-slate-900 text-white'
+                        ? 'bg-primary text-white font-bold'
                         : 'text-slate-600 hover:bg-slate-50'
                     }`}
                   >
@@ -269,7 +269,7 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                     onClick={() => setActiveType(t as any)}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                       activeType === t
-                        ? 'bg-slate-900 text-white shadow-2xs'
+                        ? 'bg-primary text-white font-bold shadow-2xs'
                         : 'bg-slate-50 text-slate-600 border border-slate-200/70 hover:bg-slate-100'
                     }`}
                   >
@@ -289,7 +289,7 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                     onClick={() => setActiveEdu(edu as any)}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                       activeEdu === edu
-                        ? 'bg-slate-900 text-white shadow-2xs'
+                        ? 'bg-primary text-white font-bold shadow-2xs'
                         : 'bg-slate-50 text-slate-600 border border-slate-200/70 hover:bg-slate-100'
                     }`}
                   >
@@ -403,7 +403,7 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                       onClick={() => setActiveType(t as any)}
                       className={`p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer text-center ${
                         activeType === t
-                          ? 'bg-slate-900 border-slate-900 text-white'
+                          ? 'bg-primary border-primary text-white font-bold'
                           : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
@@ -422,7 +422,7 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                       onClick={() => setActiveEdu(edu as any)}
                       className={`px-3 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                         activeEdu === edu
-                          ? 'bg-slate-900 border-slate-900 text-white'
+                          ? 'bg-primary border-primary text-white font-bold'
                           : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
@@ -441,7 +441,7 @@ export function JobsClient({ initialJobs }: { initialJobs: Job[] }) {
                       onClick={() => setActiveExp(exp as any)}
                       className={`p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer text-center ${
                         activeExp === exp
-                          ? 'bg-slate-900 border-slate-900 text-white'
+                          ? 'bg-primary border-primary text-white font-bold'
                           : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                       }`}
                     >

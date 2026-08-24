@@ -40,6 +40,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={`h-full antialiased ${plusJakartaSans.variable} ${fraunces.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.classList.remove('dark'); try { localStorage.removeItem('theme'); } catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary" suppressHydrationWarning>
         <NextTopLoader color="#0066cc" showSpinner={false} />
         <Toaster position="top-center" richColors closeButton expand={false} />
