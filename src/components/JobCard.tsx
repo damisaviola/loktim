@@ -59,8 +59,8 @@ export const JobCard = memo(function JobCard({
   return (
     <Link
       href={`/job/${job.id}`}
-      className={`group relative bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 hover:border-primary/50 dark:hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between gap-4 ${
-        isPremium ? 'border-amber-300/80 dark:border-amber-700/60 bg-gradient-to-b from-amber-50/20 to-white dark:from-amber-950/20 dark:to-slate-900' : ''
+      className={`group relative bg-white rounded-2xl p-5 border border-slate-200/80 hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between gap-4 ${
+        isPremium ? 'border-amber-300/80 bg-gradient-to-b from-amber-50/20 to-white' : ''
       } ${className || ''}`}
     >
       {/* Header: Logo, Company & Bookmark */}
@@ -68,7 +68,7 @@ export const JobCard = memo(function JobCard({
         <div className="flex items-start gap-3.5 min-w-0 flex-1">
           
           {/* Logo Avatar */}
-          <div className="relative w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/80 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform duration-200">
+          <div className="relative w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform duration-200">
             {(job.imageUrl || job.company?.logoUrl) ? (
               <Image 
                 src={(job.imageUrl || job.company?.logoUrl) as string} 
@@ -79,32 +79,32 @@ export const JobCard = memo(function JobCard({
                 className="object-contain p-1.5" 
               />
             ) : (
-              <Building2 className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+              <Building2 className="w-5 h-5 text-slate-400" />
             )}
           </div>
 
           {/* Titles */}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[160px]">
+              <span className="text-xs font-semibold text-slate-500 truncate max-w-[160px]">
                 {job.company?.name || 'Perusahaan di Timika'}
               </span>
 
               {isPremium && (
-                <span className="inline-flex items-center gap-0.5 bg-amber-50 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                <span className="inline-flex items-center gap-0.5 bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded text-[10px] font-bold">
                   <Sparkles className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
                   <span>Prioritas</span>
                 </span>
               )}
 
               {isNew && !isPremium && (
-                <span className="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[10px] font-bold">
                   Baru
                 </span>
               )}
             </div>
 
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary dark:group-hover:text-primary transition-colors leading-snug line-clamp-2">
+            <h3 className="text-base font-bold text-slate-900 group-hover:text-primary transition-colors leading-snug line-clamp-2">
               {job.title}
             </h3>
           </div>
@@ -120,36 +120,36 @@ export const JobCard = memo(function JobCard({
       </div>
 
       {/* Metadata Badges Row */}
-      <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 font-medium text-[11px]">
-          <MapPin className="w-3 h-3 text-slate-400 dark:text-slate-500 shrink-0" />
+      <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-600">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/60 text-slate-700 font-medium text-[11px]">
+          <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
           <span className="truncate max-w-[120px]">{job.location || job.company?.location || 'Timika'}</span>
         </span>
 
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 font-medium text-[11px]">
-          <Briefcase className="w-3 h-3 text-slate-400 dark:text-slate-500 shrink-0" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/60 text-slate-700 font-medium text-[11px]">
+          <Briefcase className="w-3 h-3 text-slate-400 shrink-0" />
           <span>{job.type}</span>
         </span>
 
         {job.education && job.education !== 'Semua' && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 font-medium text-[11px]">
-            <GraduationCap className="w-3 h-3 text-slate-400 dark:text-slate-500 shrink-0" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/60 text-slate-700 font-medium text-[11px]">
+            <GraduationCap className="w-3 h-3 text-slate-400 shrink-0" />
             <span>{job.education}</span>
           </span>
         )}
 
         {salary && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-[11px] font-mono border border-emerald-200/70 dark:border-emerald-800/70">
-            <Banknote className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-[11px] font-mono border border-emerald-200/70">
+            <Banknote className="w-3 h-3 text-emerald-600 shrink-0" />
             <span>{salary}</span>
           </span>
         )}
       </div>
 
       {/* Footer Timestamp & CTA */}
-      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+      <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
         <div className="flex items-center gap-1 font-medium text-[11px]">
-          <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+          <Clock className="w-3.5 h-3.5 text-slate-400" />
           <span suppressHydrationWarning>{formatTimeAgo(job.postedAt)}</span>
         </div>
 
