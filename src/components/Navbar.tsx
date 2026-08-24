@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Briefcase, Menu, X, Bookmark, Search, FileText, Phone, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -23,7 +24,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-lg border-b border-slate-200/80 shadow-xs transition-all duration-300 animate-navbar-slide-down">
+    <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-b border-slate-200/80 dark:border-slate-800 shadow-xs transition-all duration-300 animate-navbar-slide-down">
       <div className="container mx-auto flex h-16 max-w-[1128px] items-center justify-between px-4 sm:px-6 lg:px-0">
 
         {/* Brand / Logo & Desktop Nav Links */}
@@ -38,8 +39,8 @@ export function Navbar() {
                 className="w-full h-full object-cover scale-[1.35]"
               />
             </div>
-            <span className="font-black text-xl tracking-tight text-slate-800 transition-colors duration-300 hidden min-[360px]:inline-block">
-              Loker<span className="text-[#026CA0] group-hover:text-[#015883] transition-colors">Timika</span>
+            <span className="font-black text-xl tracking-tight text-slate-800 dark:text-slate-100 transition-colors duration-300 hidden min-[360px]:inline-block">
+              Loker<span className="text-[#026CA0] dark:text-[#38bdf8] group-hover:text-[#015883] dark:group-hover:text-[#0284c7] transition-colors">Timika</span>
             </span>
           </Link>
 
@@ -51,7 +52,7 @@ export function Navbar() {
                 href={link.href}
                 className={`px-3 py-1.5 lg:px-3.5 lg:py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${link.active
                   ? "text-primary bg-primary/10 font-bold"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
               >
                 <span>{link.label}</span>
@@ -61,7 +62,9 @@ export function Navbar() {
         </div>
 
         {/* Right Side Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <ThemeToggle />
+
           {/* Desktop Only Actions */}
           <div className="hidden sm:flex items-center gap-3">
             <Link href="/post">
