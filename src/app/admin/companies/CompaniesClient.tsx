@@ -109,7 +109,7 @@ export default function CompaniesClient({ initialCompanies }: { initialCompanies
         <div className="flex items-center gap-2">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">Total Entitas:</span>
           <span className="inline-flex items-center justify-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-extrabold text-primary border border-primary/20">
-            {companiesList.length} Perusahaan / UMKM
+            {companiesListState.length} Perusahaan / UMKM
           </span>
         </div>
 
