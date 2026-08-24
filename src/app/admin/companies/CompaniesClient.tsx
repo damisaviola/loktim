@@ -17,21 +17,27 @@ import {
   User,
   Copy,
   ExternalLink,
-  Check
+  Check,
+  AlertTriangle,
+  Loader2
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { useTableSortAndSearch } from "@/hooks/useTableSortAndSearch";
 import Image from "next/image";
 import { toast } from "sonner";
+import { deleteCompanyAction } from "@/app/actions/company";
 
 export default function CompaniesClient({ initialCompanies }: { initialCompanies: any[] }) {
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
-
-  const companiesList = initialCompanies.map(company => ({
-    ...company,
-    jobCount: company.jobs?.length || 0
-  }));
+  const [companiesListState, setCompaniesListState] = useState<any[]>(
+    initialCompanies.map(company => ({
+      ...company,
+      jobCount: company.jobs?.length || 0
+    }))
+  );
+  const [companyToDelete, setCompanyToDelete] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     inputValue,
@@ -41,7 +47,7 @@ export default function CompaniesClient({ initialCompanies }: { initialCompanies
     handleSort,
     processedData
   } = useTableSortAndSearch(
-    companiesList,
+    companiesListState,
     (company, query) => 
       company.name.toLowerCase().includes(query) || 
       company.location.toLowerCase().includes(query) ||
@@ -54,6 +60,28 @@ export default function CompaniesClient({ initialCompanies }: { initialCompanies
     setCopiedEmail(true);
     toast.success("Email berhasil disalin!");
     setTimeout(() => setCopiedEmail(false), 2000);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!companyToDelete) return;
+    try {
+      setIsDeleting(true);
+      const res = await deleteCompanyAction(companyToDelete.id);
+      if (res.success) {
+        toast.success(res.message || "Perusahaan berhasil dihapus!");
+        setCompaniesListState(prev => prev.filter(c => c.id !== companyToDelete.id));
+        if (selectedCompany?.id === companyToDelete.id) {
+          setSelectedCompany(null);
+        }
+        setCompanyToDelete(null);
+      } else {
+        toast.error(res.error || "Gagal menghapus perusahaan.");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Terjadi kesalahan sistem saat menghapus perusahaan.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const SortIcon = ({ columnKey }: { columnKey: string }) => {
@@ -193,14 +221,9 @@ export default function CompaniesClient({ initialCompanies }: { initialCompanies
                     <Eye className="h-4 w-4" />
                   </button>
                   <button 
-                    className="p-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded-xl transition-colors cursor-pointer" 
-                    title="Edit Data"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button 
+                    onClick={() => setCompanyToDelete(company)}
                     className="p-2 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" 
-                    title="Hapus"
+                    title="Hapus Perusahaan"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -361,7 +384,16 @@ export default function CompaniesClient({ initialCompanies }: { initialCompanies
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50/80 flex justify-end gap-3">
+            <div className="p-4 border-t border-slate-100 bg-slate-50/80 flex justify-between items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setCompanyToDelete(selectedCompany)}
+                className="px-4 py-2 font-bold text-xs text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Hapus Perusahaan Ini</span>
+              </button>
+
               <button 
                 onClick={() => setSelectedCompany(null)}
                 className="px-5 py-2 font-bold text-xs text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer shadow-2xs"
@@ -369,6 +401,73 @@ export default function CompaniesClient({ initialCompanies }: { initialCompanies
                 Tutup
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* POPUP VALIDASI HAPUS PERUSAHAAN */}
+      {companyToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-5 animate-in zoom-in-95 duration-200 border border-slate-100 text-left">
+            
+            {/* Icon Warning */}
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0 text-rose-600 shadow-2xs">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-extrabold text-slate-900 leading-snug">Hapus Perusahaan / UMKM</h3>
+                <p className="text-xs text-slate-500 font-medium">Konfirmasi Penghapusan Permanen</p>
+              </div>
+            </div>
+
+            {/* Message Body */}
+            <div className="space-y-3">
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                Apakah Anda yakin ingin menghapus perusahaan <strong className="text-slate-900 font-bold">{companyToDelete.name}</strong>?
+              </p>
+
+              <div className="rounded-2xl bg-rose-50/70 border border-rose-200/80 p-4 space-y-1 text-xs text-rose-900">
+                <div className="font-bold flex items-center gap-1.5 text-rose-800">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>Peringatan Tindakan Permanen!</span>
+                </div>
+                <p className="text-rose-700 leading-relaxed">
+                  Menghapus perusahaan ini juga akan menghapus <strong>{companyToDelete.jobCount} lowongan kerja</strong> dan data laporan terkait dari database secara permanen.
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setCompanyToDelete(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-xs font-bold text-white shadow-xs flex items-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Menghapus...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    <span>Ya, Hapus Perusahaan</span>
+                  </>
+                )}
+              </button>
+            </div>
+
           </div>
         </div>
       )}

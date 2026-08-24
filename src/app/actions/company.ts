@@ -164,3 +164,64 @@ export async function registerCompanyAction(rawData: {
     };
   }
 }
+
+export async function deleteCompanyAction(companyId: string) {
+  try {
+    if (!companyId) {
+      return { success: false, error: 'ID Perusahaan tidak valid.' };
+    }
+
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+      include: { jobs: { select: { id: true } } },
+    });
+
+    if (!company) {
+      return { success: false, error: 'Perusahaan tidak ditemukan.' };
+    }
+
+    const jobIds = company.jobs.map((j) => j.id);
+
+    // 1. Delete all reports for jobs belonging to this company
+    if (jobIds.length > 0) {
+      await prisma.jobReport.deleteMany({
+        where: { jobId: { in: jobIds } },
+      });
+
+      // 2. Delete all jobs belonging to this company
+      await prisma.job.deleteMany({
+        where: { companyId },
+      });
+    }
+
+    // 3. Delete company record
+    await prisma.company.delete({
+      where: { id: companyId },
+    });
+
+    // 4. Optionally delete Supabase auth user if authUserId is present
+    if (company.authUserId) {
+      try {
+        const supabase = await createClient();
+        await supabase.auth.admin.deleteUser(company.authUserId);
+      } catch (authErr) {
+        console.warn('Non-fatal: Error deleting Supabase auth user:', authErr);
+      }
+    }
+
+    revalidatePath('/', 'layout');
+    revalidatePath('/admin/companies', 'page');
+    revalidatePath('/jobs', 'page');
+
+    return {
+      success: true,
+      message: `Perusahaan ${company.name} dan seluruh data pendukungnya berhasil dihapus!`,
+    };
+  } catch (error: any) {
+    console.error('Error in deleteCompanyAction:', error);
+    return {
+      success: false,
+      error: error?.message || 'Gagal menghapus perusahaan.',
+    };
+  }
+}
