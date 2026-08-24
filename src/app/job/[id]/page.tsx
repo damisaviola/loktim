@@ -123,44 +123,62 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
   const isExpired = job.deadline ? new Date(job.deadline) < new Date() : false;
   const isPremium = job.isPremium;
 
-  const cleanDescriptionText = job.description.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+  const mapEmploymentType = (type?: string) => {
+    if (!type) return "FULL_TIME";
+    const t = type.toLowerCase();
+    if (t.includes("penuh") || t.includes("full")) return "FULL_TIME";
+    if (t.includes("paruh") || t.includes("part")) return "PART_TIME";
+    if (t.includes("kontrak") || t.includes("contract")) return "CONTRACTOR";
+    if (t.includes("magang") || t.includes("intern")) return "INTERN";
+    if (t.includes("freelance") || t.includes("lepas")) return "OTHER";
+    return "FULL_TIME";
+  };
+
+  const postedDate = job.postedAt ? new Date(job.postedAt) : new Date();
+  const validThroughDate = job.deadline
+    ? new Date(job.deadline)
+    : new Date(postedDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
   const jobPostingSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'JobPosting',
-    'title': job.title,
-    'description': cleanDescriptionText,
-    'identifier': {
-      '@type': 'PropertyValue',
-      'name': job.company?.name || 'LokerTimika',
-      'value': job.id,
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": job.title,
+    "description": job.description,
+    "identifier": {
+      "@type": "PropertyValue",
+      "name": job.company?.name || "LokerTimika",
+      "value": job.id,
     },
-    'datePosted': job.postedAt ? new Date(job.postedAt).toISOString() : new Date().toISOString(),
-    ...(job.deadline ? { 'validThrough': new Date(job.deadline).toISOString() } : {}),
-    'employmentType': job.type === 'Penuh Waktu' || job.type === 'Full Time' ? 'FULL_TIME' : job.type === 'Paruh Waktu' ? 'PART_TIME' : job.type === 'Kontrak' ? 'CONTRACT' : 'OTHER',
-    'hiringOrganization': {
-      '@type': 'Organization',
-      'name': job.company?.name || 'Perusahaan',
-      'sameAs': job.contactUrl || undefined,
-      'logo': job.company?.logoUrl || job.imageUrl || undefined,
+    "datePosted": postedDate.toISOString(),
+    "validThrough": validThroughDate.toISOString(),
+    "employmentType": mapEmploymentType(job.type),
+    "directApply": true,
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": job.company?.name || "Perusahaan",
+      "sameAs": job.contactUrl || undefined,
+      "logo": job.company?.logoUrl || job.imageUrl || undefined,
     },
-    'jobLocation': {
-      '@type': 'Place',
-      'address': {
-        '@type': 'PostalAddress',
-        'addressLocality': job.location || 'Timika',
-        'addressRegion': 'Papua Tengah',
-        'addressCountry': 'ID',
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": job.location || "Timika",
+        "addressLocality": job.location?.includes("Kuala Kencana") ? "Kuala Kencana" : "Timika",
+        "addressRegion": "Papua Tengah",
+        "postalCode": "99910",
+        "addressCountry": "ID",
       },
     },
     ...(job.salaryMin ? {
-      'baseSalary': {
-        '@type': 'MonetaryAmount',
-        'currency': 'IDR',
-        'value': {
-          '@type': 'QuantitativeValue',
-          'minValue': job.salaryMin,
-          'maxValue': job.salaryMax || job.salaryMin,
-          'unitText': 'MONTH',
+      "baseSalary": {
+        "@type": "MonetaryAmount",
+        "currency": "IDR",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": job.salaryMin,
+          "maxValue": job.salaryMax || job.salaryMin,
+          "unitText": "MONTH",
         },
       },
     } : {}),

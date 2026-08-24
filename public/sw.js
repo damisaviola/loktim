@@ -4,7 +4,6 @@ const STATIC_ASSETS = [
   '/jobs',
   '/perusahaan',
   '/panduan-pasang-loker',
-  '/ketentuan-pasang-loker',
   '/contact',
   '/manifest.json',
   '/icons/icon.svg',

@@ -47,7 +47,6 @@ export function Footer() {
             <div className="flex flex-col gap-3 text-sm font-medium">
               <Link href="/post" className="hover:text-primary transition-colors inline-block">Pasang Lowongan</Link>
               <Link href="/panduan-pasang-loker" className="hover:text-primary transition-colors inline-block">Panduan Pasang Loker</Link>
-              <Link href="/ketentuan-pasang-loker" className="hover:text-primary transition-colors inline-block">Ketentuan Layanan</Link>
               <Link href="/contact" className="hover:text-primary transition-colors inline-block">Bantuan & Kontak</Link>
             </div>
           </div>
@@ -81,7 +80,6 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-primary transition-colors">Privasi</Link>
-            <Link href="/ketentuan-pasang-loker" className="hover:text-primary transition-colors">Syarat & Ketentuan</Link>
             <span className="text-slate-400">ID (Bahasa Indonesia)</span>
           </div>
         </div>
