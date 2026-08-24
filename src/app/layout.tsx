@@ -46,6 +46,9 @@ export const metadata: Metadata = {
     shortcut: "/icons/icon-192.svg",
     apple: "/icons/icon-192.svg",
   },
+  verification: {
+    google: "ktKsxXxVRmpMCR0IKU45bCQcRgkz2KFy1cGJP3B-O48",
+  },
   openGraph: {
     title: "LokerTimika - Info Lowongan Kerja Timika & Mimika Terbaru",
     description: "Portal informasi lowongan kerja terpercaya di Timika, Mimika, dan Papua. Temukan loker terbaru untuk berbagai profesi.",
