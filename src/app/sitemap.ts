@@ -3,7 +3,6 @@ import prisma from '@/lib/prisma'
 import { jobs as dummyJobs, companies as dummyCompanies } from '@/lib/dummy-data'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Gunakan NEXT_PUBLIC_APP_URL, VERCEL_URL otomatis, atau fallback ke domain utama
   const getBaseUrl = () => {
     if (process.env.NEXT_PUBLIC_APP_URL) {
       return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')
@@ -11,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (process.env.VERCEL_URL) {
       return `https://${process.env.VERCEL_URL.replace(/\/$/, '')}`
     }
-    return 'https://lokertimika.com'
+    return 'https://lokertimika.vercel.app'
   }
 
   const baseUrl = getBaseUrl()
