@@ -1,6 +1,7 @@
 // Force dev server restart
 import type { NextConfig } from "next";
 import os from "os";
+import { withSentryConfig } from "@sentry/nextjs";
 
 // Helper function to get all local IPv4 addresses
 function getLocalIPs() {
@@ -80,11 +81,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-import { withSentryConfig } from "@sentry/nextjs";
-
 export default withSentryConfig(nextConfig, {
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
+  org: process.env.SENTRY_ORG || "timverse",
+  project: process.env.SENTRY_PROJECT || "loktim",
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
@@ -93,7 +92,8 @@ export default withSentryConfig(nextConfig, {
   widenClientFileUpload: true,
 
   // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  tunnelRoute: "/monitoring",
+  // tunnelRoute: "/monitoring",
+
 
   // Source maps configuration
   sourcemaps: {

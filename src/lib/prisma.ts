@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { captureAppError } from '@/lib/sentry'
 
 const prismaClientSingleton = () => {
   const connectionString = process.env.DATABASE_URL || process.env.DIRECT_URL || ''
@@ -11,8 +12,34 @@ const prismaClientSingleton = () => {
     idleTimeoutMillis: 30000,
     ssl: { rejectUnauthorized: false },
   })
+
+  // Tangkap error koneksi PostgreSQL Pool ke Sentry
+  pool.on('error', (err) => {
+    captureAppError(err, { source: 'PostgreSQL Pool Connection' })
+  })
+
   const adapter = new PrismaPg(pool)
-  return new PrismaClient({ adapter })
+  const baseClient = new PrismaClient({ adapter })
+
+  // Ekstensi Prisma untuk menangkap semua error query database ke Sentry
+  return baseClient.$extends({
+    query: {
+      $allModels: {
+        async $allOperations({ model, operation, args, query }) {
+          try {
+            return await query(args)
+          } catch (error) {
+            captureAppError(error, {
+              source: 'Prisma Query Exception',
+              model,
+              operation,
+            })
+            throw error
+          }
+        },
+      },
+    },
+  })
 }
 
 declare const globalThis: {
@@ -46,4 +73,3 @@ export function getExtendedClient(userId?: string) {
     },
   });
 }
-

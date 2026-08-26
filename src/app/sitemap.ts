@@ -1,11 +1,24 @@
 import { MetadataRoute } from 'next'
 import prisma from '@/lib/prisma'
-import { jobs as dummyJobs } from '@/lib/dummy-data'
+import { jobs as dummyJobs, companies as dummyCompanies } from '@/lib/dummy-data'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://lokertimika.com'
+  // Gunakan NEXT_PUBLIC_APP_URL, VERCEL_URL otomatis, atau fallback ke domain utama
+  const getBaseUrl = () => {
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+      return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')
+    }
+    if (process.env.VERCEL_URL) {
+      return `https://${process.env.VERCEL_URL.replace(/\/$/, '')}`
+    }
+    return 'https://lokertimika.com'
+  }
+
+  const baseUrl = getBaseUrl()
 
   let dbJobs: any[] = []
+  let dbCompanies: any[] = []
+
   try {
     dbJobs = await prisma.job.findMany({
       where: { status: 'approved' },
@@ -15,6 +28,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Failed to fetch jobs for sitemap:', error)
   }
 
+  try {
+    dbCompanies = await prisma.company.findMany({
+      select: { id: true, updatedAt: true }
+    })
+  } catch (error) {
+    console.error('Failed to fetch companies for sitemap:', error)
+  }
+
+  // Gabungkan lowongan dari Database dan Dummy Data
   const allJobsMap = new Map<string, { id: string; updatedAt?: Date }>()
   dummyJobs.forEach(j => allJobsMap.set(j.id, { id: j.id, updatedAt: new Date() }))
   dbJobs.forEach(j => allJobsMap.set(j.id, { id: j.id, updatedAt: j.updatedAt }))
@@ -26,6 +48,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
+  // Gabungkan profil perusahaan dari Database dan Dummy Data
+  const allCompaniesMap = new Map<string, { id: string; updatedAt?: Date }>()
+  dummyCompanies.forEach(c => allCompaniesMap.set(c.id, { id: c.id, updatedAt: new Date() }))
+  dbCompanies.forEach(c => allCompaniesMap.set(c.id, { id: c.id, updatedAt: c.updatedAt }))
+
+  const companyUrls = Array.from(allCompaniesMap.values()).map((company) => ({
+    url: `${baseUrl}/perusahaan/${company.id}`,
+    lastModified: company.updatedAt || new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }))
+
+  // Halaman Statis Utama
   const staticUrls = [
     {
       url: baseUrl,
@@ -38,6 +73,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'hourly' as const,
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/perusahaan`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/post`,
@@ -65,5 +106,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  return [...staticUrls, ...jobUrls]
+  return [...staticUrls, ...jobUrls, ...companyUrls]
 }

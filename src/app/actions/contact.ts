@@ -6,6 +6,8 @@ import { getUserSession } from './auth'
 import { contactFormSchema } from '@/lib/validations/contact'
 import { getClientIp, checkRateLimit } from '@/lib/rate-limit'
 import DOMPurify from '@/lib/sanitize'
+import { captureAppError } from '@/lib/sentry'
+
 
 export async function submitContactMessageAction(rawInput: {
   name: string
@@ -74,7 +76,7 @@ export async function submitContactMessageAction(rawInput: {
       ticketId: newMessage.ticketId 
     }
   } catch (error: any) {
-    console.error('Failed to submit contact message:', error)
+    captureAppError(error, { action: 'submitContactMessageAction' })
     return { success: false, error: 'Terjadi kesalahan sistem saat mengirim pesan. Silakan coba lagi.' }
   }
 }
@@ -96,7 +98,7 @@ export async function getContactMessagesAction() {
       updatedAt: m.updatedAt.toISOString()
     }))
   } catch (error: any) {
-    console.error('Failed to get contact messages:', error)
+    captureAppError(error, { action: 'getContactMessagesAction' })
     return []
   }
 }
@@ -117,7 +119,7 @@ export async function updateContactMessageStatusAction(id: string, status: strin
     revalidatePath('/admin/contacts')
     return { success: true }
   } catch (error: any) {
-    console.error('Failed to update contact message status:', error)
+    captureAppError(error, { action: 'updateContactMessageStatusAction', id, status })
     return { success: false, error: 'Gagal memperbarui status pesan' }
   }
 }
@@ -134,7 +136,7 @@ export async function deleteContactMessageAction(id: string) {
     revalidatePath('/admin/contacts')
     return { success: true }
   } catch (error: any) {
-    console.error('Failed to delete contact message:', error)
+    captureAppError(error, { action: 'deleteContactMessageAction', id })
     return { success: false, error: 'Gagal menghapus pesan' }
   }
 }
