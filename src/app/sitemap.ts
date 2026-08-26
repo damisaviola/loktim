@@ -29,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     dbCompanies = await prisma.company.findMany({
-      select: { id: true, updatedAt: true }
+      select: { id: true }
     })
   } catch (error) {
     console.error('Failed to fetch companies for sitemap:', error)
@@ -49,8 +49,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Gabungkan profil perusahaan dari Database dan Dummy Data
   const allCompaniesMap = new Map<string, { id: string; updatedAt?: Date }>()
-  dummyCompanies.forEach(c => allCompaniesMap.set(c.id, { id: c.id, updatedAt: new Date() }))
-  dbCompanies.forEach(c => allCompaniesMap.set(c.id, { id: c.id, updatedAt: c.updatedAt }))
+  Object.values(dummyCompanies).forEach(c => allCompaniesMap.set(c.id, { id: c.id, updatedAt: new Date() }))
+  dbCompanies.forEach(c => allCompaniesMap.set(c.id, { id: c.id, updatedAt: undefined }))
 
   const companyUrls = Array.from(allCompaniesMap.values()).map((company) => ({
     url: `${baseUrl}/perusahaan/${company.id}`,
