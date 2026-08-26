@@ -5,9 +5,30 @@ import Link from 'next/link';
 import { Building2, MapPin, Briefcase, Search, Sparkles, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://lokertimika.vercel.app';
+
 export const metadata: Metadata = {
-  title: 'Daftar Perusahaan | Portal Loker Mimika',
-  description: 'Jelajahi berbagai perusahaan mitra dan instansi di Mimika yang membuka lowongan kerja.',
+  title: 'Daftar Perusahaan & PT di Timika - Loker Timika',
+  description: 'Profil daftar perusahaan, PT, kontraktor Freeport, dan instansi resmi yang membuka lowongan kerja di Timika & Mimika, Papua Tengah.',
+  keywords: [
+    'perusahaan timika',
+    'pt di timika',
+    "kontraktor freeport timika",
+    'loker perusahaan timika',
+    'loker timika',
+    'lokertimika'
+  ],
+  alternates: {
+    canonical: `${siteUrl}/perusahaan`,
+  },
+  openGraph: {
+    title: 'Daftar Perusahaan & PT di Timika - LokerTimika',
+    description: 'Profil daftar perusahaan, PT, kontraktor Freeport, dan instansi resmi yang membuka lowongan kerja di Timika & Mimika.',
+    url: `${siteUrl}/perusahaan`,
+    siteName: 'LokerTimika',
+    locale: 'id_ID',
+    type: 'website',
+  },
 };
 
 export default async function PublicCompaniesPage() {

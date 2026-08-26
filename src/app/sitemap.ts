@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next'
+ mport { MetadataRoute } from 'next'
 import prisma from '@/lib/prisma'
 import { jobs as dummyJobs, companies as dummyCompanies } from '@/lib/dummy-data'
 

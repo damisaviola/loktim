@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShareButton } from '@/components/ShareButton';
 import { BookmarkButton } from '@/components/BookmarkButton';
 import { JobMoreOptions } from '@/components/JobMoreOptions';
 import { ApplyModal } from '@/components/ApplyModal';
@@ -263,8 +262,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
             {/* Top Right Action Icons */}
             <div className="hidden sm:flex items-center gap-2 shrink-0">
               <BookmarkButton jobId={job.id} jobTitle={job.title} className="w-11 h-11 rounded-xl shadow-2xs" iconClassName="w-4 h-4" />
-              <ShareButton title={job.title} className="rounded-xl w-11 h-11 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 shadow-2xs" />
-              <JobMoreOptions jobId={job.id} />
+              <JobMoreOptions jobId={job.id} jobTitle={job.title} />
             </div>
           </div>
 
@@ -531,8 +529,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
         <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-3 flex flex-row gap-2 z-50 shadow-lg pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <ApplyModal job={job} isMobile={true} isExpired={isExpired} />
           <BookmarkButton jobId={job.id} jobTitle={job.title} className="rounded-xl w-11 h-11 shrink-0 relative" />
-          <ShareButton title={job.title} className="rounded-xl w-11 h-11 shrink-0 relative bg-slate-50 border border-slate-200 text-slate-600" />
-          <JobMoreOptions jobId={job.id} />
+          <JobMoreOptions jobId={job.id} jobTitle={job.title} />
         </div>
 
       </div>
